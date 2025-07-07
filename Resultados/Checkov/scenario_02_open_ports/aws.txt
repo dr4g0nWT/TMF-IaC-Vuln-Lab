@@ -1,0 +1,307 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 2, Failed checks: 8, Skipped checks: 0
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public
+	File: /aws.tf:10-19
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		10 | resource "aws_subnet" "public" {
+		11 |   vpc_id     = aws_vpc.main.id
+		12 |   cidr_block = "10.0.1.0/24"
+		13 |   map_public_ip_on_launch = true
+		14 |   availability_zone = "eu-west-3" # Cambia según tu región preferida
+		15 | 
+		16 |   tags = {
+		17 |     Name = "tfm-security-public-subnet"
+		18 |   }
+		19 | }
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	FAILED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+
+		21 | resource "aws_security_group" "open_ports_sg" {
+		22 |   name        = "tfm-insecure-open-ports-sg"
+		23 |   description = "Security group with commonly insecure open ports"
+		24 |   vpc_id      = aws_vpc.main.id
+		25 | 
+		26 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		27 |   ingress {
+		28 |     description = "Allow SSH from anywhere"
+		29 |     from_port   = 22
+		30 |     to_port     = 22
+		31 |     protocol    = "tcp"
+		32 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		33 |   }
+		34 | 
+		35 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		36 |   ingress {
+		37 |     description = "Allow RDP from anywhere"
+		38 |     from_port   = 3389
+		39 |     to_port     = 3389
+		40 |     protocol    = "tcp"
+		41 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. MySQL) desde cualquier lugar (0.0.0.0/0)
+		45 |   ingress {
+		46 |     description = "Allow MySQL from anywhere"
+		47 |     from_port   = 3306
+		48 |     to_port     = 3306
+		49 |     protocol    = "tcp"
+		50 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		51 |   }
+		52 | 
+		53 |   egress {
+		54 |     from_port   = 0
+		55 |     to_port     = 0
+		56 |     protocol    = "-1"
+		57 |     cidr_blocks = ["0.0.0.0/0"]
+		58 |   }
+		59 | 
+		60 |   tags = {
+		61 |     Name = "TFM-Insecure-SG"
+		62 |   }
+		63 | }
+
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	FAILED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+
+		21 | resource "aws_security_group" "open_ports_sg" {
+		22 |   name        = "tfm-insecure-open-ports-sg"
+		23 |   description = "Security group with commonly insecure open ports"
+		24 |   vpc_id      = aws_vpc.main.id
+		25 | 
+		26 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		27 |   ingress {
+		28 |     description = "Allow SSH from anywhere"
+		29 |     from_port   = 22
+		30 |     to_port     = 22
+		31 |     protocol    = "tcp"
+		32 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		33 |   }
+		34 | 
+		35 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		36 |   ingress {
+		37 |     description = "Allow RDP from anywhere"
+		38 |     from_port   = 3389
+		39 |     to_port     = 3389
+		40 |     protocol    = "tcp"
+		41 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. MySQL) desde cualquier lugar (0.0.0.0/0)
+		45 |   ingress {
+		46 |     description = "Allow MySQL from anywhere"
+		47 |     from_port   = 3306
+		48 |     to_port     = 3306
+		49 |     protocol    = "tcp"
+		50 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		51 |   }
+		52 | 
+		53 |   egress {
+		54 |     from_port   = 0
+		55 |     to_port     = 0
+		56 |     protocol    = "-1"
+		57 |     cidr_blocks = ["0.0.0.0/0"]
+		58 |   }
+		59 | 
+		60 |   tags = {
+		61 |     Name = "TFM-Insecure-SG"
+		62 |   }
+		63 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		21 | resource "aws_security_group" "open_ports_sg" {
+		22 |   name        = "tfm-insecure-open-ports-sg"
+		23 |   description = "Security group with commonly insecure open ports"
+		24 |   vpc_id      = aws_vpc.main.id
+		25 | 
+		26 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		27 |   ingress {
+		28 |     description = "Allow SSH from anywhere"
+		29 |     from_port   = 22
+		30 |     to_port     = 22
+		31 |     protocol    = "tcp"
+		32 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		33 |   }
+		34 | 
+		35 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		36 |   ingress {
+		37 |     description = "Allow RDP from anywhere"
+		38 |     from_port   = 3389
+		39 |     to_port     = 3389
+		40 |     protocol    = "tcp"
+		41 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. MySQL) desde cualquier lugar (0.0.0.0/0)
+		45 |   ingress {
+		46 |     description = "Allow MySQL from anywhere"
+		47 |     from_port   = 3306
+		48 |     to_port     = 3306
+		49 |     protocol    = "tcp"
+		50 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		51 |   }
+		52 | 
+		53 |   egress {
+		54 |     from_port   = 0
+		55 |     to_port     = 0
+		56 |     protocol    = "-1"
+		57 |     cidr_blocks = ["0.0.0.0/0"]
+		58 |   }
+		59 | 
+		60 |   tags = {
+		61 |     Name = "TFM-Insecure-SG"
+		62 |   }
+		63 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		21 | resource "aws_security_group" "open_ports_sg" {
+		22 |   name        = "tfm-insecure-open-ports-sg"
+		23 |   description = "Security group with commonly insecure open ports"
+		24 |   vpc_id      = aws_vpc.main.id
+		25 | 
+		26 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		27 |   ingress {
+		28 |     description = "Allow SSH from anywhere"
+		29 |     from_port   = 22
+		30 |     to_port     = 22
+		31 |     protocol    = "tcp"
+		32 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		33 |   }
+		34 | 
+		35 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		36 |   ingress {
+		37 |     description = "Allow RDP from anywhere"
+		38 |     from_port   = 3389
+		39 |     to_port     = 3389
+		40 |     protocol    = "tcp"
+		41 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. MySQL) desde cualquier lugar (0.0.0.0/0)
+		45 |   ingress {
+		46 |     description = "Allow MySQL from anywhere"
+		47 |     from_port   = 3306
+		48 |     to_port     = 3306
+		49 |     protocol    = "tcp"
+		50 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		51 |   }
+		52 | 
+		53 |   egress {
+		54 |     from_port   = 0
+		55 |     to_port     = 0
+		56 |     protocol    = "-1"
+		57 |     cidr_blocks = ["0.0.0.0/0"]
+		58 |   }
+		59 | 
+		60 |   tags = {
+		61 |     Name = "TFM-Insecure-SG"
+		62 |   }
+		63 | }
+
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main
+	File: /aws.tf:3-8
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		3 | resource "aws_vpc" "main" {
+		4 |   cidr_block = "10.0.0.0/16"
+		5 |   tags = {
+		6 |     Name = "tfm-security-vpc"
+		7 |   }
+		8 | }
+
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: aws_security_group.open_ports_sg
+	File: /aws.tf:21-63
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+
+		21 | resource "aws_security_group" "open_ports_sg" {
+		22 |   name        = "tfm-insecure-open-ports-sg"
+		23 |   description = "Security group with commonly insecure open ports"
+		24 |   vpc_id      = aws_vpc.main.id
+		25 | 
+		26 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		27 |   ingress {
+		28 |     description = "Allow SSH from anywhere"
+		29 |     from_port   = 22
+		30 |     to_port     = 22
+		31 |     protocol    = "tcp"
+		32 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		33 |   }
+		34 | 
+		35 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		36 |   ingress {
+		37 |     description = "Allow RDP from anywhere"
+		38 |     from_port   = 3389
+		39 |     to_port     = 3389
+		40 |     protocol    = "tcp"
+		41 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. MySQL) desde cualquier lugar (0.0.0.0/0)
+		45 |   ingress {
+		46 |     description = "Allow MySQL from anywhere"
+		47 |     from_port   = 3306
+		48 |     to_port     = 3306
+		49 |     protocol    = "tcp"
+		50 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad
+		51 |   }
+		52 | 
+		53 |   egress {
+		54 |     from_port   = 0
+		55 |     to_port     = 0
+		56 |     protocol    = "-1"
+		57 |     cidr_blocks = ["0.0.0.0/0"]
+		58 |   }
+		59 | 
+		60 |   tags = {
+		61 |     Name = "TFM-Insecure-SG"
+		62 |   }
+		63 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main
+	File: /aws.tf:3-8
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		3 | resource "aws_vpc" "main" {
+		4 |   cidr_block = "10.0.0.0/16"
+		5 |   tags = {
+		6 |     Name = "tfm-security-vpc"
+		7 |   }
+		8 | }
+
+
