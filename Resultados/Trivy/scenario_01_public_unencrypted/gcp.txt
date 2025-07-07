@@ -1,0 +1,99 @@
+
+Report Summary
+
+┌────────┬───────────┬───────────────────┐
+│ Target │   Type    │ Misconfigurations │
+├────────┼───────────┼───────────────────┤
+│ .      │ terraform │         0         │
+├────────┼───────────┼───────────────────┤
+│ gcs.tf │ terraform │         4         │
+└────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+gcs.tf (terraform)
+==================
+Tests: 4 (SUCCESSES: 0, FAILURES: 4)
+Failures: 4 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 2, CRITICAL: 0)
+
+AVD-GCP-0001 (HIGH): Bucket allows public access.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Using 'allUsers' or 'allAuthenticatedUsers' as members in an IAM member/binding causes data to be exposed outside of the organisation.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0001
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcs.tf:23
+   via gcs.tf:20-24 (google_storage_bucket_iam_member.public_access_member)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  20   resource "google_storage_bucket_iam_member" "public_access_member" {
+  21     bucket = google_storage_bucket.unencrypted_public_bucket.name
+  22     role   = "roles/storage.objectViewer" # Permite a los usuarios ver objetos
+  23 [   member = "allUsers"                  # Vulnerabilidad 1: Acceso público a todos los usuarios
+  24   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0002 (MEDIUM): Bucket has uniform bucket level access disabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When you enable uniform bucket-level access on a bucket, Access Control Lists (ACLs) are disabled, and only bucket-level Identity and Access Management (IAM) permissions grant access to that bucket and the objects it contains. You revoke all access granted by object ACLs and the ability to administrate permissions using bucket ACLs.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0002
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcs.tf:17
+   via gcs.tf:8-18 (google_storage_bucket.unencrypted_public_bucket)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   8   resource "google_storage_bucket" "unencrypted_public_bucket" {
+   9     name          = "my-highly-insecure-public-unencrypted-gcs-bucket-tfm-2025" # Debe ser globalmente único
+  10     location      = "europe-west1"
+  11     project       = google_project.project.project_id
+  12     force_destroy = true # Para facilitar la eliminación después de las pruebas
+  13   
+  14     # Vulnerabilidad 1: Acceso público mediante IAM
+  15     # Se otorga el rol de 'roles/storage.objectViewer' al grupo 'allUsers',
+  16     # lo que permite a cualquier persona en Internet leer los objetos del bucket.
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0010 (HIGH): Project has automatic network creation enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+The default network which is provided for a project contains multiple insecure firewall rules which allow ingress to the project's infrastructure. Creation of this network should therefore be disabled.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0010
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcs.tf:3-6
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3 ┌ resource "google_project" "project" {
+   4 │   project_id = "tfm-security-project-2025" # Cambia esto a tu ID de proyecto de GCP
+   5 │   name       = "TFM Security Project"
+   6 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0066 (LOW): Storage bucket encryption does not use a customer-managed key.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Using unmanaged keys makes rotation and general management difficult.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0066
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcs.tf:8-18
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   8 ┌ resource "google_storage_bucket" "unencrypted_public_bucket" {
+   9 │   name          = "my-highly-insecure-public-unencrypted-gcs-bucket-tfm-2025" # Debe ser globalmente único
+  10 │   location      = "europe-west1"
+  11 │   project       = google_project.project.project_id
+  12 │   force_destroy = true # Para facilitar la eliminación después de las pruebas
+  13 │ 
+  14 │   # Vulnerabilidad 1: Acceso público mediante IAM
+  15 │   # Se otorga el rol de 'roles/storage.objectViewer' al grupo 'allUsers',
+  16 └   # lo que permite a cualquier persona en Internet leer los objetos del bucket.
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

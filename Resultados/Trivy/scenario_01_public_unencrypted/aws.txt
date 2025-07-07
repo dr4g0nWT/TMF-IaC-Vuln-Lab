@@ -1,0 +1,223 @@
+
+Report Summary
+
+┌───────────┬───────────┬───────────────────┐
+│  Target   │   Type    │ Misconfigurations │
+├───────────┼───────────┼───────────────────┤
+│ .         │ terraform │         0         │
+├───────────┼───────────┼───────────────────┤
+│ s3_aws.tf │ terraform │         9         │
+└───────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+s3_aws.tf (terraform)
+=====================
+Tests: 9 (SUCCESSES: 0, FAILURES: 9)
+Failures: 9 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 7, CRITICAL: 0)
+
+AVD-AWS-0086 (HIGH): Public access block does not block public ACLs
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 buckets should block public ACLs on buckets and any objects they contain. By blocking, PUTs with fail if the object has any public ACL a.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0086
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:24
+   via s3_aws.tf:19-28 (aws_s3_bucket_public_access_block.block_public_access_disabled)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  19   resource "aws_s3_bucket_public_access_block" "block_public_access_disabled" {
+  20     bucket = aws_s3_bucket.unencrypted_public_bucket.id
+  21   
+  22     # Vulnerabilidad 1: Deshabilitar todos los bloques de acceso público
+  23     # Esto permite que las ACLs y las políticas de bucket hagan que el bucket sea público.
+  24 [   block_public_acls       = false
+  25     block_public_policy     = false
+  26     ignore_public_acls      = false
+  27     restrict_public_buckets = false
+  28   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0087 (HIGH): Public access block does not block public policies
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 bucket policy should have block public policy to prevent users from putting a policy that enable public access.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0087
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:25
+   via s3_aws.tf:19-28 (aws_s3_bucket_public_access_block.block_public_access_disabled)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  19   resource "aws_s3_bucket_public_access_block" "block_public_access_disabled" {
+  20     bucket = aws_s3_bucket.unencrypted_public_bucket.id
+  21   
+  22     # Vulnerabilidad 1: Deshabilitar todos los bloques de acceso público
+  23     # Esto permite que las ACLs y las políticas de bucket hagan que el bucket sea público.
+  24     block_public_acls       = false
+  25 [   block_public_policy     = false
+  26     ignore_public_acls      = false
+  27     restrict_public_buckets = false
+  28   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0088 (HIGH): Bucket does not have encryption enabled
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0088
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:3-17
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3 ┌ resource "aws_s3_bucket" "unencrypted_public_bucket" {
+   4 │   bucket = "my-highly-insecure-public-unencrypted-bucket-tfm-2025" # Nombre único, debe cambiarse si se despliega
+   5 │   acl    = "public-read" # Vulnerabilidad 1: Acceso público a través de ACL
+   6 │ 
+   7 │   tags = {
+   8 │     Environment = "Dev"
+   9 │     Project     = "IaC_Security_TFM_AWS"
+  10 │   }
+  11 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0089 (LOW): Bucket has logging disabled
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensures S3 bucket logging is enabled for S3 buckets
+
+See https://avd.aquasec.com/misconfig/s3-bucket-logging
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:3-17
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3 ┌ resource "aws_s3_bucket" "unencrypted_public_bucket" {
+   4 │   bucket = "my-highly-insecure-public-unencrypted-bucket-tfm-2025" # Nombre único, debe cambiarse si se despliega
+   5 │   acl    = "public-read" # Vulnerabilidad 1: Acceso público a través de ACL
+   6 │ 
+   7 │   tags = {
+   8 │     Environment = "Dev"
+   9 │     Project     = "IaC_Security_TFM_AWS"
+  10 │   }
+  11 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0090 (MEDIUM): Bucket does not have versioning enabled
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Versioning in Amazon S3 is a means of keeping multiple variants of an object in the same bucket.
+
+You can use the S3 Versioning feature to preserve, retrieve, and restore every version of every object stored in your buckets.
+
+With versioning you can recover more easily from both unintended user actions and application failures.
+
+When you enable versioning, also keep in mind the potential costs of storing noncurrent versions of objects. To help manage those costs, consider setting up an S3 Lifecycle configuration.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0090
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:3-17
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3 ┌ resource "aws_s3_bucket" "unencrypted_public_bucket" {
+   4 │   bucket = "my-highly-insecure-public-unencrypted-bucket-tfm-2025" # Nombre único, debe cambiarse si se despliega
+   5 │   acl    = "public-read" # Vulnerabilidad 1: Acceso público a través de ACL
+   6 │ 
+   7 │   tags = {
+   8 │     Environment = "Dev"
+   9 │     Project     = "IaC_Security_TFM_AWS"
+  10 │   }
+  11 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0091 (HIGH): Public access block does not ignore public ACLs
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 buckets should ignore public ACLs on buckets and any objects they contain. By ignoring rather than blocking, PUT calls with public ACLs will still be applied but the ACL will be ignored.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0091
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:26
+   via s3_aws.tf:19-28 (aws_s3_bucket_public_access_block.block_public_access_disabled)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  19   resource "aws_s3_bucket_public_access_block" "block_public_access_disabled" {
+  20     bucket = aws_s3_bucket.unencrypted_public_bucket.id
+  21   
+  22     # Vulnerabilidad 1: Deshabilitar todos los bloques de acceso público
+  23     # Esto permite que las ACLs y las políticas de bucket hagan que el bucket sea público.
+  24     block_public_acls       = false
+  25     block_public_policy     = false
+  26 [   ignore_public_acls      = false
+  27     restrict_public_buckets = false
+  28   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0092 (HIGH): Bucket has a public ACL: "public-read"
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Buckets should not have ACLs that allow public access
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0092
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:5
+   via s3_aws.tf:3-17 (aws_s3_bucket.unencrypted_public_bucket)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3   resource "aws_s3_bucket" "unencrypted_public_bucket" {
+   .   
+   5 [   acl    = "public-read" # Vulnerabilidad 1: Acceso público a través de ACL
+  ..   
+  17   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0093 (HIGH): Public access block does not restrict public buckets
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 buckets should restrict public policies for the bucket. By enabling, the restrict_public_buckets, only the bucket owner and AWS Services can access if it has a public policy.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0093
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:27
+   via s3_aws.tf:19-28 (aws_s3_bucket_public_access_block.block_public_access_disabled)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  19   resource "aws_s3_bucket_public_access_block" "block_public_access_disabled" {
+  20     bucket = aws_s3_bucket.unencrypted_public_bucket.id
+  21   
+  22     # Vulnerabilidad 1: Deshabilitar todos los bloques de acceso público
+  23     # Esto permite que las ACLs y las políticas de bucket hagan que el bucket sea público.
+  24     block_public_acls       = false
+  25     block_public_policy     = false
+  26     ignore_public_acls      = false
+  27 [   restrict_public_buckets = false
+  28   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0132 (HIGH): Bucket does not encrypt data with a customer managed key.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0132
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ s3_aws.tf:3-17
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3 ┌ resource "aws_s3_bucket" "unencrypted_public_bucket" {
+   4 │   bucket = "my-highly-insecure-public-unencrypted-bucket-tfm-2025" # Nombre único, debe cambiarse si se despliega
+   5 │   acl    = "public-read" # Vulnerabilidad 1: Acceso público a través de ACL
+   6 │ 
+   7 │   tags = {
+   8 │     Environment = "Dev"
+   9 │     Project     = "IaC_Security_TFM_AWS"
+  10 │   }
+  11 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

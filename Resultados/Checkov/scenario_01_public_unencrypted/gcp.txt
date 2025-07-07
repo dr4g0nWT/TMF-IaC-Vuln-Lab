@@ -1,0 +1,113 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 0, Failed checks: 7, Skipped checks: 0
+
+Check: CKV_GCP_27: "Ensure that the default network does not exist in a project"
+	FAILED for resource: google_project.project
+	File: /gcs.tf:3-6
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-27
+
+		3 | resource "google_project" "project" {
+		4 |   project_id = "tfm-security-project-2025" # Cambia esto a tu ID de proyecto de GCP
+		5 |   name       = "TFM Security Project"
+		6 | }
+
+Check: CKV_GCP_62: "Bucket should log access"
+	FAILED for resource: google_storage_bucket.unencrypted_public_bucket
+	File: /gcs.tf:8-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-logging-2
+
+		8  | resource "google_storage_bucket" "unencrypted_public_bucket" {
+		9  |   name          = "my-highly-insecure-public-unencrypted-gcs-bucket-tfm-2025" # Debe ser globalmente único
+		10 |   location      = "europe-west1"
+		11 |   project       = google_project.project.project_id
+		12 |   force_destroy = true # Para facilitar la eliminación después de las pruebas
+		13 | 
+		14 |   # Vulnerabilidad 1: Acceso público mediante IAM
+		15 |   # Se otorga el rol de 'roles/storage.objectViewer' al grupo 'allUsers',
+		16 |   # lo que permite a cualquier persona en Internet leer los objetos del bucket.
+		17 |   uniform_bucket_level_access = false # Permite que las ACLs de objetos individuales anulen los permisos de bucket
+		18 | }
+
+Check: CKV_GCP_114: "Ensure public access prevention is enforced on Cloud Storage bucket"
+	FAILED for resource: google_storage_bucket.unencrypted_public_bucket
+	File: /gcs.tf:8-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-google-cloud-114
+
+		8  | resource "google_storage_bucket" "unencrypted_public_bucket" {
+		9  |   name          = "my-highly-insecure-public-unencrypted-gcs-bucket-tfm-2025" # Debe ser globalmente único
+		10 |   location      = "europe-west1"
+		11 |   project       = google_project.project.project_id
+		12 |   force_destroy = true # Para facilitar la eliminación después de las pruebas
+		13 | 
+		14 |   # Vulnerabilidad 1: Acceso público mediante IAM
+		15 |   # Se otorga el rol de 'roles/storage.objectViewer' al grupo 'allUsers',
+		16 |   # lo que permite a cualquier persona en Internet leer los objetos del bucket.
+		17 |   uniform_bucket_level_access = false # Permite que las ACLs de objetos individuales anulen los permisos de bucket
+		18 | }
+
+Check: CKV_GCP_78: "Ensure Cloud storage has versioning enabled"
+	FAILED for resource: google_storage_bucket.unencrypted_public_bucket
+	File: /gcs.tf:8-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-cloud-storage-has-versioning-enabled
+
+		8  | resource "google_storage_bucket" "unencrypted_public_bucket" {
+		9  |   name          = "my-highly-insecure-public-unencrypted-gcs-bucket-tfm-2025" # Debe ser globalmente único
+		10 |   location      = "europe-west1"
+		11 |   project       = google_project.project.project_id
+		12 |   force_destroy = true # Para facilitar la eliminación después de las pruebas
+		13 | 
+		14 |   # Vulnerabilidad 1: Acceso público mediante IAM
+		15 |   # Se otorga el rol de 'roles/storage.objectViewer' al grupo 'allUsers',
+		16 |   # lo que permite a cualquier persona en Internet leer los objetos del bucket.
+		17 |   uniform_bucket_level_access = false # Permite que las ACLs de objetos individuales anulen los permisos de bucket
+		18 | }
+
+Check: CKV_GCP_29: "Ensure that Cloud Storage buckets have uniform bucket-level access enabled"
+	FAILED for resource: google_storage_bucket.unencrypted_public_bucket
+	File: /gcs.tf:8-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-gcs-2
+
+		8  | resource "google_storage_bucket" "unencrypted_public_bucket" {
+		9  |   name          = "my-highly-insecure-public-unencrypted-gcs-bucket-tfm-2025" # Debe ser globalmente único
+		10 |   location      = "europe-west1"
+		11 |   project       = google_project.project.project_id
+		12 |   force_destroy = true # Para facilitar la eliminación después de las pruebas
+		13 | 
+		14 |   # Vulnerabilidad 1: Acceso público mediante IAM
+		15 |   # Se otorga el rol de 'roles/storage.objectViewer' al grupo 'allUsers',
+		16 |   # lo que permite a cualquier persona en Internet leer los objetos del bucket.
+		17 |   uniform_bucket_level_access = false # Permite que las ACLs de objetos individuales anulen los permisos de bucket
+		18 | }
+
+Check: CKV_GCP_28: "Ensure that Cloud Storage bucket is not anonymously or publicly accessible"
+	FAILED for resource: google_storage_bucket_iam_member.public_access_member
+	File: /gcs.tf:20-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-1
+
+		20 | resource "google_storage_bucket_iam_member" "public_access_member" {
+		21 |   bucket = google_storage_bucket.unencrypted_public_bucket.name
+		22 |   role   = "roles/storage.objectViewer" # Permite a los usuarios ver objetos
+		23 |   member = "allUsers"                  # Vulnerabilidad 1: Acceso público a todos los usuarios
+		24 | }
+
+Check: CKV2_GCP_5: "Ensure that Cloud Audit Logging is configured properly across all services and all users from a project"
+	FAILED for resource: google_project.project
+	File: /gcs.tf:3-6
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/ensure-that-cloud-audit-logging-is-configured-properly-across-all-services-and-all-users-from-a-project
+
+		3 | resource "google_project" "project" {
+		4 |   project_id = "tfm-security-project-2025" # Cambia esto a tu ID de proyecto de GCP
+		5 |   name       = "TFM Security Project"
+		6 | }
+
+
