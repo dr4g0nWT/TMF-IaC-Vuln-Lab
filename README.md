@@ -15,26 +15,6 @@ El objetivo principal de este proyecto es:
 * **Proporcionar una Base de Conocimiento** práctica para comprender y mitigar riesgos en despliegues de infraestructura en la nube.
 * **Servir como material de laboratorio** para la formación y la concienciación sobre la seguridad en la nube.
 
-## 📁 Estructura del Repositorio
-
-El repositorio está organizado de la siguiente manera:
-
-.
-├── scenarios/
-│   ├── aws/
-│   │   ├── scenario_01_insecure_storage_aws.tf
-│   │   ├── ...
-│   │   └── scenario_20_insecure_metadata_aws.tf
-│   ├── azure/
-│   │   ├── scenario_01_insecure_storage_azure.tf
-│   │   ├── ...
-│   │   └── scenario_20_insecure_metadata_azure.tf
-│   └── gcp/
-│       ├── scenario_01_insecure_storage_gcp.tf
-│       ├── ...
-│       └── scenario_20_insecure_metadata_gcp.tf
-└── README.md
-
 Cada carpeta de proveedor (`aws`, `azure`, `gcp`) contiene 20 archivos Terraform (`.tf`), uno para cada escenario de vulnerabilidad. Todas las configuraciones están diseñadas para ser desplegadas en regiones europeas.
 
 ## 📝 Escenarios de Vulnerabilidad Implementados
