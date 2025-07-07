@@ -1,0 +1,368 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 6, Failed checks: 12, Skipped checks: 0
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public
+	File: /aws.tf:14-23
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		14 | resource "aws_subnet" "public" {
+		15 |   vpc_id     = aws_vpc.main.id
+		16 |   cidr_block = "10.0.1.0/24"
+		17 |   map_public_ip_on_launch = true
+		18 |   availability_zone = "eu-west-3a" # Ajusta la zona según la región
+		19 | 
+		20 |   tags = {
+		21 |     Name = "tfm-security-public-subnet-03-aws"
+		22 |   }
+		23 | }
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		25 | resource "aws_security_group" "web" {
+		26 |   name        = "tfm-web-sg-03-aws"
+		27 |   description = "Allow web traffic"
+		28 |   vpc_id      = aws_vpc.main.id
+		29 | 
+		30 |   ingress {
+		31 |     from_port   = 80
+		32 |     to_port     = 80
+		33 |     protocol    = "tcp"
+		34 |     cidr_blocks = ["0.0.0.0/0"]
+		35 |   }
+		36 | 
+		37 |   egress {
+		38 |     from_port   = 0
+		39 |     to_port     = 0
+		40 |     protocol    = "-1"
+		41 |     cidr_blocks = ["0.0.0.0/0"]
+		42 |   }
+		43 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		25 | resource "aws_security_group" "web" {
+		26 |   name        = "tfm-web-sg-03-aws"
+		27 |   description = "Allow web traffic"
+		28 |   vpc_id      = aws_vpc.main.id
+		29 | 
+		30 |   ingress {
+		31 |     from_port   = 80
+		32 |     to_port     = 80
+		33 |     protocol    = "tcp"
+		34 |     cidr_blocks = ["0.0.0.0/0"]
+		35 |   }
+		36 | 
+		37 |   egress {
+		38 |     from_port   = 0
+		39 |     to_port     = 0
+		40 |     protocol    = "-1"
+		41 |     cidr_blocks = ["0.0.0.0/0"]
+		42 |   }
+		43 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.web
+	File: /aws.tf:25-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		25 | resource "aws_security_group" "web" {
+		26 |   name        = "tfm-web-sg-03-aws"
+		27 |   description = "Allow web traffic"
+		28 |   vpc_id      = aws_vpc.main.id
+		29 | 
+		30 |   ingress {
+		31 |     from_port   = 80
+		32 |     to_port     = 80
+		33 |     protocol    = "tcp"
+		34 |     cidr_blocks = ["0.0.0.0/0"]
+		35 |   }
+		36 | 
+		37 |   egress {
+		38 |     from_port   = 0
+		39 |     to_port     = 0
+		40 |     protocol    = "-1"
+		41 |     cidr_blocks = ["0.0.0.0/0"]
+		42 |   }
+		43 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		45 | resource "aws_instance" "insecure_app_server" {
+		46 |   # Asegúrate de usar una AMI válida para la región eu-west-3 (ej: Amazon Linux 2)
+		47 |   # Puedes buscar AMIs con 'aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" --query "Images[0].ImageId"'
+		48 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3, puede variar
+		49 |   instance_type = "t2.micro"
+		50 |   subnet_id     = aws_subnet.public.id
+		51 |   vpc_security_group_ids = [aws_security_group.web.id]
+		52 |   associate_public_ip_address = true
+		53 | 
+		54 |   # Vulnerabilidad 1: Credencial hardcodeada en un tag
+		55 |   tags = {
+		56 |     Name               = "InsecureWebServer"
+		57 |     # ¡Vulnerabilidad! Contraseña de una base de datos directamente en un tag
+		58 |     DatabasePassword   = "MySuperSecretDBPass123!" 
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad 2: Credencial hardcodeada en user_data (script de inicio)
+		62 |   # Esto sería visible en los detalles de la instancia si se desplegara.
+		63 |   user_data = <<-EOF
+		64 |               #!/bin/bash
+		65 |               echo "Installing web server..."
+		66 |               # ¡Vulnerabilidad! Clave de API directamente en el script
+		67 |               export API_KEY="sk_live_very_secret_api_key_456" 
+		68 |               yum install -y httpd
+		69 |               systemctl start httpd
+		70 |               systemctl enable httpd
+		71 |               echo "<h1>Insecure server with hardcoded secrets!</h1>" > /var/www/html/index.html
+		72 |               EOF
+		73 | }
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		45 | resource "aws_instance" "insecure_app_server" {
+		46 |   # Asegúrate de usar una AMI válida para la región eu-west-3 (ej: Amazon Linux 2)
+		47 |   # Puedes buscar AMIs con 'aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" --query "Images[0].ImageId"'
+		48 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3, puede variar
+		49 |   instance_type = "t2.micro"
+		50 |   subnet_id     = aws_subnet.public.id
+		51 |   vpc_security_group_ids = [aws_security_group.web.id]
+		52 |   associate_public_ip_address = true
+		53 | 
+		54 |   # Vulnerabilidad 1: Credencial hardcodeada en un tag
+		55 |   tags = {
+		56 |     Name               = "InsecureWebServer"
+		57 |     # ¡Vulnerabilidad! Contraseña de una base de datos directamente en un tag
+		58 |     DatabasePassword   = "MySuperSecretDBPass123!" 
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad 2: Credencial hardcodeada en user_data (script de inicio)
+		62 |   # Esto sería visible en los detalles de la instancia si se desplegara.
+		63 |   user_data = <<-EOF
+		64 |               #!/bin/bash
+		65 |               echo "Installing web server..."
+		66 |               # ¡Vulnerabilidad! Clave de API directamente en el script
+		67 |               export API_KEY="sk_live_very_secret_api_key_456" 
+		68 |               yum install -y httpd
+		69 |               systemctl start httpd
+		70 |               systemctl enable httpd
+		71 |               echo "<h1>Insecure server with hardcoded secrets!</h1>" > /var/www/html/index.html
+		72 |               EOF
+		73 | }
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		45 | resource "aws_instance" "insecure_app_server" {
+		46 |   # Asegúrate de usar una AMI válida para la región eu-west-3 (ej: Amazon Linux 2)
+		47 |   # Puedes buscar AMIs con 'aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" --query "Images[0].ImageId"'
+		48 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3, puede variar
+		49 |   instance_type = "t2.micro"
+		50 |   subnet_id     = aws_subnet.public.id
+		51 |   vpc_security_group_ids = [aws_security_group.web.id]
+		52 |   associate_public_ip_address = true
+		53 | 
+		54 |   # Vulnerabilidad 1: Credencial hardcodeada en un tag
+		55 |   tags = {
+		56 |     Name               = "InsecureWebServer"
+		57 |     # ¡Vulnerabilidad! Contraseña de una base de datos directamente en un tag
+		58 |     DatabasePassword   = "MySuperSecretDBPass123!" 
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad 2: Credencial hardcodeada en user_data (script de inicio)
+		62 |   # Esto sería visible en los detalles de la instancia si se desplegara.
+		63 |   user_data = <<-EOF
+		64 |               #!/bin/bash
+		65 |               echo "Installing web server..."
+		66 |               # ¡Vulnerabilidad! Clave de API directamente en el script
+		67 |               export API_KEY="sk_live_very_secret_api_key_456" 
+		68 |               yum install -y httpd
+		69 |               systemctl start httpd
+		70 |               systemctl enable httpd
+		71 |               echo "<h1>Insecure server with hardcoded secrets!</h1>" > /var/www/html/index.html
+		72 |               EOF
+		73 | }
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		45 | resource "aws_instance" "insecure_app_server" {
+		46 |   # Asegúrate de usar una AMI válida para la región eu-west-3 (ej: Amazon Linux 2)
+		47 |   # Puedes buscar AMIs con 'aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" --query "Images[0].ImageId"'
+		48 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3, puede variar
+		49 |   instance_type = "t2.micro"
+		50 |   subnet_id     = aws_subnet.public.id
+		51 |   vpc_security_group_ids = [aws_security_group.web.id]
+		52 |   associate_public_ip_address = true
+		53 | 
+		54 |   # Vulnerabilidad 1: Credencial hardcodeada en un tag
+		55 |   tags = {
+		56 |     Name               = "InsecureWebServer"
+		57 |     # ¡Vulnerabilidad! Contraseña de una base de datos directamente en un tag
+		58 |     DatabasePassword   = "MySuperSecretDBPass123!" 
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad 2: Credencial hardcodeada en user_data (script de inicio)
+		62 |   # Esto sería visible en los detalles de la instancia si se desplegara.
+		63 |   user_data = <<-EOF
+		64 |               #!/bin/bash
+		65 |               echo "Installing web server..."
+		66 |               # ¡Vulnerabilidad! Clave de API directamente en el script
+		67 |               export API_KEY="sk_live_very_secret_api_key_456" 
+		68 |               yum install -y httpd
+		69 |               systemctl start httpd
+		70 |               systemctl enable httpd
+		71 |               echo "<h1>Insecure server with hardcoded secrets!</h1>" > /var/www/html/index.html
+		72 |               EOF
+		73 | }
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		45 | resource "aws_instance" "insecure_app_server" {
+		46 |   # Asegúrate de usar una AMI válida para la región eu-west-3 (ej: Amazon Linux 2)
+		47 |   # Puedes buscar AMIs con 'aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" --query "Images[0].ImageId"'
+		48 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3, puede variar
+		49 |   instance_type = "t2.micro"
+		50 |   subnet_id     = aws_subnet.public.id
+		51 |   vpc_security_group_ids = [aws_security_group.web.id]
+		52 |   associate_public_ip_address = true
+		53 | 
+		54 |   # Vulnerabilidad 1: Credencial hardcodeada en un tag
+		55 |   tags = {
+		56 |     Name               = "InsecureWebServer"
+		57 |     # ¡Vulnerabilidad! Contraseña de una base de datos directamente en un tag
+		58 |     DatabasePassword   = "MySuperSecretDBPass123!" 
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad 2: Credencial hardcodeada en user_data (script de inicio)
+		62 |   # Esto sería visible en los detalles de la instancia si se desplegara.
+		63 |   user_data = <<-EOF
+		64 |               #!/bin/bash
+		65 |               echo "Installing web server..."
+		66 |               # ¡Vulnerabilidad! Clave de API directamente en el script
+		67 |               export API_KEY="sk_live_very_secret_api_key_456" 
+		68 |               yum install -y httpd
+		69 |               systemctl start httpd
+		70 |               systemctl enable httpd
+		71 |               echo "<h1>Insecure server with hardcoded secrets!</h1>" > /var/www/html/index.html
+		72 |               EOF
+		73 | }
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-03-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-03-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.insecure_app_server
+	File: /aws.tf:45-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		45 | resource "aws_instance" "insecure_app_server" {
+		46 |   # Asegúrate de usar una AMI válida para la región eu-west-3 (ej: Amazon Linux 2)
+		47 |   # Puedes buscar AMIs con 'aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-*-x86_64-gp2" --query "Images[0].ImageId"'
+		48 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3, puede variar
+		49 |   instance_type = "t2.micro"
+		50 |   subnet_id     = aws_subnet.public.id
+		51 |   vpc_security_group_ids = [aws_security_group.web.id]
+		52 |   associate_public_ip_address = true
+		53 | 
+		54 |   # Vulnerabilidad 1: Credencial hardcodeada en un tag
+		55 |   tags = {
+		56 |     Name               = "InsecureWebServer"
+		57 |     # ¡Vulnerabilidad! Contraseña de una base de datos directamente en un tag
+		58 |     DatabasePassword   = "MySuperSecretDBPass123!" 
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad 2: Credencial hardcodeada en user_data (script de inicio)
+		62 |   # Esto sería visible en los detalles de la instancia si se desplegara.
+		63 |   user_data = <<-EOF
+		64 |               #!/bin/bash
+		65 |               echo "Installing web server..."
+		66 |               # ¡Vulnerabilidad! Clave de API directamente en el script
+		67 |               export API_KEY="sk_live_very_secret_api_key_456" 
+		68 |               yum install -y httpd
+		69 |               systemctl start httpd
+		70 |               systemctl enable httpd
+		71 |               echo "<h1>Insecure server with hardcoded secrets!</h1>" > /var/www/html/index.html
+		72 |               EOF
+		73 | }
+secrets scan results:
+
+Passed checks: 0, Failed checks: 1, Skipped checks: 0
+
+Check: CKV_SECRET_6: "Base64 High Entropy String"
+	FAILED for resource: 3e9df080fea13f50b326343cebe3d8bfe8f3676e
+	File: /Escenarios/scenario_03_hardcoded_secrets/aws.tf:67-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-6
+
+		67 |               export API_KEY="sk_liv**********" 
+
+
