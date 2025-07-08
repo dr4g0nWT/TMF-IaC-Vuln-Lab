@@ -1,0 +1,307 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 14, Failed checks: 13, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.vm_without_diagnostic_settings
+	File: /azure.tf:38-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.vm_without_diagnostic_settings
+	File: /azure.tf:38-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.vm_without_diagnostic_settings
+	File: /azure.tf:38-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.vm_without_diagnostic_settings
+	File: /azure.tf:38-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.vm_without_diagnostic_settings
+	File: /azure.tf:38-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_36: "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access"
+	PASSED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access
+Check: CKV_AZURE_244: "Avoid the use of local users for Azure Storage unless necessary"
+	PASSED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-244
+Check: CKV_AZURE_43: "Ensure Storage Accounts adhere to the naming rules"
+	PASSED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/ensure-storage-accounts-adhere-to-the-naming-rules
+Check: CKV_AZURE_3: "Ensure that 'enable_https_traffic_only' is enabled"
+	PASSED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-3
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+Check: CKV2_AZURE_39: "Ensure Azure VM is not configured with public IP and serial console access"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-2-39
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.vm_without_diagnostic_settings
+	File: /azure.tf:38-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		38 | resource "azurerm_linux_virtual_machine" "vm_without_diagnostic_settings" {
+		39 |   name                = "unlogged-linux-vm-04-azure"
+		40 |   resource_group_name = azurerm_resource_group.rg.name
+		41 |   location            = azurerm_resource_group.rg.location
+		42 |   size                = "Standard_B1s"
+		43 |   admin_username      = "adminuser"
+		44 |   network_interface_ids = [azurerm_network_interface.nic.id]
+		45 | 
+		46 |   source_image_reference {
+		47 |     publisher = "Canonical"
+		48 |     offer     = "UbuntuServer"
+		49 |     sku       = "18.04-LTS"
+		50 |     version   = "latest"
+		51 |   }
+		52 | 
+		53 |   os_disk {
+		54 |     caching              = "ReadWrite"
+		55 |     storage_account_type = "Standard_LRS"
+		56 |   }
+		57 | 
+		58 |   admin_ssh_key {
+		59 |     username   = "adminuser"
+		60 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com" # Cambia si vas a desplegar
+		61 |   }
+		62 | 
+		63 |   # Vulnerabilidad: No se adjunta una extensión de diagnóstico (ej. Azure Monitor Agent)
+		64 |   # ni se configuran los 'boot_diagnostics' o 'identity' para el envío de logs.
+		65 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'.
+		66 |   # boot_diagnostics {
+		67 |   #   storage_account_uri = azurerm_storage_account.diag_storage.primary_blob_endpoint
+		68 |   # }
+		69 | }
+
+Check: CKV_AZURE_190: "Ensure that Storage blobs restrict public access"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV_AZURE_59: "Ensure that Storage accounts disallow public access"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV_AZURE_44: "Ensure Storage Account is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azr-storage-2
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV_AZURE_206: "Ensure that Storage Accounts use replication"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV_AZURE_33: "Ensure Storage logging is enabled for Queue service for read, write and delete requests"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_41: "Ensure storage account is configured with SAS expiration policy"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_33: "Ensure storage account is configured with private endpoint"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_47: "Ensure storage account is configured without blob anonymous access"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_38: "Ensure soft-delete is enabled on Azure storage account"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_40: "Ensure storage account is not configured with Shared Key authorization"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_1: "Ensure storage for critical data are encrypted with Customer Managed Key"
+	FAILED for resource: azurerm_storage_account.unlogged_storage_account
+	File: /azure.tf:71-81
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key
+
+		71 | resource "azurerm_storage_account" "unlogged_storage_account" {
+		72 |   name                     = "tfmunloggedstorage04" # Debe ser globalmente único
+		73 |   resource_group_name      = azurerm_resource_group.rg.name
+		74 |   location                 = azurerm_resource_group.rg.location
+		75 |   account_tier             = "Standard"
+		76 |   account_replication_type = "LRS"
+		77 | 
+		78 |   # Vulnerabilidad: No se configura el logging de diagnóstico para la cuenta de almacenamiento
+		79 |   # En una configuración segura, se usaría 'azurerm_monitor_diagnostic_setting'
+		80 |   # para enviar logs de operaciones a un Log Analytics Workspace o Storage Account.
+		81 | }
+
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "subnet" {
+		20 |   name                 = "tfm-security-subnet-04-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 | }
+
+

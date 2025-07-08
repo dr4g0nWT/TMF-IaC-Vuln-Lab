@@ -1,0 +1,388 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 14, Failed checks: 14, Skipped checks: 0
+
+Check: CKV_GCP_31: "Ensure that instances are not configured to use the default service account with full access to all Cloud APIs"
+	PASSED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-2
+Check: CKV_GCP_35: "Ensure 'Enable connecting to serial ports' is not enabled for VM Instance"
+	PASSED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-11
+Check: CKV_GCP_36: "Ensure that IP forwarding is not enabled on Instances"
+	PASSED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-12
+Check: CKV_GCP_34: "Ensure that no instance in the project overrides the project setting for enabling OSLogin(OSLogin needs to be enabled in project metadata for all instances)"
+	PASSED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-10
+Check: CKV_GCP_79: "Ensure SQL database is using latest Major version"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-sql-database-uses-the-latest-major-version
+Check: CKV_GCP_11: "Ensure that Cloud SQL database Instances are not open to the world"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-4
+Check: CKV_GCP_60: "Ensure Cloud SQL database does not have public IP"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/cloud-sql-policies/bc-gcp-sql-11
+Check: CKV_GCP_50: "Ensure MySQL database 'local_infile' flag is set to 'off'"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/cloud-sql-policies/bc-gcp-sql-1
+Check: CKV2_GCP_13: "Ensure PostgreSQL database flag 'log_duration' is set to 'on'"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-13
+Check: CKV2_GCP_16: "Ensure PostgreSQL database flag 'log_planner_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-16
+Check: CKV2_GCP_7: "Ensure that a MySQL database instance does not allow anyone to connect with administrative privileges"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/ensure-that-a-mysql-database-instance-does-not-allow-anyone-to-connect-with-administrative-privileges
+Check: CKV2_GCP_17: "Ensure PostgreSQL database flag 'log_statement_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-17
+Check: CKV2_GCP_14: "Ensure PostgreSQL database flag 'log_executor_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-14
+Check: CKV2_GCP_15: "Ensure PostgreSQL database flag 'log_parser_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-15
+Check: CKV_GCP_26: "Ensure that VPC Flow Logs is enabled for every subnet in a VPC Network"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-logging-1
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-08-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_74: "Ensure that private_ip_google_access is enabled for Subnet"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-subnet-has-a-private-ip-google-access
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-08-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_32: "Ensure 'Block Project-wide SSH keys' is enabled for VM instances"
+	FAILED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-8
+
+		22 | resource "google_compute_instance" "single_vm_app" {
+		23 |   name         = "single-gcp-vm-app-08"
+		24 |   machine_type = "e2-micro"
+		25 |   # Vulnerabilidad: Se despliega en una única zona de disponibilidad
+		26 |   zone         = "europe-west1-b" # ¡Vulnerabilidad! Punto único de fallo
+		27 | 
+		28 |   boot_disk {
+		29 |     initialize_params {
+		30 |       image = "debian-cloud/debian-11"
+		31 |     }
+		32 |   }
+		33 | 
+		34 |   network_interface {
+		35 |     network    = google_compute_network.vpc_network.id
+		36 |     subnetwork = google_compute_subnetwork.subnet.id
+		37 |     access_config {
+		38 |       # Asigna una IP pública
+		39 |     }
+		40 |   }
+		41 | 
+		42 |   # Vulnerabilidad: No hay Managed Instance Group con múltiples zonas
+		43 |   # Esto sería la forma robusta de desplegar una aplicación escalable y redundante.
+		44 |   # También se asume que no hay snapshots automáticos para discos persistentes.
+		45 | }
+
+Check: CKV_GCP_40: "Ensure that Compute instances do not have public IP addresses"
+	FAILED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-2
+
+		22 | resource "google_compute_instance" "single_vm_app" {
+		23 |   name         = "single-gcp-vm-app-08"
+		24 |   machine_type = "e2-micro"
+		25 |   # Vulnerabilidad: Se despliega en una única zona de disponibilidad
+		26 |   zone         = "europe-west1-b" # ¡Vulnerabilidad! Punto único de fallo
+		27 | 
+		28 |   boot_disk {
+		29 |     initialize_params {
+		30 |       image = "debian-cloud/debian-11"
+		31 |     }
+		32 |   }
+		33 | 
+		34 |   network_interface {
+		35 |     network    = google_compute_network.vpc_network.id
+		36 |     subnetwork = google_compute_subnetwork.subnet.id
+		37 |     access_config {
+		38 |       # Asigna una IP pública
+		39 |     }
+		40 |   }
+		41 | 
+		42 |   # Vulnerabilidad: No hay Managed Instance Group con múltiples zonas
+		43 |   # Esto sería la forma robusta de desplegar una aplicación escalable y redundante.
+		44 |   # También se asume que no hay snapshots automáticos para discos persistentes.
+		45 | }
+
+Check: CKV_GCP_38: "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)"
+	FAILED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/encrypt-boot-disks-for-instances-with-cseks
+
+		22 | resource "google_compute_instance" "single_vm_app" {
+		23 |   name         = "single-gcp-vm-app-08"
+		24 |   machine_type = "e2-micro"
+		25 |   # Vulnerabilidad: Se despliega en una única zona de disponibilidad
+		26 |   zone         = "europe-west1-b" # ¡Vulnerabilidad! Punto único de fallo
+		27 | 
+		28 |   boot_disk {
+		29 |     initialize_params {
+		30 |       image = "debian-cloud/debian-11"
+		31 |     }
+		32 |   }
+		33 | 
+		34 |   network_interface {
+		35 |     network    = google_compute_network.vpc_network.id
+		36 |     subnetwork = google_compute_subnetwork.subnet.id
+		37 |     access_config {
+		38 |       # Asigna una IP pública
+		39 |     }
+		40 |   }
+		41 | 
+		42 |   # Vulnerabilidad: No hay Managed Instance Group con múltiples zonas
+		43 |   # Esto sería la forma robusta de desplegar una aplicación escalable y redundante.
+		44 |   # También se asume que no hay snapshots automáticos para discos persistentes.
+		45 | }
+
+Check: CKV_GCP_39: "Ensure Compute instances are launched with Shielded VM enabled"
+	FAILED for resource: google_compute_instance.single_vm_app
+	File: /gcp.tf:22-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-y
+
+		22 | resource "google_compute_instance" "single_vm_app" {
+		23 |   name         = "single-gcp-vm-app-08"
+		24 |   machine_type = "e2-micro"
+		25 |   # Vulnerabilidad: Se despliega en una única zona de disponibilidad
+		26 |   zone         = "europe-west1-b" # ¡Vulnerabilidad! Punto único de fallo
+		27 | 
+		28 |   boot_disk {
+		29 |     initialize_params {
+		30 |       image = "debian-cloud/debian-11"
+		31 |     }
+		32 |   }
+		33 | 
+		34 |   network_interface {
+		35 |     network    = google_compute_network.vpc_network.id
+		36 |     subnetwork = google_compute_subnetwork.subnet.id
+		37 |     access_config {
+		38 |       # Asigna una IP pública
+		39 |     }
+		40 |   }
+		41 | 
+		42 |   # Vulnerabilidad: No hay Managed Instance Group con múltiples zonas
+		43 |   # Esto sería la forma robusta de desplegar una aplicación escalable y redundante.
+		44 |   # También se asume que no hay snapshots automáticos para discos persistentes.
+		45 | }
+
+Check: CKV_GCP_14: "Ensure all Cloud SQL database instance have backup configuration enabled"
+	FAILED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-2
+
+		47 | resource "google_sql_database_instance" "single_zone_database" {
+		48 |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		49 |   name             = "tfm-single-zone-db-08"
+		50 |   database_version = "MYSQL_8_0"
+		51 |   settings {
+		52 |     tier = "db-f1-micro"
+		53 |     # Vulnerabilidad: No se configura alta disponibilidad (multi_zone)
+		54 |     # disk_autoresize = true
+		55 |     # backup_configuration {
+		56 |     #   enabled            = true
+		57 |     #   binary_log_enabled = true
+		58 |     # }
+		59 |     # ip_configuration {
+		60 |     #   ipv4_enabled = true
+		61 |     #   require_ssl  = true
+		62 |     # }
+		63 |     # database_flags {
+		64 |     #   name  = "long_query_time"
+		65 |     #   value = "0"
+		66 |     # }
+		67 |     # disk_size = 20
+		68 |   }
+		69 |   # No hay 'master_instance_name' para réplicas de lectura
+		70 |   # No se especifica 'region' para réplicas de lectura en otra región
+		71 |   # La ausencia de 'replica_configuration' implica una instancia principal sin HA/DR
+		72 | }
+
+Check: CKV_GCP_6: "Ensure all Cloud SQL database instance requires all incoming connections to use SSL"
+	FAILED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-1
+
+		47 | resource "google_sql_database_instance" "single_zone_database" {
+		48 |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		49 |   name             = "tfm-single-zone-db-08"
+		50 |   database_version = "MYSQL_8_0"
+		51 |   settings {
+		52 |     tier = "db-f1-micro"
+		53 |     # Vulnerabilidad: No se configura alta disponibilidad (multi_zone)
+		54 |     # disk_autoresize = true
+		55 |     # backup_configuration {
+		56 |     #   enabled            = true
+		57 |     #   binary_log_enabled = true
+		58 |     # }
+		59 |     # ip_configuration {
+		60 |     #   ipv4_enabled = true
+		61 |     #   require_ssl  = true
+		62 |     # }
+		63 |     # database_flags {
+		64 |     #   name  = "long_query_time"
+		65 |     #   value = "0"
+		66 |     # }
+		67 |     # disk_size = 20
+		68 |   }
+		69 |   # No hay 'master_instance_name' para réplicas de lectura
+		70 |   # No se especifica 'region' para réplicas de lectura en otra región
+		71 |   # La ausencia de 'replica_configuration' implica una instancia principal sin HA/DR
+		72 | }
+
+Check: CKV_GCP_62: "Bucket should log access"
+	FAILED for resource: google_storage_bucket.regional_storage_bucket
+	File: /gcp.tf:74-84
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-logging-2
+
+		74 | resource "google_storage_bucket" "regional_storage_bucket" {
+		75 |   name     = "tfm-regional-storage-bucket-08" # Debe ser globalmente único
+		76 |   project  = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		77 |   location = "EUROPE-WEST1"                  # ¡Vulnerabilidad! Bucket regional, no multi-regional
+		78 | 
+		79 |   # Para un entorno robusto y de DR, se usaría 'MULTI_REGIONAL' o 'DUAL_REGION'
+		80 |   # storage_class = "STANDARD"
+		81 |   # versioning {
+		82 |   #   enabled = true # Buena práctica, pero no cubre redundancia geográfica
+		83 |   # }
+		84 | }
+Check: CKV_GCP_114: "Ensure public access prevention is enforced on Cloud Storage bucket"
+	FAILED for resource: google_storage_bucket.regional_storage_bucket
+	File: /gcp.tf:74-84
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-google-cloud-114
+
+		74 | resource "google_storage_bucket" "regional_storage_bucket" {
+		75 |   name     = "tfm-regional-storage-bucket-08" # Debe ser globalmente único
+		76 |   project  = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		77 |   location = "EUROPE-WEST1"                  # ¡Vulnerabilidad! Bucket regional, no multi-regional
+		78 | 
+		79 |   # Para un entorno robusto y de DR, se usaría 'MULTI_REGIONAL' o 'DUAL_REGION'
+		80 |   # storage_class = "STANDARD"
+		81 |   # versioning {
+		82 |   #   enabled = true # Buena práctica, pero no cubre redundancia geográfica
+		83 |   # }
+		84 | }
+Check: CKV_GCP_78: "Ensure Cloud storage has versioning enabled"
+	FAILED for resource: google_storage_bucket.regional_storage_bucket
+	File: /gcp.tf:74-84
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-cloud-storage-has-versioning-enabled
+
+		74 | resource "google_storage_bucket" "regional_storage_bucket" {
+		75 |   name     = "tfm-regional-storage-bucket-08" # Debe ser globalmente único
+		76 |   project  = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		77 |   location = "EUROPE-WEST1"                  # ¡Vulnerabilidad! Bucket regional, no multi-regional
+		78 | 
+		79 |   # Para un entorno robusto y de DR, se usaría 'MULTI_REGIONAL' o 'DUAL_REGION'
+		80 |   # storage_class = "STANDARD"
+		81 |   # versioning {
+		82 |   #   enabled = true # Buena práctica, pero no cubre redundancia geográfica
+		83 |   # }
+		84 | }
+Check: CKV_GCP_29: "Ensure that Cloud Storage buckets have uniform bucket-level access enabled"
+	FAILED for resource: google_storage_bucket.regional_storage_bucket
+	File: /gcp.tf:74-84
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-gcs-2
+
+		74 | resource "google_storage_bucket" "regional_storage_bucket" {
+		75 |   name     = "tfm-regional-storage-bucket-08" # Debe ser globalmente único
+		76 |   project  = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		77 |   location = "EUROPE-WEST1"                  # ¡Vulnerabilidad! Bucket regional, no multi-regional
+		78 | 
+		79 |   # Para un entorno robusto y de DR, se usaría 'MULTI_REGIONAL' o 'DUAL_REGION'
+		80 |   # storage_class = "STANDARD"
+		81 |   # versioning {
+		82 |   #   enabled = true # Buena práctica, pero no cubre redundancia geográfica
+		83 |   # }
+		84 | }
+Check: CKV2_GCP_20: "Ensure MySQL DB instance has point-in-time recovery backup configured"
+	FAILED for resource: google_sql_database_instance.single_zone_database
+	File: /gcp.tf:47-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-2-20
+
+		47 | resource "google_sql_database_instance" "single_zone_database" {
+		48 |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		49 |   name             = "tfm-single-zone-db-08"
+		50 |   database_version = "MYSQL_8_0"
+		51 |   settings {
+		52 |     tier = "db-f1-micro"
+		53 |     # Vulnerabilidad: No se configura alta disponibilidad (multi_zone)
+		54 |     # disk_autoresize = true
+		55 |     # backup_configuration {
+		56 |     #   enabled            = true
+		57 |     #   binary_log_enabled = true
+		58 |     # }
+		59 |     # ip_configuration {
+		60 |     #   ipv4_enabled = true
+		61 |     #   require_ssl  = true
+		62 |     # }
+		63 |     # database_flags {
+		64 |     #   name  = "long_query_time"
+		65 |     #   value = "0"
+		66 |     # }
+		67 |     # disk_size = 20
+		68 |   }
+		69 |   # No hay 'master_instance_name' para réplicas de lectura
+		70 |   # No se especifica 'region' para réplicas de lectura en otra región
+		71 |   # La ausencia de 'replica_configuration' implica una instancia principal sin HA/DR
+		72 | }
+
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	FAILED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:8-11
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+
+		8  | resource "google_compute_network" "vpc_network" {
+		9  |   name    = "tfm-security-vpc-08-gcp"
+		10 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		11 | }
+
+

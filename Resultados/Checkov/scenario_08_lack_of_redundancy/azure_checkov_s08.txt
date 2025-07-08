@@ -1,0 +1,284 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 14, Failed checks: 13, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:27-37
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.single_vm_app
+	File: /azure.tf:39-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.single_vm_app
+	File: /azure.tf:39-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.single_vm_app
+	File: /azure.tf:39-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.single_vm_app
+	File: /azure.tf:39-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.single_vm_app
+	File: /azure.tf:39-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_36: "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access"
+	PASSED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access
+Check: CKV_AZURE_244: "Avoid the use of local users for Azure Storage unless necessary"
+	PASSED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-244
+Check: CKV_AZURE_43: "Ensure Storage Accounts adhere to the naming rules"
+	PASSED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/ensure-storage-accounts-adhere-to-the-naming-rules
+Check: CKV_AZURE_3: "Ensure that 'enable_https_traffic_only' is enabled"
+	PASSED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-3
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:27-37
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+Check: CKV2_AZURE_39: "Ensure Azure VM is not configured with public IP and serial console access"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:27-37
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-2-39
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.single_vm_app
+	File: /azure.tf:39-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		39 | resource "azurerm_linux_virtual_machine" "single_vm_app" {
+		40 |   name                = "single-vm-app-08-azure"
+		41 |   resource_group_name = azurerm_resource_group.rg.name
+		42 |   location            = azurerm_resource_group.rg.location
+		43 |   size                = "Standard_B1s"
+		44 |   admin_username      = "adminuser"
+		45 |   network_interface_ids = [azurerm_network_interface.nic.id]
+		46 | 
+		47 |   source_image_reference {
+		48 |     publisher = "Canonical"
+		49 |     offer     = "UbuntuServer"
+		50 |     sku       = "18.04-LTS"
+		51 |     version   = "latest"
+		52 |   }
+		53 | 
+		54 |   os_disk {
+		55 |     caching              = "ReadWrite"
+		56 |     storage_account_type = "Standard_LRS"
+		57 |   }
+		58 | 
+		59 |   admin_ssh_key {
+		60 |     username   = "adminuser"
+		61 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com" # Cambia si vas a desplegar
+		62 |   }
+		63 | 
+		64 |   # Vulnerabilidad: No se despliega en un Availability Set ni se usa Zona de Disponibilidad
+		65 |   # Esto deja la VM como un punto único de fallo dentro de la región.
+		66 |   # availability_set_id = azurerm_availability_set.main.id # Comentado para la vulnerabilidad
+		67 |   # zones = ["1"] # No se especifica una zona de disponibilidad explícita para redundancia
+		68 | }
+
+Check: CKV_AZURE_190: "Ensure that Storage blobs restrict public access"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV_AZURE_59: "Ensure that Storage accounts disallow public access"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV_AZURE_44: "Ensure Storage Account is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azr-storage-2
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV_AZURE_206: "Ensure that Storage Accounts use replication"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV_AZURE_33: "Ensure Storage logging is enabled for Queue service for read, write and delete requests"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_33: "Ensure storage account is configured with private endpoint"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_47: "Ensure storage account is configured without blob anonymous access"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_38: "Ensure soft-delete is enabled on Azure storage account"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_40: "Ensure storage account is not configured with Shared Key authorization"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_41: "Ensure storage account is configured with SAS expiration policy"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_1: "Ensure storage for critical data are encrypted with Customer Managed Key"
+	FAILED for resource: azurerm_storage_account.lrs_storage_account
+	File: /azure.tf:70-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key
+
+		70 | resource "azurerm_storage_account" "lrs_storage_account" {
+		71 |   name                     = "tfmlrsstorage08" # Debe ser globalmente único
+		72 |   resource_group_name      = azurerm_resource_group.rg.name
+		73 |   location                 = azurerm_resource_group.rg.location
+		74 |   account_tier             = "Standard"
+		75 |   # Vulnerabilidad: Uso de LRS (Local-Redundant Storage) para datos críticos
+		76 |   account_replication_type = "LRS" # ¡Vulnerabilidad! No es geo-redundante para DR
+		77 |   # Para un entorno robusto se usaría GRS (Geo-Redundant) o ZRS (Zone-Redundant)
+		78 | }
+
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:19-25
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "subnet" {
+		20 |   name                 = "tfm-security-subnet-08-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 |   # No se especifica 'service_endpoints' para servicios específicos o delegaciones
+		25 | }
+
+

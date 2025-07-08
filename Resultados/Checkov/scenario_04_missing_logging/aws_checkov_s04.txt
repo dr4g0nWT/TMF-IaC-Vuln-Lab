@@ -1,0 +1,495 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 10, Failed checks: 19, Skipped checks: 0
+
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV_AWS_93: "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)"
+	PASSED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/bc-aws-s3-24
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_57: "S3 Bucket has an ACL defined which allows public WRITE access."
+	PASSED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-2-acl-write-permissions-everyone
+Check: CKV_AWS_20: "S3 Bucket has an ACL defined which allows public READ access."
+	PASSED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-1-acl-read-permissions-everyone
+Check: CKV_AWS_19: "Ensure all data stored in the S3 bucket is securely encrypted at rest"
+	PASSED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-14-data-encrypted-at-rest
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		48 | resource "aws_instance" "server_without_cloudwatch_agent" {
+		49 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		50 |   instance_type = "t2.micro"
+		51 |   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+		52 |   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+		53 |   associate_public_ip_address = true
+		54 | 
+		55 |   tags = {
+		56 |     Name = "ServerWithoutCloudWatch"
+		57 |   }
+		58 | 
+		59 |   # Vulnerabilidad: No se configura el agente de CloudWatch para métricas/logs detallados
+		60 |   # user_data = <<-EOF
+		61 |   #             #!/bin/bash
+		62 |   #             # Comandos para instalar y configurar el agente de CloudWatch
+		63 |   #             # ...
+		64 |   #             EOF
+		65 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		48 | resource "aws_instance" "server_without_cloudwatch_agent" {
+		49 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		50 |   instance_type = "t2.micro"
+		51 |   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+		52 |   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+		53 |   associate_public_ip_address = true
+		54 | 
+		55 |   tags = {
+		56 |     Name = "ServerWithoutCloudWatch"
+		57 |   }
+		58 | 
+		59 |   # Vulnerabilidad: No se configura el agente de CloudWatch para métricas/logs detallados
+		60 |   # user_data = <<-EOF
+		61 |   #             #!/bin/bash
+		62 |   #             # Comandos para instalar y configurar el agente de CloudWatch
+		63 |   #             # ...
+		64 |   #             EOF
+		65 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		48 | resource "aws_instance" "server_without_cloudwatch_agent" {
+		49 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		50 |   instance_type = "t2.micro"
+		51 |   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+		52 |   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+		53 |   associate_public_ip_address = true
+		54 | 
+		55 |   tags = {
+		56 |     Name = "ServerWithoutCloudWatch"
+		57 |   }
+		58 | 
+		59 |   # Vulnerabilidad: No se configura el agente de CloudWatch para métricas/logs detallados
+		60 |   # user_data = <<-EOF
+		61 |   #             #!/bin/bash
+		62 |   #             # Comandos para instalar y configurar el agente de CloudWatch
+		63 |   #             # ...
+		64 |   #             EOF
+		65 | }
+
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		48 | resource "aws_instance" "server_without_cloudwatch_agent" {
+		49 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		50 |   instance_type = "t2.micro"
+		51 |   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+		52 |   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+		53 |   associate_public_ip_address = true
+		54 | 
+		55 |   tags = {
+		56 |     Name = "ServerWithoutCloudWatch"
+		57 |   }
+		58 | 
+		59 |   # Vulnerabilidad: No se configura el agente de CloudWatch para métricas/logs detallados
+		60 |   # user_data = <<-EOF
+		61 |   #             #!/bin/bash
+		62 |   #             # Comandos para instalar y configurar el agente de CloudWatch
+		63 |   #             # ...
+		64 |   #             EOF
+		65 | }
+
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		48 | resource "aws_instance" "server_without_cloudwatch_agent" {
+		49 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		50 |   instance_type = "t2.micro"
+		51 |   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+		52 |   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+		53 |   associate_public_ip_address = true
+		54 | 
+		55 |   tags = {
+		56 |     Name = "ServerWithoutCloudWatch"
+		57 |   }
+		58 | 
+		59 |   # Vulnerabilidad: No se configura el agente de CloudWatch para métricas/logs detallados
+		60 |   # user_data = <<-EOF
+		61 |   #             #!/bin/bash
+		62 |   #             # Comandos para instalar y configurar el agente de CloudWatch
+		63 |   #             # ...
+		64 |   #             EOF
+		65 | }
+
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public
+	File: /aws.tf:75-83
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		75 | resource "aws_subnet" "public" {
+		76 |   vpc_id     = aws_vpc.main_04.id
+		77 |   cidr_block = "10.0.1.0/24"
+		78 |   map_public_ip_on_launch = true
+		79 |   availability_zone = "eu-west-3a" # Ajusta la zona según la región
+		80 |   tags = {
+		81 |     Name = "tfm-security-public-subnet-04-aws"
+		82 |   }
+		83 | }
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		85  | resource "aws_security_group" "default" {
+		86  |   name        = "tfm-default-sg-04-aws"
+		87  |   description = "Default security group"
+		88  |   vpc_id      = aws_vpc.main_04.id
+		89  | 
+		90  |   ingress {
+		91  |     from_port   = 80
+		92  |     to_port     = 80
+		93  |     protocol    = "tcp"
+		94  |     cidr_blocks = ["0.0.0.0/0"]
+		95  |   }
+		96  |   egress {
+		97  |     from_port   = 0
+		98  |     to_port     = 0
+		99  |     protocol    = "-1"
+		100 |     cidr_blocks = ["0.0.0.0/0"]
+		101 |   }
+		102 | }
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		85  | resource "aws_security_group" "default" {
+		86  |   name        = "tfm-default-sg-04-aws"
+		87  |   description = "Default security group"
+		88  |   vpc_id      = aws_vpc.main_04.id
+		89  | 
+		90  |   ingress {
+		91  |     from_port   = 80
+		92  |     to_port     = 80
+		93  |     protocol    = "tcp"
+		94  |     cidr_blocks = ["0.0.0.0/0"]
+		95  |   }
+		96  |   egress {
+		97  |     from_port   = 0
+		98  |     to_port     = 0
+		99  |     protocol    = "-1"
+		100 |     cidr_blocks = ["0.0.0.0/0"]
+		101 |   }
+		102 | }
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.default
+	File: /aws.tf:85-102
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		85  | resource "aws_security_group" "default" {
+		86  |   name        = "tfm-default-sg-04-aws"
+		87  |   description = "Default security group"
+		88  |   vpc_id      = aws_vpc.main_04.id
+		89  | 
+		90  |   ingress {
+		91  |     from_port   = 80
+		92  |     to_port     = 80
+		93  |     protocol    = "tcp"
+		94  |     cidr_blocks = ["0.0.0.0/0"]
+		95  |   }
+		96  |   egress {
+		97  |     from_port   = 0
+		98  |     to_port     = 0
+		99  |     protocol    = "-1"
+		100 |     cidr_blocks = ["0.0.0.0/0"]
+		101 |   }
+		102 | }
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_04
+	File: /aws.tf:68-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		68 | resource "aws_vpc" "main_04" {
+		69 |   cidr_block = "10.0.0.0/16"
+		70 |   tags = {
+		71 |     Name = "tfm-security-vpc-04-aws"
+		72 |   }
+		73 | }
+
+Check: CKV2_AWS_61: "Ensure that an S3 bucket has a lifecycle configuration"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV_AWS_144: "Ensure that S3 bucket has cross-region replication enabled"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV2_AWS_62: "Ensure S3 buckets should have event notifications enabled"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV_AWS_145: "Ensure that S3 buckets are encrypted with KMS by default"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-buckets-are-encrypted-with-kms-by-default
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV_AWS_21: "Ensure all data stored in the S3 bucket have versioning enabled"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-16-enable-versioning
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV_AWS_18: "Ensure the S3 bucket has access logging enabled"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-13-enable-logging
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV2_AWS_6: "Ensure that S3 bucket has a Public Access block"
+	FAILED for resource: aws_s3_bucket.unlogged_sensitive_data_bucket
+	File: /aws.tf:7-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/s3-bucket-should-have-public-access-blocks-defaults-to-false-if-the-public-access-block-is-not-attached
+
+		7  | resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+		8  |   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+		9  |   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+		10 | 
+		11 |   tags = {
+		12 |     Environment = "Prod"
+		13 |     Purpose     = "SensitiveData"
+		14 |   }
+		15 | 
+		16 |   # Vulnerabilidad: Falta de logging de acceso al bucket
+		17 |   # En una configuración segura, este bucket debería tener configurado el logging de acceso
+		18 |   # a un bucket de logging dedicado (target_bucket y target_prefix).
+		19 |   # logging {
+		20 |   #   target_bucket = aws_s3_bucket.log_bucket.id
+		21 |   #   target_prefix = "s3_access_logs/"
+		22 |   # }
+		23 | 
+		24 |   # Otra posible vulnerabilidad no cubierta aquí directamente:
+		25 |   # Falta de AWS CloudTrail para registrar las llamadas a la API de S3 a nivel de cuenta/organización
+		26 |   # Sin embargo, esta herramienta se enfoca en la configuración del recurso.
+		27 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_04
+	File: /aws.tf:68-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		68 | resource "aws_vpc" "main_04" {
+		69 |   cidr_block = "10.0.0.0/16"
+		70 |   tags = {
+		71 |     Name = "tfm-security-vpc-04-aws"
+		72 |   }
+		73 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.server_without_cloudwatch_agent
+	File: /aws.tf:48-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		48 | resource "aws_instance" "server_without_cloudwatch_agent" {
+		49 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		50 |   instance_type = "t2.micro"
+		51 |   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+		52 |   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+		53 |   associate_public_ip_address = true
+		54 | 
+		55 |   tags = {
+		56 |     Name = "ServerWithoutCloudWatch"
+		57 |   }
+		58 | 
+		59 |   # Vulnerabilidad: No se configura el agente de CloudWatch para métricas/logs detallados
+		60 |   # user_data = <<-EOF
+		61 |   #             #!/bin/bash
+		62 |   #             # Comandos para instalar y configurar el agente de CloudWatch
+		63 |   #             # ...
+		64 |   #             EOF
+		65 | }
+
+

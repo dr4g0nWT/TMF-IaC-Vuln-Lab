@@ -1,0 +1,30 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 0, Skipped checks: 0
+
+Check: CKV_AZURE_10: "Ensure that SSH access is restricted from the internet"
+	PASSED for resource: azurerm_network_security_group.test_nsg
+	File: /azure.tf:30-34
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-3
+Check: CKV_AZURE_77: "Ensure that UDP Services are restricted from the Internet "
+	PASSED for resource: azurerm_network_security_group.test_nsg
+	File: /azure.tf:30-34
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-udp-services-are-restricted-from-the-internet
+Check: CKV_AZURE_160: "Ensure that HTTP (port 80) access is restricted from the internet"
+	PASSED for resource: azurerm_network_security_group.test_nsg
+	File: /azure.tf:30-34
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-http-port-80-access-from-the-internet-is-restricted
+Check: CKV_AZURE_9: "Ensure that RDP access is restricted from the internet"
+	PASSED for resource: azurerm_network_security_group.test_nsg
+	File: /azure.tf:30-34
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-2
+

@@ -1,0 +1,212 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 7, Skipped checks: 0
+
+Check: CKV_GCP_31: "Ensure that instances are not configured to use the default service account with full access to all Cloud APIs"
+	PASSED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-2
+Check: CKV_GCP_35: "Ensure 'Enable connecting to serial ports' is not enabled for VM Instance"
+	PASSED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-11
+Check: CKV_GCP_36: "Ensure that IP forwarding is not enabled on Instances"
+	PASSED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-12
+Check: CKV_GCP_34: "Ensure that no instance in the project overrides the project setting for enabling OSLogin(OSLogin needs to be enabled in project metadata for all instances)"
+	PASSED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-10
+Check: CKV_GCP_26: "Ensure that VPC Flow Logs is enabled for every subnet in a VPC Network"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-logging-1
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-07-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_74: "Ensure that private_ip_google_access is enabled for Subnet"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-subnet-has-a-private-ip-google-access
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-07-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_32: "Ensure 'Block Project-wide SSH keys' is enabled for VM instances"
+	FAILED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-8
+
+		22 | resource "google_compute_instance" "outdated_vm" {
+		23 |   name         = "outdated-gcp-vm-07"
+		24 |   machine_type = "e2-micro"
+		25 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		26 | 
+		27 |   boot_disk {
+		28 |     initialize_params {
+		29 |       # Vulnerabilidad 1: Uso de una imagen de SO antigua/específica que no está actualizada.
+		30 |       # Debian 9 Stretch ya no tiene soporte extendido.
+		31 |       # Esto debería ser reemplazado por un "family" como "debian-cloud" para versiones actualizadas.
+		32 |       image = "debian-cloud/debian-9" # ¡Vulnerabilidad! Imagen de Debian 9 (antigua)
+		33 |     }
+		34 |   }
+		35 | 
+		36 |   network_interface {
+		37 |     network    = google_compute_network.vpc_network.id
+		38 |     subnetwork = google_compute_subnetwork.subnet.id
+		39 |     access_config {
+		40 |       # Asigna una IP pública para un escenario más completo
+		41 |     }
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 2: No se configura el OS Patch Management (OS Config)
+		45 |   # No se adjunta un Service Account con permisos para OS Config,
+		46 |   # ni se habilita la API de OS Config, ni se configura una política de parches.
+		47 |   # metadata = {
+		48 |   #   enable-osconfig = "true" # Habilita el agente OS Config, pero no configura la política.
+		49 |   # }
+		50 |   # No hay user_data para instalar herramientas de parcheo o configurar auto-updates.
+		51 | }
+
+Check: CKV_GCP_40: "Ensure that Compute instances do not have public IP addresses"
+	FAILED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-2
+
+		22 | resource "google_compute_instance" "outdated_vm" {
+		23 |   name         = "outdated-gcp-vm-07"
+		24 |   machine_type = "e2-micro"
+		25 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		26 | 
+		27 |   boot_disk {
+		28 |     initialize_params {
+		29 |       # Vulnerabilidad 1: Uso de una imagen de SO antigua/específica que no está actualizada.
+		30 |       # Debian 9 Stretch ya no tiene soporte extendido.
+		31 |       # Esto debería ser reemplazado por un "family" como "debian-cloud" para versiones actualizadas.
+		32 |       image = "debian-cloud/debian-9" # ¡Vulnerabilidad! Imagen de Debian 9 (antigua)
+		33 |     }
+		34 |   }
+		35 | 
+		36 |   network_interface {
+		37 |     network    = google_compute_network.vpc_network.id
+		38 |     subnetwork = google_compute_subnetwork.subnet.id
+		39 |     access_config {
+		40 |       # Asigna una IP pública para un escenario más completo
+		41 |     }
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 2: No se configura el OS Patch Management (OS Config)
+		45 |   # No se adjunta un Service Account con permisos para OS Config,
+		46 |   # ni se habilita la API de OS Config, ni se configura una política de parches.
+		47 |   # metadata = {
+		48 |   #   enable-osconfig = "true" # Habilita el agente OS Config, pero no configura la política.
+		49 |   # }
+		50 |   # No hay user_data para instalar herramientas de parcheo o configurar auto-updates.
+		51 | }
+
+Check: CKV_GCP_38: "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)"
+	FAILED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/encrypt-boot-disks-for-instances-with-cseks
+
+		22 | resource "google_compute_instance" "outdated_vm" {
+		23 |   name         = "outdated-gcp-vm-07"
+		24 |   machine_type = "e2-micro"
+		25 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		26 | 
+		27 |   boot_disk {
+		28 |     initialize_params {
+		29 |       # Vulnerabilidad 1: Uso de una imagen de SO antigua/específica que no está actualizada.
+		30 |       # Debian 9 Stretch ya no tiene soporte extendido.
+		31 |       # Esto debería ser reemplazado por un "family" como "debian-cloud" para versiones actualizadas.
+		32 |       image = "debian-cloud/debian-9" # ¡Vulnerabilidad! Imagen de Debian 9 (antigua)
+		33 |     }
+		34 |   }
+		35 | 
+		36 |   network_interface {
+		37 |     network    = google_compute_network.vpc_network.id
+		38 |     subnetwork = google_compute_subnetwork.subnet.id
+		39 |     access_config {
+		40 |       # Asigna una IP pública para un escenario más completo
+		41 |     }
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 2: No se configura el OS Patch Management (OS Config)
+		45 |   # No se adjunta un Service Account con permisos para OS Config,
+		46 |   # ni se habilita la API de OS Config, ni se configura una política de parches.
+		47 |   # metadata = {
+		48 |   #   enable-osconfig = "true" # Habilita el agente OS Config, pero no configura la política.
+		49 |   # }
+		50 |   # No hay user_data para instalar herramientas de parcheo o configurar auto-updates.
+		51 | }
+
+Check: CKV_GCP_39: "Ensure Compute instances are launched with Shielded VM enabled"
+	FAILED for resource: google_compute_instance.outdated_vm
+	File: /gcp.tf:22-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-y
+
+		22 | resource "google_compute_instance" "outdated_vm" {
+		23 |   name         = "outdated-gcp-vm-07"
+		24 |   machine_type = "e2-micro"
+		25 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		26 | 
+		27 |   boot_disk {
+		28 |     initialize_params {
+		29 |       # Vulnerabilidad 1: Uso de una imagen de SO antigua/específica que no está actualizada.
+		30 |       # Debian 9 Stretch ya no tiene soporte extendido.
+		31 |       # Esto debería ser reemplazado por un "family" como "debian-cloud" para versiones actualizadas.
+		32 |       image = "debian-cloud/debian-9" # ¡Vulnerabilidad! Imagen de Debian 9 (antigua)
+		33 |     }
+		34 |   }
+		35 | 
+		36 |   network_interface {
+		37 |     network    = google_compute_network.vpc_network.id
+		38 |     subnetwork = google_compute_subnetwork.subnet.id
+		39 |     access_config {
+		40 |       # Asigna una IP pública para un escenario más completo
+		41 |     }
+		42 |   }
+		43 | 
+		44 |   # Vulnerabilidad 2: No se configura el OS Patch Management (OS Config)
+		45 |   # No se adjunta un Service Account con permisos para OS Config,
+		46 |   # ni se habilita la API de OS Config, ni se configura una política de parches.
+		47 |   # metadata = {
+		48 |   #   enable-osconfig = "true" # Habilita el agente OS Config, pero no configura la política.
+		49 |   # }
+		50 |   # No hay user_data para instalar herramientas de parcheo o configurar auto-updates.
+		51 | }
+
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	FAILED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:8-11
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+
+		8  | resource "google_compute_network" "vpc_network" {
+		9  |   name    = "tfm-security-vpc-07-gcp"
+		10 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		11 | }
+
+
