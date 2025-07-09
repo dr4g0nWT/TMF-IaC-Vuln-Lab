@@ -1,0 +1,106 @@
+
+Report Summary
+
+┌──────────┬───────────┬───────────────────┐
+│  Target  │   Type    │ Misconfigurations │
+├──────────┼───────────┼───────────────────┤
+│ .        │ terraform │         0         │
+├──────────┼───────────┼───────────────────┤
+│ azure.tf │ terraform │         4         │
+└──────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+azure.tf (terraform)
+====================
+Tests: 4 (SUCCESSES: 0, FAILURES: 4)
+Failures: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 1, CRITICAL: 0)
+
+AVD-AZU-0020 (MEDIUM): Database server does not have enforce SSL.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+SSL connections should be enforced were available to ensure secure transfer and reduce the risk of compromising data in flight.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0020
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:29
+   via azure.tf:20-30 (azurerm_mysql_server.insecure_mysql_server)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  20   resource "azurerm_mysql_server" "insecure_mysql_server" {
+  21     name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+  22     location            = azurerm_resource_group.rg.location
+  23     resource_group_name = azurerm_resource_group.rg.name
+  24     sku_name            = "B_Gen5_1"
+  25     storage_mb          = 5120
+  26     version             = "8.0"
+  27     administrator_login    = "mysqladmin"
+  28     administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0022 (MEDIUM): Database server has public network access enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Database resources should not publicly available. You should limit all access to the minimum that is required for your application to function.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0022
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:20-30
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  20 ┌ resource "azurerm_mysql_server" "insecure_mysql_server" {
+  21 │   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+  22 │   location            = azurerm_resource_group.rg.location
+  23 │   resource_group_name = azurerm_resource_group.rg.name
+  24 │   sku_name            = "B_Gen5_1"
+  25 │   storage_mb          = 5120
+  26 │   version             = "8.0"
+  27 │   administrator_login    = "mysqladmin"
+  28 └   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0026 (MEDIUM): Database server does not require a secure TLS version.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+You should not use outdated/insecure TLS versions for encryption. You should be using TLS v1.2+.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0026
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:20-30
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  20 ┌ resource "azurerm_mysql_server" "insecure_mysql_server" {
+  21 │   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+  22 │   location            = azurerm_resource_group.rg.location
+  23 │   resource_group_name = azurerm_resource_group.rg.name
+  24 │   sku_name            = "B_Gen5_1"
+  25 │   storage_mb          = 5120
+  26 │   version             = "8.0"
+  27 │   administrator_login    = "mysqladmin"
+  28 └   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0029 (HIGH): Firewall rule allows public internet access to a database server.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Azure services can be allowed access through the firewall using a start and end IP address of 0.0.0.0. No other end ip address should be combined with a start of 0.0.0.0
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0029
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:33-39
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  33 ┌ resource "azurerm_mysql_firewall_rule" "public_access_rule" {
+  34 │   name                = "AllowAllPublicAccess"
+  35 │   resource_group_name = azurerm_resource_group.rg.name
+  36 │   server_name         = azurerm_mysql_server.insecure_mysql_server.name
+  37 │   start_ip_address    = "0.0.0.0" # ¡Vulnerabilidad!
+  38 │   end_ip_address      = "255.255.255.255" # ¡Vulnerabilidad!
+  39 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

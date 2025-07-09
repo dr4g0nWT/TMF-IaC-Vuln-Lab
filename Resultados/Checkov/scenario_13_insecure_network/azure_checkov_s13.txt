@@ -1,0 +1,216 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 13, Failed checks: 4, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_77: "Ensure that UDP Services are restricted from the Internet "
+	PASSED for resource: azurerm_network_security_group.overly_permissive_nsg
+	File: /azure.tf:34-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-udp-services-are-restricted-from-the-internet
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.app_nic
+	File: /azure.tf:82-91
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.app_vm
+	File: /azure.tf:93-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.app_vm
+	File: /azure.tf:93-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.app_vm
+	File: /azure.tf:93-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.app_vm
+	File: /azure.tf:93-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.app_vm
+	File: /azure.tf:93-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	PASSED for resource: azurerm_network_interface.app_nic
+	File: /azure.tf:82-91
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+Check: CKV2_AZURE_39: "Ensure Azure VM is not configured with public IP and serial console access"
+	PASSED for resource: azurerm_network_interface.app_nic
+	File: /azure.tf:82-91
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-2-39
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	PASSED for resource: azurerm_subnet.app_subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	PASSED for resource: azurerm_subnet.db_subnet
+	File: /azure.tf:26-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+Check: CKV_AZURE_10: "Ensure that SSH access is restricted from the internet"
+	FAILED for resource: azurerm_network_security_group.overly_permissive_nsg
+	File: /azure.tf:34-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-3
+
+		34 | resource "azurerm_network_security_group" "overly_permissive_nsg" {
+		35 |   name                = "tfm-overly-permissive-nsg-13-azure"
+		36 |   location            = azurerm_resource_group.rg.location
+		37 |   resource_group_name = azurerm_resource_group.rg.name
+		38 | 
+		39 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		40 |   security_rule {
+		41 |     name                       = "AllowAllInbound"
+		42 |     priority                   = 100
+		43 |     direction                  = "Inbound"
+		44 |     access                     = "Allow"
+		45 |     protocol                   = "*" # ¡Vulnerabilidad! Todos los protocolos
+		46 |     source_port_range          = "*"
+		47 |     destination_port_range     = "*"
+		48 |     source_address_prefix      = "*" # ¡Vulnerabilidad! Cualquier origen (incluyendo Internet)
+		49 |     destination_address_prefix = "*"
+		50 |   }
+		51 | 
+		52 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		53 |   security_rule {
+		54 |     name                       = "AllowAllOutbound"
+		55 |     priority                   = 100
+		56 |     direction                  = "Outbound"
+		57 |     access                     = "Allow"
+		58 |     protocol                   = "*" # ¡Vulnerabilidad! Todos los protocolos
+		59 |     source_port_range          = "*"
+		60 |     destination_port_range     = "*"
+		61 |     source_address_prefix      = "*"
+		62 |     destination_address_prefix = "*" # ¡Vulnerabilidad! Cualquier destino (incluyendo Internet)
+		63 |   }
+		64 | 
+		65 |   tags = {
+		66 |     Name = "TFM-Overly-Permissive-NSG-13"
+		67 |   }
+		68 | }
+
+Check: CKV_AZURE_160: "Ensure that HTTP (port 80) access is restricted from the internet"
+	FAILED for resource: azurerm_network_security_group.overly_permissive_nsg
+	File: /azure.tf:34-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-http-port-80-access-from-the-internet-is-restricted
+
+		34 | resource "azurerm_network_security_group" "overly_permissive_nsg" {
+		35 |   name                = "tfm-overly-permissive-nsg-13-azure"
+		36 |   location            = azurerm_resource_group.rg.location
+		37 |   resource_group_name = azurerm_resource_group.rg.name
+		38 | 
+		39 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		40 |   security_rule {
+		41 |     name                       = "AllowAllInbound"
+		42 |     priority                   = 100
+		43 |     direction                  = "Inbound"
+		44 |     access                     = "Allow"
+		45 |     protocol                   = "*" # ¡Vulnerabilidad! Todos los protocolos
+		46 |     source_port_range          = "*"
+		47 |     destination_port_range     = "*"
+		48 |     source_address_prefix      = "*" # ¡Vulnerabilidad! Cualquier origen (incluyendo Internet)
+		49 |     destination_address_prefix = "*"
+		50 |   }
+		51 | 
+		52 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		53 |   security_rule {
+		54 |     name                       = "AllowAllOutbound"
+		55 |     priority                   = 100
+		56 |     direction                  = "Outbound"
+		57 |     access                     = "Allow"
+		58 |     protocol                   = "*" # ¡Vulnerabilidad! Todos los protocolos
+		59 |     source_port_range          = "*"
+		60 |     destination_port_range     = "*"
+		61 |     source_address_prefix      = "*"
+		62 |     destination_address_prefix = "*" # ¡Vulnerabilidad! Cualquier destino (incluyendo Internet)
+		63 |   }
+		64 | 
+		65 |   tags = {
+		66 |     Name = "TFM-Overly-Permissive-NSG-13"
+		67 |   }
+		68 | }
+
+Check: CKV_AZURE_9: "Ensure that RDP access is restricted from the internet"
+	FAILED for resource: azurerm_network_security_group.overly_permissive_nsg
+	File: /azure.tf:34-68
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-2
+
+		34 | resource "azurerm_network_security_group" "overly_permissive_nsg" {
+		35 |   name                = "tfm-overly-permissive-nsg-13-azure"
+		36 |   location            = azurerm_resource_group.rg.location
+		37 |   resource_group_name = azurerm_resource_group.rg.name
+		38 | 
+		39 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		40 |   security_rule {
+		41 |     name                       = "AllowAllInbound"
+		42 |     priority                   = 100
+		43 |     direction                  = "Inbound"
+		44 |     access                     = "Allow"
+		45 |     protocol                   = "*" # ¡Vulnerabilidad! Todos los protocolos
+		46 |     source_port_range          = "*"
+		47 |     destination_port_range     = "*"
+		48 |     source_address_prefix      = "*" # ¡Vulnerabilidad! Cualquier origen (incluyendo Internet)
+		49 |     destination_address_prefix = "*"
+		50 |   }
+		51 | 
+		52 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		53 |   security_rule {
+		54 |     name                       = "AllowAllOutbound"
+		55 |     priority                   = 100
+		56 |     direction                  = "Outbound"
+		57 |     access                     = "Allow"
+		58 |     protocol                   = "*" # ¡Vulnerabilidad! Todos los protocolos
+		59 |     source_port_range          = "*"
+		60 |     destination_port_range     = "*"
+		61 |     source_address_prefix      = "*"
+		62 |     destination_address_prefix = "*" # ¡Vulnerabilidad! Cualquier destino (incluyendo Internet)
+		63 |   }
+		64 | 
+		65 |   tags = {
+		66 |     Name = "TFM-Overly-Permissive-NSG-13"
+		67 |   }
+		68 | }
+
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.app_vm
+	File: /azure.tf:93-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		93  | resource "azurerm_linux_virtual_machine" "app_vm" {
+		94  |   name                = "tfm-app-vm-13-azure"
+		95  |   resource_group_name = azurerm_resource_group.rg.name
+		96  |   location            = azurerm_resource_group.rg.location
+		97  |   size                = "Standard_B1s"
+		98  |   admin_username      = "adminuser"
+		99  |   network_interface_ids = [azurerm_network_interface.app_nic.id]
+		100 |   source_image_reference {
+		101 |     publisher = "Canonical"
+		102 |     offer     = "UbuntuServer"
+		103 |     sku       = "18.04-LTS"
+		104 |     version   = "latest"
+		105 |   }
+		106 |   os_disk {
+		107 |     caching              = "ReadWrite"
+		108 |     storage_account_type = "Standard_LRS"
+		109 |   }
+		110 |   admin_ssh_key {
+		111 |     username   = "adminuser"
+		112 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com"
+		113 |   }
+		114 | }
+

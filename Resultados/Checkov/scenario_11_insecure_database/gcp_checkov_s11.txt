@@ -1,0 +1,231 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 8, Failed checks: 5, Skipped checks: 0
+
+Check: CKV_GCP_79: "Ensure SQL database is using latest Major version"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-sql-database-uses-the-latest-major-version
+Check: CKV_GCP_50: "Ensure MySQL database 'local_infile' flag is set to 'off'"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/cloud-sql-policies/bc-gcp-sql-1
+Check: CKV2_GCP_16: "Ensure PostgreSQL database flag 'log_planner_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-16
+Check: CKV2_GCP_13: "Ensure PostgreSQL database flag 'log_duration' is set to 'on'"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-13
+Check: CKV2_GCP_14: "Ensure PostgreSQL database flag 'log_executor_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-14
+Check: CKV2_GCP_17: "Ensure PostgreSQL database flag 'log_statement_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-17
+Check: CKV2_GCP_15: "Ensure PostgreSQL database flag 'log_parser_stats' is set to 'off'"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-2-15
+Check: CKV2_GCP_7: "Ensure that a MySQL database instance does not allow anyone to connect with administrative privileges"
+	PASSED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/ensure-that-a-mysql-database-instance-does-not-allow-anyone-to-connect-with-administrative-privileges
+Check: CKV_GCP_14: "Ensure all Cloud SQL database instance have backup configuration enabled"
+	FAILED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-2
+
+		8  | resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+		9  |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		10 |   name             = "tfm-insecure-cloud-sql-11"
+		11 |   database_version = "MYSQL_8_0"
+		12 |   settings {
+		13 |     tier = "db-f1-micro"
+		14 |     # disk_autoresize = true
+		15 |     # backup_configuration {
+		16 |     #   enabled            = true
+		17 |     #   binary_log_enabled = true
+		18 |     # }
+		19 | 
+		20 |     ip_configuration {
+		21 |       # Vulnerabilidad 1: Habilitar la IP pública para la base de datos
+		22 |       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+		23 | 
+		24 |       # Vulnerabilidad 2: Redes autorizadas excesivamente permisivas (0.0.0.0/0)
+		25 |       authorized_networks {
+		26 |         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+		27 |         name  = "Public Access"
+		28 |       }
+		29 | 
+		30 |       # Vulnerabilidad 3: No forzar el uso de SSL/TLS
+		31 |       # require_ssl = false # Ausencia o configuración explícita a false
+		32 |     }
+		33 | 
+		34 |     # Vulnerabilidad 4: Contraseña de usuario raíz débil o no cambiada (ya cubierta en S3, pero importante aquí)
+		35 |     # No se especifica un password para el usuario 'root', que puede usar el usuario por defecto.
+		36 |     # user_labels = {} # No hay etiquetas que puedan indicar configuraciones de seguridad.
+		37 |   }
+		38 | }
+
+Check: CKV_GCP_11: "Ensure that Cloud SQL database Instances are not open to the world"
+	FAILED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-4
+
+		8  | resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+		9  |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		10 |   name             = "tfm-insecure-cloud-sql-11"
+		11 |   database_version = "MYSQL_8_0"
+		12 |   settings {
+		13 |     tier = "db-f1-micro"
+		14 |     # disk_autoresize = true
+		15 |     # backup_configuration {
+		16 |     #   enabled            = true
+		17 |     #   binary_log_enabled = true
+		18 |     # }
+		19 | 
+		20 |     ip_configuration {
+		21 |       # Vulnerabilidad 1: Habilitar la IP pública para la base de datos
+		22 |       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+		23 | 
+		24 |       # Vulnerabilidad 2: Redes autorizadas excesivamente permisivas (0.0.0.0/0)
+		25 |       authorized_networks {
+		26 |         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+		27 |         name  = "Public Access"
+		28 |       }
+		29 | 
+		30 |       # Vulnerabilidad 3: No forzar el uso de SSL/TLS
+		31 |       # require_ssl = false # Ausencia o configuración explícita a false
+		32 |     }
+		33 | 
+		34 |     # Vulnerabilidad 4: Contraseña de usuario raíz débil o no cambiada (ya cubierta en S3, pero importante aquí)
+		35 |     # No se especifica un password para el usuario 'root', que puede usar el usuario por defecto.
+		36 |     # user_labels = {} # No hay etiquetas que puedan indicar configuraciones de seguridad.
+		37 |   }
+		38 | }
+
+Check: CKV_GCP_60: "Ensure Cloud SQL database does not have public IP"
+	FAILED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/cloud-sql-policies/bc-gcp-sql-11
+
+		8  | resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+		9  |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		10 |   name             = "tfm-insecure-cloud-sql-11"
+		11 |   database_version = "MYSQL_8_0"
+		12 |   settings {
+		13 |     tier = "db-f1-micro"
+		14 |     # disk_autoresize = true
+		15 |     # backup_configuration {
+		16 |     #   enabled            = true
+		17 |     #   binary_log_enabled = true
+		18 |     # }
+		19 | 
+		20 |     ip_configuration {
+		21 |       # Vulnerabilidad 1: Habilitar la IP pública para la base de datos
+		22 |       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+		23 | 
+		24 |       # Vulnerabilidad 2: Redes autorizadas excesivamente permisivas (0.0.0.0/0)
+		25 |       authorized_networks {
+		26 |         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+		27 |         name  = "Public Access"
+		28 |       }
+		29 | 
+		30 |       # Vulnerabilidad 3: No forzar el uso de SSL/TLS
+		31 |       # require_ssl = false # Ausencia o configuración explícita a false
+		32 |     }
+		33 | 
+		34 |     # Vulnerabilidad 4: Contraseña de usuario raíz débil o no cambiada (ya cubierta en S3, pero importante aquí)
+		35 |     # No se especifica un password para el usuario 'root', que puede usar el usuario por defecto.
+		36 |     # user_labels = {} # No hay etiquetas que puedan indicar configuraciones de seguridad.
+		37 |   }
+		38 | }
+
+Check: CKV_GCP_6: "Ensure all Cloud SQL database instance requires all incoming connections to use SSL"
+	FAILED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-1
+
+		8  | resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+		9  |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		10 |   name             = "tfm-insecure-cloud-sql-11"
+		11 |   database_version = "MYSQL_8_0"
+		12 |   settings {
+		13 |     tier = "db-f1-micro"
+		14 |     # disk_autoresize = true
+		15 |     # backup_configuration {
+		16 |     #   enabled            = true
+		17 |     #   binary_log_enabled = true
+		18 |     # }
+		19 | 
+		20 |     ip_configuration {
+		21 |       # Vulnerabilidad 1: Habilitar la IP pública para la base de datos
+		22 |       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+		23 | 
+		24 |       # Vulnerabilidad 2: Redes autorizadas excesivamente permisivas (0.0.0.0/0)
+		25 |       authorized_networks {
+		26 |         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+		27 |         name  = "Public Access"
+		28 |       }
+		29 | 
+		30 |       # Vulnerabilidad 3: No forzar el uso de SSL/TLS
+		31 |       # require_ssl = false # Ausencia o configuración explícita a false
+		32 |     }
+		33 | 
+		34 |     # Vulnerabilidad 4: Contraseña de usuario raíz débil o no cambiada (ya cubierta en S3, pero importante aquí)
+		35 |     # No se especifica un password para el usuario 'root', que puede usar el usuario por defecto.
+		36 |     # user_labels = {} # No hay etiquetas que puedan indicar configuraciones de seguridad.
+		37 |   }
+		38 | }
+
+Check: CKV2_GCP_20: "Ensure MySQL DB instance has point-in-time recovery backup configured"
+	FAILED for resource: google_sql_database_instance.insecure_cloud_sql_db
+	File: /gcp.tf:8-38
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-2-20
+
+		8  | resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+		9  |   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		10 |   name             = "tfm-insecure-cloud-sql-11"
+		11 |   database_version = "MYSQL_8_0"
+		12 |   settings {
+		13 |     tier = "db-f1-micro"
+		14 |     # disk_autoresize = true
+		15 |     # backup_configuration {
+		16 |     #   enabled            = true
+		17 |     #   binary_log_enabled = true
+		18 |     # }
+		19 | 
+		20 |     ip_configuration {
+		21 |       # Vulnerabilidad 1: Habilitar la IP pública para la base de datos
+		22 |       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+		23 | 
+		24 |       # Vulnerabilidad 2: Redes autorizadas excesivamente permisivas (0.0.0.0/0)
+		25 |       authorized_networks {
+		26 |         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+		27 |         name  = "Public Access"
+		28 |       }
+		29 | 
+		30 |       # Vulnerabilidad 3: No forzar el uso de SSL/TLS
+		31 |       # require_ssl = false # Ausencia o configuración explícita a false
+		32 |     }
+		33 | 
+		34 |     # Vulnerabilidad 4: Contraseña de usuario raíz débil o no cambiada (ya cubierta en S3, pero importante aquí)
+		35 |     # No se especifica un password para el usuario 'root', que puede usar el usuario por defecto.
+		36 |     # user_labels = {} # No hay etiquetas que puedan indicar configuraciones de seguridad.
+		37 |   }
+		38 | }
+
+

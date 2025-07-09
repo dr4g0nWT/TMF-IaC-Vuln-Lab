@@ -1,0 +1,172 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 9, Failed checks: 8, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:13-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:13-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.vm_nic
+	File: /azure.tf:35-46
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.backend_vm
+	File: /azure.tf:48-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.backend_vm
+	File: /azure.tf:48-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.backend_vm
+	File: /azure.tf:48-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.backend_vm
+	File: /azure.tf:48-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.backend_vm
+	File: /azure.tf:48-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_198: "Ensure the Azure CDN enables the HTTPS endpoint"
+	PASSED for resource: azurerm_cdn_endpoint.insecure_cdn_endpoint
+	File: /azure.tf:165-189
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-198
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.backend_vm
+	File: /azure.tf:48-72
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		48 | resource "azurerm_linux_virtual_machine" "backend_vm" {
+		49 |   name                = "tfm-backend-vm-18"
+		50 |   resource_group_name = azurerm_resource_group.rg.name
+		51 |   location            = azurerm_resource_group.rg.location
+		52 |   size                = "Standard_B1s"
+		53 |   admin_username      = "adminuser"
+		54 |   network_interface_ids = [azurerm_network_interface.vm_nic.id]
+		55 | 
+		56 |   source_image_reference {
+		57 |     publisher = "Canonical"
+		58 |     offer     = "UbuntuServer"
+		59 |     sku       = "18.04-LTS"
+		60 |     version   = "latest"
+		61 |   }
+		62 | 
+		63 |   os_disk {
+		64 |     caching              = "ReadWrite"
+		65 |     storage_account_type = "Standard_LRS"
+		66 |   }
+		67 | 
+		68 |   admin_ssh_key {
+		69 |     username   = "adminuser"
+		70 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com"
+		71 |   }
+		72 | }
+
+Check: CKV_AZURE_218: "Ensure Application Gateway defines secure protocols for in transit communication"
+	FAILED for resource: azurerm_application_gateway.insecure_app_gateway
+	File: /azure.tf:90-155
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-218
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AZURE_217: "Ensure Azure Application gateways listener that allow connection requests over HTTP"
+	FAILED for resource: azurerm_application_gateway.insecure_app_gateway
+	File: /azure.tf:90-155
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-217
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AZURE_197: "Ensure the Azure CDN disables the HTTP endpoint"
+	FAILED for resource: azurerm_cdn_endpoint.insecure_cdn_endpoint
+	File: /azure.tf:165-189
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-197
+
+		165 | resource "azurerm_cdn_endpoint" "insecure_cdn_endpoint" {
+		166 |   name                = "tfm-insecure-cdn-endpoint-18-${random_id.cdn_suffix.hex}"
+		167 |   profile_name        = azurerm_cdn_profile.insecure_cdn_profile.name
+		168 |   resource_group_name = azurerm_resource_group.rg.name
+		169 |   location            = azurerm_resource_group.rg.location
+		170 | 
+		171 |   origin {
+		172 |     name = "backend-vm-origin"
+		173 |     host_header = azurerm_public_ip.vm_public_ip.ip_address # O el FQDN de la VM
+		174 |     # La vulnerabilidad es que este origen directo es accesible
+		175 |     # Si la VM tuviera una IP privada, el CDN la resolvería si estuviera en la misma VNet o en un VNet Peering.
+		176 |     # Para la simulación, usamos la IP pública de la VM.
+		177 |     # La VM es el "origen" que el CDN cachea y sirve.
+		178 |   }
+		179 | 
+		180 |   is_http_allowed         = true  # ¡Vulnerabilidad! Permite el acceso a través de HTTP
+		181 |   is_https_allowed        = true
+		182 |   # No se especifica 'default_origin_group' con un grupo que tenga HTTPS enforcement.
+		183 |   # No hay reglas de ruta para forzar HTTPS.
+		184 |   # No hay 'delivery_rule' para la redirección HTTPS.
+		185 | 
+		186 |   tags = {
+		187 |     Name = "TFM-Insecure-CDN-Endpoint"
+		188 |   }
+		189 | }
+
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	FAILED for resource: azurerm_network_interface.vm_nic
+	File: /azure.tf:35-46
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+
+		35 | resource "azurerm_network_interface" "vm_nic" {
+		36 |   name                = "tfm-vm-nic-18"
+		37 |   location            = azurerm_resource_group.rg.location
+		38 |   resource_group_name = azurerm_resource_group.rg.name
+		39 | 
+		40 |   ip_configuration {
+		41 |     name                          = "internal"
+		42 |     subnet_id                     = azurerm_subnet.app_subnet.id
+		43 |     private_ip_address_allocation = "Dynamic"
+		44 |     public_ip_address_id          = azurerm_public_ip.vm_public_ip.id
+		45 |   }
+		46 | }
+
+Check: CKV_AZURE_120: "Ensure that Application Gateway enables WAF"
+	FAILED for resource: azurerm_application_gateway.insecure_app_gateway
+	File: /azure.tf:90-155
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-application-gateway-enables-waf
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.app_subnet
+	File: /azure.tf:20-25
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		20 | resource "azurerm_subnet" "app_subnet" {
+		21 |   name                 = "tfm-security-app-subnet-18-azure"
+		22 |   resource_group_name  = azurerm_resource_group.rg.name
+		23 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		24 |   address_prefixes     = ["10.0.1.0/24"]
+		25 | }
+
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.app_gw_subnet
+	File: /azure.tf:83-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		83 | resource "azurerm_subnet" "app_gw_subnet" {
+		84 |   name                 = "tfm-appgw-subnet-18"
+		85 |   resource_group_name  = azurerm_resource_group.rg.name
+		86 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		87 |   address_prefixes     = ["10.0.2.0/24"]
+		88 | }
+
+

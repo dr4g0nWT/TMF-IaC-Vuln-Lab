@@ -1,0 +1,320 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 16, Failed checks: 18, Skipped checks: 0
+
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.lambda_exec_role_14
+	File: /aws.tf:8-23
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.lambda_exec_role_14
+	File: /aws.tf:8-23
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-44
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.lambda_exec_role_14
+	File: /aws.tf:8-23
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_93: "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)"
+	PASSED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/bc-aws-s3-24
+Check: CKV_AWS_363: "Ensure Lambda Runtime is not deprecated"
+	PASSED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-363
+Check: CKV_AWS_45: "Ensure no hard-coded secrets exist in lambda environment"
+	PASSED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-3
+Check: CKV_AWS_301: "Ensure that AWS Lambda function is not publicly accessible"
+	PASSED for resource: aws_lambda_permission.allow_public_invocation_14
+	File: /aws.tf:82-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-301
+Check: CKV2_AWS_70: "Ensure API gateway method has authorization or API key set"
+	PASSED for resource: aws_api_gateway_method.api_method_14
+	File: /aws.tf:102-107
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-70
+Check: CKV_AWS_217: "Ensure Create before destroy for API deployments"
+	PASSED for resource: aws_api_gateway_deployment.api_deployment_14
+	File: /aws.tf:118-134
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-api-deployments-enable-create-before-destroy
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV_AWS_57: "S3 Bucket has an ACL defined which allows public WRITE access."
+	PASSED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-2-acl-write-permissions-everyone
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.lambda_exec_role_14
+	File: /aws.tf:8-23
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role_policy_attachment.lambda_policy_attachment_14
+	File: /aws.tf:26-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV_AWS_20: "S3 Bucket has an ACL defined which allows public READ access."
+	PASSED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-1-acl-read-permissions-everyone
+Check: CKV_AWS_19: "Ensure all data stored in the S3 bucket is securely encrypted at rest"
+	PASSED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-14-data-encrypted-at-rest
+Check: CKV2_AWS_75: "Ensure no open CORS policy"
+	PASSED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-75
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	FAILED for resource: aws_iam_role_policy_attachment.lambda_policy_attachment_14
+	File: /aws.tf:26-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+
+		26 | resource "aws_iam_role_policy_attachment" "lambda_policy_attachment_14" {
+		27 |   role       = aws_iam_role.lambda_exec_role_14.name
+		28 |   # ¡Vulnerabilidad! Política de "Full Access" que no cumple el principio de mínimo privilegio
+		29 |   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # O algo como AmazonS3FullAccess, AmazonEC2FullAccess
+		30 |   # Para una vulnerabilidad más específica de PaaS, se podría usar algo como DynamoDBFullAccess
+		31 | }
+
+Check: CKV_AWS_186: "Ensure S3 bucket Object is encrypted by KMS using a customer managed Key (CMK)"
+	FAILED for resource: aws_s3_bucket_object.lambda_zip_14
+	File: /aws.tf:46-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-106
+
+		46 | resource "aws_s3_bucket_object" "lambda_zip_14" {
+		47 |   bucket = aws_s3_bucket.lambda_bucket_14.id
+		48 |   key    = "lambda_function.zip"
+		49 |   source = data.archive_file.lambda_zip_14.output_path
+		50 |   etag   = filemd5(data.archive_file.lambda_zip_14.output_path)
+		51 | }
+
+Check: CKV_AWS_117: "Ensure that AWS Lambda function is configured inside a VPC"
+	FAILED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1
+
+		70 | resource "aws_lambda_function" "insecure_lambda_14" {
+		71 |   function_name    = "tfm-insecure-lambda-14"
+		72 |   s3_bucket        = aws_s3_bucket.lambda_bucket_14.id
+		73 |   s3_key           = aws_s3_bucket_object.lambda_zip_14.key
+		74 |   handler          = "index.js"
+		75 |   runtime          = "nodejs18.x"
+		76 |   role             = aws_iam_role.lambda_exec_role_14.arn
+		77 |   timeout          = 30
+		78 |   memory_size      = 128
+		79 | }
+
+Check: CKV_AWS_50: "X-Ray tracing is enabled for Lambda"
+	FAILED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-serverless-policies/bc-aws-serverless-4
+
+		70 | resource "aws_lambda_function" "insecure_lambda_14" {
+		71 |   function_name    = "tfm-insecure-lambda-14"
+		72 |   s3_bucket        = aws_s3_bucket.lambda_bucket_14.id
+		73 |   s3_key           = aws_s3_bucket_object.lambda_zip_14.key
+		74 |   handler          = "index.js"
+		75 |   runtime          = "nodejs18.x"
+		76 |   role             = aws_iam_role.lambda_exec_role_14.arn
+		77 |   timeout          = 30
+		78 |   memory_size      = 128
+		79 | }
+
+Check: CKV_AWS_116: "Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ)"
+	FAILED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-aws-lambda-function-is-configured-for-a-dead-letter-queue-dlq
+
+		70 | resource "aws_lambda_function" "insecure_lambda_14" {
+		71 |   function_name    = "tfm-insecure-lambda-14"
+		72 |   s3_bucket        = aws_s3_bucket.lambda_bucket_14.id
+		73 |   s3_key           = aws_s3_bucket_object.lambda_zip_14.key
+		74 |   handler          = "index.js"
+		75 |   runtime          = "nodejs18.x"
+		76 |   role             = aws_iam_role.lambda_exec_role_14.arn
+		77 |   timeout          = 30
+		78 |   memory_size      = 128
+		79 | }
+
+Check: CKV_AWS_272: "Ensure AWS Lambda function is configured to validate code-signing"
+	FAILED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-272
+
+		70 | resource "aws_lambda_function" "insecure_lambda_14" {
+		71 |   function_name    = "tfm-insecure-lambda-14"
+		72 |   s3_bucket        = aws_s3_bucket.lambda_bucket_14.id
+		73 |   s3_key           = aws_s3_bucket_object.lambda_zip_14.key
+		74 |   handler          = "index.js"
+		75 |   runtime          = "nodejs18.x"
+		76 |   role             = aws_iam_role.lambda_exec_role_14.arn
+		77 |   timeout          = 30
+		78 |   memory_size      = 128
+		79 | }
+
+Check: CKV_AWS_115: "Ensure that AWS Lambda function is configured for function-level concurrent execution limit"
+	FAILED for resource: aws_lambda_function.insecure_lambda_14
+	File: /aws.tf:70-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-aws-lambda-function-is-configured-for-function-level-concurrent-execution-limit
+
+		70 | resource "aws_lambda_function" "insecure_lambda_14" {
+		71 |   function_name    = "tfm-insecure-lambda-14"
+		72 |   s3_bucket        = aws_s3_bucket.lambda_bucket_14.id
+		73 |   s3_key           = aws_s3_bucket_object.lambda_zip_14.key
+		74 |   handler          = "index.js"
+		75 |   runtime          = "nodejs18.x"
+		76 |   role             = aws_iam_role.lambda_exec_role_14.arn
+		77 |   timeout          = 30
+		78 |   memory_size      = 128
+		79 | }
+
+Check: CKV_AWS_364: "Ensure that AWS Lambda function permissions delegated to AWS services are limited by SourceArn or SourceAccount"
+	FAILED for resource: aws_lambda_permission.allow_public_invocation_14
+	File: /aws.tf:82-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-364
+
+		82 | resource "aws_lambda_permission" "allow_public_invocation_14" {
+		83 |   statement_id  = "AllowExecutionFromAPIGateway"
+		84 |   action        = "lambda:InvokeFunction"
+		85 |   function_name = aws_lambda_function.insecure_lambda_14.function_name
+		86 |   principal     = "apigateway.amazonaws.com" # Se asume que será invocada por APIGateway
+		87 |   # Para una invocación directamente pública, el principal podría ser "*" o una cuenta AWS específica sin restricciones.
+		88 | }
+
+Check: CKV_AWS_237: "Ensure Create before destroy for API Gateway"
+	FAILED for resource: aws_api_gateway_rest_api.insecure_api_gateway_14
+	File: /aws.tf:91-94
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-api-gateway-enables-create-before-destroy
+
+		91 | resource "aws_api_gateway_rest_api" "insecure_api_gateway_14" {
+		92 |   name        = "tfm-insecure-api-14"
+		93 |   description = "API Gateway expuesto sin autenticación"
+		94 | }
+
+Check: CKV_AWS_59: "Ensure there is no open access to back-end resources through API"
+	FAILED for resource: aws_api_gateway_method.api_method_14
+	File: /aws.tf:102-107
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-6-api-gateway-authorizer-set
+
+		102 | resource "aws_api_gateway_method" "api_method_14" {
+		103 |   rest_api_id   = aws_api_gateway_rest_api.insecure_api_gateway_14.id
+		104 |   resource_id   = aws_api_gateway_resource.api_resource_14.id
+		105 |   http_method   = "GET"
+		106 |   authorization = "NONE" # ¡Vulnerabilidad! Sin autenticación/autorización
+		107 | }
+
+Check: CKV2_AWS_61: "Ensure that an S3 bucket has a lifecycle configuration"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+Check: CKV_AWS_144: "Ensure that S3 bucket has cross-region replication enabled"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+Check: CKV2_AWS_62: "Ensure S3 buckets should have event notifications enabled"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+Check: CKV_AWS_21: "Ensure all data stored in the S3 bucket have versioning enabled"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-16-enable-versioning
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+Check: CKV_AWS_145: "Ensure that S3 buckets are encrypted with KMS by default"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-buckets-are-encrypted-with-kms-by-default
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+Check: CKV2_AWS_53: "Ensure AWS API gateway request is validated"
+	FAILED for resource: aws_api_gateway_method.api_method_14
+	File: /aws.tf:102-107
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-53
+
+		102 | resource "aws_api_gateway_method" "api_method_14" {
+		103 |   rest_api_id   = aws_api_gateway_rest_api.insecure_api_gateway_14.id
+		104 |   resource_id   = aws_api_gateway_resource.api_resource_14.id
+		105 |   http_method   = "GET"
+		106 |   authorization = "NONE" # ¡Vulnerabilidad! Sin autenticación/autorización
+		107 | }
+
+Check: CKV2_AWS_6: "Ensure that S3 bucket has a Public Access block"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/s3-bucket-should-have-public-access-blocks-defaults-to-false-if-the-public-access-block-is-not-attached
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+Check: CKV_AWS_18: "Ensure the S3 bucket has access logging enabled"
+	FAILED for resource: aws_s3_bucket.lambda_bucket_14
+	File: /aws.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-13-enable-logging
+
+		34 | resource "aws_s3_bucket" "lambda_bucket_14" {
+		35 |   bucket = "tfm-lambda-code-bucket-14-${random_id.bucket_suffix.hex}"
+		36 |   acl    = "private"
+		37 |   tags = {
+		38 |     Name = "TFM Lambda Code Bucket"
+		39 |   }
+		40 | }
+
+

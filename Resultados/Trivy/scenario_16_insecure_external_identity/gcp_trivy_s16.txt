@@ -1,0 +1,58 @@
+
+Report Summary
+
+┌────────┬───────────┬───────────────────┐
+│ Target │   Type    │ Misconfigurations │
+├────────┼───────────┼───────────────────┤
+│ .      │ terraform │         0         │
+├────────┼───────────┼───────────────────┤
+│ gcp.tf │ terraform │         2         │
+└────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+gcp.tf (terraform)
+==================
+Tests: 2 (SUCCESSES: 0, FAILURES: 2)
+Failures: 2 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+AVD-GCP-0001 (HIGH): Bucket allows public access.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Using 'allUsers' or 'allAuthenticatedUsers' as members in an IAM member/binding causes data to be exposed outside of the organisation.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0001
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:26
+   via gcp.tf:23-27 (google_storage_bucket_iam_member.public_bucket_access_all_users)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23   resource "google_storage_bucket_iam_member" "public_bucket_access_all_users" {
+  24     bucket = google_storage_bucket.sensitive_bucket_16.name
+  25     role   = "roles/storage.objectViewer" # ¡Vulnerabilidad! Permite a cualquiera ver objetos
+  26 [   member = "allUsers" # ¡Vulnerabilidad! Acceso público sin autenticación
+  27   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0066 (LOW): Storage bucket encryption does not use a customer-managed key.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Using unmanaged keys makes rotation and general management difficult.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0066
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:9-16
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   9 ┌ resource "google_storage_bucket" "sensitive_bucket_16" {
+  10 │   name          = "tfm-sensitive-bucket-16-${random_id.bucket_suffix.hex}" # Nombre de bucket globalmente único
+  11 │   location      = "EUROPE-WEST1" # Coincidir con la región del provider o ser multiregional
+  12 │   force_destroy = true # Para facilitar la limpieza del laboratorio
+  13 │   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+  14 │ 
+  15 │   uniform_bucket_level_access = true # Recomendado para evitar ACLs a nivel de objeto.
+  16 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

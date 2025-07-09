@@ -1,0 +1,268 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 10, Failed checks: 8, Skipped checks: 0
+
+Check: CKV_GCP_75: "Ensure Google compute firewall ingress does not allow unrestricted FTP access"
+	PASSED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-ftp-access
+Check: CKV_GCP_106: "Ensure Google compute firewall ingress does not allow unrestricted http port 80 access"
+	PASSED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-http-port-80-access
+Check: CKV_GCP_88: "Ensure Google compute firewall ingress does not allow unrestricted mysql access"
+	PASSED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-compute-firewall-ingress-does-not-allow-unrestricted-mysql-access
+Check: CKV_GCP_77: "Ensure Google compute firewall ingress does not allow on ftp port"
+	PASSED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-ftp-port-20-access
+Check: CKV_GCP_31: "Ensure that instances are not configured to use the default service account with full access to all Cloud APIs"
+	PASSED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-2
+Check: CKV_GCP_35: "Ensure 'Enable connecting to serial ports' is not enabled for VM Instance"
+	PASSED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-11
+Check: CKV_GCP_36: "Ensure that IP forwarding is not enabled on Instances"
+	PASSED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-12
+Check: CKV_GCP_34: "Ensure that no instance in the project overrides the project setting for enabling OSLogin(OSLogin needs to be enabled in project metadata for all instances)"
+	PASSED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-10
+Check: CKV2_GCP_12: "Ensure GCP compute firewall ingress does not allow unrestricted access to all ports"
+	PASSED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-access-to-all-ports
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	PASSED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:8-11
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+Check: CKV_GCP_3: "Ensure Google compute firewall ingress does not allow unrestricted rdp access"
+	FAILED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-2
+
+		13 | resource "google_compute_firewall" "exposed_management_firewall" {
+		14 |   name    = "tfm-exposed-management-firewall-12"
+		15 |   network = google_compute_network.vpc_network.name
+		16 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		17 | 
+		18 |   # Vulnerabilidad 1: SSH (tcp:22) abierto a 0.0.0.0/0
+		19 |   allow {
+		20 |     protocol = "tcp"
+		21 |     ports    = ["22"]
+		22 |   }
+		23 |   source_ranges = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso SSH público
+		24 |   description   = "Allow public SSH access"
+		25 | 
+		26 |   # Vulnerabilidad 2: RDP (tcp:3389) también abierto a 0.0.0.0/0 (agrega otra regla)
+		27 |   # Se puede añadir otra regla o combinar puertos en una sola 'allow' block
+		28 |   # Para claridad, otra regla para RDP
+		29 |   allow {
+		30 |     protocol = "tcp"
+		31 |     ports    = ["3389"]
+		32 |   }
+		33 |   source_ranges = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso RDP público
+		34 |   description   = "Allow public RDP access"
+		35 | 
+		36 |   # Vulnerabilidad 3: Puerto de administración (ej. Jenkins 8080) abierto a 0.0.0.0/0
+		37 |   allow {
+		38 |     protocol = "tcp"
+		39 |     ports    = ["8080"] # Puerto común para Jenkins, Tomcat, etc.
+		40 |   }
+		41 |   source_ranges = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso de servicio de gestión público
+		42 |   description   = "Allow public Jenkins/WebApp Management access"
+		43 | }
+
+Check: CKV_GCP_2: "Ensure Google compute firewall ingress does not allow unrestricted ssh access"
+	FAILED for resource: google_compute_firewall.exposed_management_firewall
+	File: /gcp.tf:13-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-1
+
+		13 | resource "google_compute_firewall" "exposed_management_firewall" {
+		14 |   name    = "tfm-exposed-management-firewall-12"
+		15 |   network = google_compute_network.vpc_network.name
+		16 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		17 | 
+		18 |   # Vulnerabilidad 1: SSH (tcp:22) abierto a 0.0.0.0/0
+		19 |   allow {
+		20 |     protocol = "tcp"
+		21 |     ports    = ["22"]
+		22 |   }
+		23 |   source_ranges = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso SSH público
+		24 |   description   = "Allow public SSH access"
+		25 | 
+		26 |   # Vulnerabilidad 2: RDP (tcp:3389) también abierto a 0.0.0.0/0 (agrega otra regla)
+		27 |   # Se puede añadir otra regla o combinar puertos en una sola 'allow' block
+		28 |   # Para claridad, otra regla para RDP
+		29 |   allow {
+		30 |     protocol = "tcp"
+		31 |     ports    = ["3389"]
+		32 |   }
+		33 |   source_ranges = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso RDP público
+		34 |   description   = "Allow public RDP access"
+		35 | 
+		36 |   # Vulnerabilidad 3: Puerto de administración (ej. Jenkins 8080) abierto a 0.0.0.0/0
+		37 |   allow {
+		38 |     protocol = "tcp"
+		39 |     ports    = ["8080"] # Puerto común para Jenkins, Tomcat, etc.
+		40 |   }
+		41 |   source_ranges = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso de servicio de gestión público
+		42 |   description   = "Allow public Jenkins/WebApp Management access"
+		43 | }
+
+Check: CKV_GCP_26: "Ensure that VPC Flow Logs is enabled for every subnet in a VPC Network"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:46-53
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-logging-1
+
+		46 | resource "google_compute_subnetwork" "subnet" {
+		47 |   name        = "tfm-security-subnet-12-gcp"
+		48 |   ip_cidr_range = "10.0.1.0/24"
+		49 |   network     = google_compute_network.vpc_network.id
+		50 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		51 | 
+		52 |   depends_on = [google_compute_network.vpc_network]
+		53 | }
+
+Check: CKV_GCP_74: "Ensure that private_ip_google_access is enabled for Subnet"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:46-53
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-subnet-has-a-private-ip-google-access
+
+		46 | resource "google_compute_subnetwork" "subnet" {
+		47 |   name        = "tfm-security-subnet-12-gcp"
+		48 |   ip_cidr_range = "10.0.1.0/24"
+		49 |   network     = google_compute_network.vpc_network.id
+		50 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		51 | 
+		52 |   depends_on = [google_compute_network.vpc_network]
+		53 | }
+
+Check: CKV_GCP_32: "Ensure 'Block Project-wide SSH keys' is enabled for VM instances"
+	FAILED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-8
+
+		55 | resource "google_compute_instance" "exposed_instance" {
+		56 |   name         = "exposed-gcp-vm-12"
+		57 |   machine_type = "e2-micro"
+		58 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		59 | 
+		60 |   boot_disk {
+		61 |     initialize_params {
+		62 |       image = "debian-cloud/debian-11"
+		63 |     }
+		64 |   }
+		65 | 
+		66 |   network_interface {
+		67 |     network    = google_compute_network.vpc_network.id
+		68 |     subnetwork = google_compute_subnetwork.subnet.id
+		69 |     access_config {
+		70 |       # Asigna una IP pública para que la VM sea accesible desde Internet
+		71 |     }
+		72 |   }
+		73 | 
+		74 |   # Asegura que la instancia tenga las etiquetas para que la regla de firewall le aplique
+		75 |   # Si no hay 'target_tags' en la regla de firewall, aplicará a todas las VMs en la VPC.
+		76 |   # tags = ["exposed-server"] # Si el firewall tuviera target_tags
+		77 | }
+Check: CKV_GCP_40: "Ensure that Compute instances do not have public IP addresses"
+	FAILED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-2
+
+		55 | resource "google_compute_instance" "exposed_instance" {
+		56 |   name         = "exposed-gcp-vm-12"
+		57 |   machine_type = "e2-micro"
+		58 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		59 | 
+		60 |   boot_disk {
+		61 |     initialize_params {
+		62 |       image = "debian-cloud/debian-11"
+		63 |     }
+		64 |   }
+		65 | 
+		66 |   network_interface {
+		67 |     network    = google_compute_network.vpc_network.id
+		68 |     subnetwork = google_compute_subnetwork.subnet.id
+		69 |     access_config {
+		70 |       # Asigna una IP pública para que la VM sea accesible desde Internet
+		71 |     }
+		72 |   }
+		73 | 
+		74 |   # Asegura que la instancia tenga las etiquetas para que la regla de firewall le aplique
+		75 |   # Si no hay 'target_tags' en la regla de firewall, aplicará a todas las VMs en la VPC.
+		76 |   # tags = ["exposed-server"] # Si el firewall tuviera target_tags
+		77 | }
+Check: CKV_GCP_38: "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)"
+	FAILED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/encrypt-boot-disks-for-instances-with-cseks
+
+		55 | resource "google_compute_instance" "exposed_instance" {
+		56 |   name         = "exposed-gcp-vm-12"
+		57 |   machine_type = "e2-micro"
+		58 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		59 | 
+		60 |   boot_disk {
+		61 |     initialize_params {
+		62 |       image = "debian-cloud/debian-11"
+		63 |     }
+		64 |   }
+		65 | 
+		66 |   network_interface {
+		67 |     network    = google_compute_network.vpc_network.id
+		68 |     subnetwork = google_compute_subnetwork.subnet.id
+		69 |     access_config {
+		70 |       # Asigna una IP pública para que la VM sea accesible desde Internet
+		71 |     }
+		72 |   }
+		73 | 
+		74 |   # Asegura que la instancia tenga las etiquetas para que la regla de firewall le aplique
+		75 |   # Si no hay 'target_tags' en la regla de firewall, aplicará a todas las VMs en la VPC.
+		76 |   # tags = ["exposed-server"] # Si el firewall tuviera target_tags
+		77 | }
+Check: CKV_GCP_39: "Ensure Compute instances are launched with Shielded VM enabled"
+	FAILED for resource: google_compute_instance.exposed_instance
+	File: /gcp.tf:55-77
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-y
+
+		55 | resource "google_compute_instance" "exposed_instance" {
+		56 |   name         = "exposed-gcp-vm-12"
+		57 |   machine_type = "e2-micro"
+		58 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		59 | 
+		60 |   boot_disk {
+		61 |     initialize_params {
+		62 |       image = "debian-cloud/debian-11"
+		63 |     }
+		64 |   }
+		65 | 
+		66 |   network_interface {
+		67 |     network    = google_compute_network.vpc_network.id
+		68 |     subnetwork = google_compute_subnetwork.subnet.id
+		69 |     access_config {
+		70 |       # Asigna una IP pública para que la VM sea accesible desde Internet
+		71 |     }
+		72 |   }
+		73 | 
+		74 |   # Asegura que la instancia tenga las etiquetas para que la regla de firewall le aplique
+		75 |   # Si no hay 'target_tags' en la regla de firewall, aplicará a todas las VMs en la VPC.
+		76 |   # tags = ["exposed-server"] # Si el firewall tuviera target_tags
+		77 | }
+

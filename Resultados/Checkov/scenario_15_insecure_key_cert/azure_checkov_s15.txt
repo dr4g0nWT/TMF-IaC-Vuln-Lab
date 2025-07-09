@@ -1,0 +1,133 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 8, Failed checks: 6, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:34-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.unencrypted_os_disk_vm
+	File: /azure.tf:48-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.unencrypted_os_disk_vm
+	File: /azure.tf:48-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.unencrypted_os_disk_vm
+	File: /azure.tf:48-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.unencrypted_os_disk_vm
+	File: /azure.tf:48-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.unencrypted_os_disk_vm
+	File: /azure.tf:48-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.unencrypted_os_disk_vm
+	File: /azure.tf:48-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		48 | resource "azurerm_linux_virtual_machine" "unencrypted_os_disk_vm" {
+		49 |   name                = "tfm-unencrypted-disk-vm-15-azure"
+		50 |   resource_group_name = azurerm_resource_group.rg.name
+		51 |   location            = azurerm_resource_group.rg.location
+		52 |   size                = "Standard_B1s"
+		53 |   admin_username      = "adminuser"
+		54 |   network_interface_ids = [azurerm_network_interface.nic.id]
+		55 | 
+		56 |   source_image_reference {
+		57 |     publisher = "Canonical"
+		58 |     offer     = "UbuntuServer"
+		59 |     sku       = "18.04-LTS"
+		60 |     version   = "latest"
+		61 |   }
+		62 | 
+		63 |   os_disk {
+		64 |     caching              = "ReadWrite"
+		65 |     storage_account_type = "Standard_LRS"
+		66 |     # No se especifica 'disk_encryption_set_id', lo que significa que el disco no está encriptado con CMK
+		67 |     # y por defecto solo utiliza la encriptación en el servicio de almacenamiento (SSE).
+		68 |     # Para simular la vulnerabilidad, se asume que no se está utilizando encriptación a nivel de disco completo (ADE).
+		69 |     # Explicitamente sin encriptación:
+		70 |     # write_accelerator_enabled = false # No relacionado con encriptación pero aquí para contexto
+		71 |   }
+		72 | 
+		73 |   admin_ssh_key {
+		74 |     username   = "adminuser"
+		75 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com"
+		76 |   }
+		77 |   tags = {
+		78 |     Name = "TFM-Unencrypted-OS-Disk-VM"
+		79 |   }
+		80 | }
+
+Check: CKV_AZURE_218: "Ensure Application Gateway defines secure protocols for in transit communication"
+	FAILED for resource: azurerm_application_gateway.insecure_app_gateway
+	File: /azure.tf:91-148
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-218
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AZURE_217: "Ensure Azure Application gateways listener that allow connection requests over HTTP"
+	FAILED for resource: azurerm_application_gateway.insecure_app_gateway
+	File: /azure.tf:91-148
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-217
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	FAILED for resource: azurerm_network_interface.nic
+	File: /azure.tf:34-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+
+		34 | resource "azurerm_network_interface" "nic" {
+		35 |   name                = "tfm-security-nic-15-azure"
+		36 |   location            = azurerm_resource_group.rg.location
+		37 |   resource_group_name = azurerm_resource_group.rg.name
+		38 | 
+		39 |   ip_configuration {
+		40 |     name                          = "internal"
+		41 |     subnet_id                     = azurerm_subnet.subnet.id
+		42 |     private_ip_address_allocation = "Dynamic"
+		43 |     public_ip_address_id          = azurerm_public_ip.public_ip.id
+		44 |   }
+		45 | }
+
+Check: CKV_AZURE_120: "Ensure that Application Gateway enables WAF"
+	FAILED for resource: azurerm_application_gateway.insecure_app_gateway
+	File: /azure.tf:91-148
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-application-gateway-enables-waf
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "subnet" {
+		20 |   name                 = "tfm-security-subnet-15-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 | }
+
+

@@ -1,0 +1,309 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 11, Failed checks: 14, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.vm_nic
+	File: /azure.tf:34-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_azure_vm
+	File: /azure.tf:48-86
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_azure_vm
+	File: /azure.tf:48-86
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_azure_vm
+	File: /azure.tf:48-86
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_azure_vm
+	File: /azure.tf:48-86
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_azure_vm
+	File: /azure.tf:48-86
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_36: "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access"
+	PASSED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access
+Check: CKV_AZURE_244: "Avoid the use of local users for Azure Storage unless necessary"
+	PASSED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-244
+Check: CKV_AZURE_3: "Ensure that 'enable_https_traffic_only' is enabled"
+	PASSED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-3
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.insecure_azure_vm
+	File: /azure.tf:48-86
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		48 | resource "azurerm_linux_virtual_machine" "insecure_azure_vm" {
+		49 |   name                = "tfm-insecure-azure-vm-20"
+		50 |   resource_group_name = azurerm_resource_group.rg.name
+		51 |   location            = azurerm_resource_group.rg.location
+		52 |   size                = "Standard_B1s"
+		53 |   admin_username      = "adminuser"
+		54 |   network_interface_ids = [azurerm_network_interface.vm_nic.id]
+		55 | 
+		56 |   source_image_reference {
+		57 |     publisher = "Canonical"
+		58 |     offer     = "UbuntuServer"
+		59 |     sku       = "18.04-LTS"
+		60 |     version   = "latest"
+		61 |   }
+		62 | 
+		63 |   os_disk {
+		64 |     caching              = "ReadWrite"
+		65 |     storage_account_type = "Standard_LRS"
+		66 |   }
+		67 | 
+		68 |   admin_ssh_key {
+		69 |     username   = "adminuser"
+		70 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com"
+		71 |   }
+		72 | 
+		73 |   # ¡Vulnerabilidad! Contiene información sensible en Custom Data.
+		74 |   # Aunque Custom Data es para la propia VM, puede ser recuperado por actores maliciosos
+		75 |   # si comprometen la VM o el servicio de metadatos de la VM.
+		76 |   custom_data = base64encode(<<EOF
+		77 |               #!/bin/bash
+		78 |               echo "WEBHOOK_URL=https://insecure.webhook.site/mysecretdata" > /etc/app/sensitive_info.conf
+		79 |               echo "INTERNAL_DB_PASS=WeakPass123" >> /etc/app/sensitive_info.conf
+		80 |               EOF
+		81 |   )
+		82 | 
+		83 |   tags = {
+		84 |     Name = "TFM-Insecure-Azure-VM-Metadata"
+		85 |   }
+		86 | }
+
+Check: CKV_AZURE_190: "Ensure that Storage blobs restrict public access"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV_AZURE_59: "Ensure that Storage accounts disallow public access"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV_AZURE_44: "Ensure Storage Account is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azr-storage-2
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV_AZURE_206: "Ensure that Storage Accounts use replication"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV_AZURE_33: "Ensure Storage logging is enabled for Queue service for read, write and delete requests"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV2_AZURE_41: "Ensure storage account is configured with SAS expiration policy"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV2_AZURE_33: "Ensure storage account is configured with private endpoint"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV2_AZURE_47: "Ensure storage account is configured without blob anonymous access"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	FAILED for resource: azurerm_network_interface.vm_nic
+	File: /azure.tf:34-45
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+
+		34 | resource "azurerm_network_interface" "vm_nic" {
+		35 |   name                = "tfm-vm-nic-20"
+		36 |   location            = azurerm_resource_group.rg.location
+		37 |   resource_group_name = azurerm_resource_group.rg.name
+		38 | 
+		39 |   ip_configuration {
+		40 |     name                          = "internal"
+		41 |     subnet_id                     = azurerm_subnet.vm_subnet.id
+		42 |     private_ip_address_allocation = "Dynamic"
+		43 |     public_ip_address_id          = azurerm_public_ip.vm_public_ip.id
+		44 |   }
+		45 | }
+
+Check: CKV2_AZURE_38: "Ensure soft-delete is enabled on Azure storage account"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV2_AZURE_40: "Ensure storage account is not configured with Shared Key authorization"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV2_AZURE_1: "Ensure storage for critical data are encrypted with Customer Managed Key"
+	FAILED for resource: azurerm_storage_account.boot_diagnostics_storage
+	File: /azure.tf:91-99
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key
+
+		91 | resource "azurerm_storage_account" "boot_diagnostics_storage" {
+		92 |   name                     = "tfmbootdiag20${random_id.diag_suffix.hex}"
+		93 |   resource_group_name      = azurerm_resource_group.rg.name
+		94 |   location                 = azurerm_resource_group.rg.location
+		95 |   account_tier             = "Standard"
+		96 |   account_replication_type = "LRS"
+		97 |   # ¡Vulnerabilidad! No está configurado para acceso privado o con CORS restrictivo
+		98 |   # Si este bucket fuera público o CORS muy abierto, los logs/capturas de pantalla podrían ser expuestos.
+		99 | }
+
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.vm_subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "vm_subnet" {
+		20 |   name                 = "tfm-security-vm-subnet-20-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 | }
+
+secrets scan results:
+
+Passed checks: 0, Failed checks: 1, Skipped checks: 0
+
+Check: CKV_SECRET_6: "Base64 High Entropy String"
+	FAILED for resource: 88921489298fe00d4f8f47ab6908b3ddaa657cd1
+	File: /Escenarios/scenario_20_insecure_metadata/azure.tf:79-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-6
+
+		79 |               echo "INTERNAL_DB_PASS=We**********" >> /etc/app/sensitive_info.conf
+
+

@@ -1,0 +1,86 @@
+
+Report Summary
+
+┌──────────┬───────────┬───────────────────┐
+│  Target  │   Type    │ Misconfigurations │
+├──────────┼───────────┼───────────────────┤
+│ .        │ terraform │         0         │
+├──────────┼───────────┼───────────────────┤
+│ azure.tf │ terraform │         3         │
+└──────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+azure.tf (terraform)
+====================
+Tests: 3 (SUCCESSES: 0, FAILURES: 3)
+Failures: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 1, CRITICAL: 1)
+
+AVD-AZU-0040 (MEDIUM): Cluster does not have logging enabled via OMS Agent.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensure AKS logging to Azure Monitoring is configured for containers to monitor the performance of workloads.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0040
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:27-61
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  27 ┌ resource "azurerm_kubernetes_cluster" "insecure_aks_cluster" {
+  28 │   name                = "tfm-insecure-aks-cluster-17"
+  29 │   location            = azurerm_resource_group.rg.location
+  30 │   resource_group_name = azurerm_resource_group.rg.name
+  31 │   dns_prefix          = "tfm-aks-17"
+  32 │   kubernetes_version  = "1.27" # Versión de ejemplo, usar una compatible
+  33 │   sku_tier            = "Free" # O Basic/Standard
+  34 │ 
+  35 └   default_node_pool {
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0041 (CRITICAL): Cluster does not limit API access to specific IP addresses.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+The API server is the central way to interact with and manage a cluster. To improve cluster security and minimize attacks, the API server should only be accessible from a limited set of IP address ranges.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0041
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:27-61
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  27 ┌ resource "azurerm_kubernetes_cluster" "insecure_aks_cluster" {
+  28 │   name                = "tfm-insecure-aks-cluster-17"
+  29 │   location            = azurerm_resource_group.rg.location
+  30 │   resource_group_name = azurerm_resource_group.rg.name
+  31 │   dns_prefix          = "tfm-aks-17"
+  32 │   kubernetes_version  = "1.27" # Versión de ejemplo, usar una compatible
+  33 │   sku_tier            = "Free" # O Basic/Standard
+  34 │ 
+  35 └   default_node_pool {
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0042 (HIGH): RBAC is not enabled on cluster
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Using Kubernetes role-based access control (RBAC), you can grant users, groups, and service accounts access to only the resources they need.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0042
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:27-61
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  27 ┌ resource "azurerm_kubernetes_cluster" "insecure_aks_cluster" {
+  28 │   name                = "tfm-insecure-aks-cluster-17"
+  29 │   location            = azurerm_resource_group.rg.location
+  30 │   resource_group_name = azurerm_resource_group.rg.name
+  31 │   dns_prefix          = "tfm-aks-17"
+  32 │   kubernetes_version  = "1.27" # Versión de ejemplo, usar una compatible
+  33 │   sku_tier            = "Free" # O Basic/Standard
+  34 │ 
+  35 └   default_node_pool {
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

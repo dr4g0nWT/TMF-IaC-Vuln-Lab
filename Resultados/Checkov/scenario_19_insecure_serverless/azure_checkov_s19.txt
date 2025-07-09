@@ -1,0 +1,298 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 8, Failed checks: 16, Skipped checks: 0
+
+Check: CKV_AZURE_36: "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access"
+	PASSED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access
+Check: CKV_AZURE_244: "Avoid the use of local users for Azure Storage unless necessary"
+	PASSED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-244
+Check: CKV_AZURE_3: "Ensure that 'enable_https_traffic_only' is enabled"
+	PASSED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-3
+Check: CKV_AZURE_159: "Ensure function app builtin logging is enabled"
+	PASSED for resource: azurerm_function_app.insecure_function_app
+	File: /azure.tf:36-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-built-in-logging-for-azure-function-app-is-enabled
+Check: CKV_AZURE_145: "Ensure Function app is using the latest version of TLS encryption"
+	PASSED for resource: azurerm_function_app.insecure_function_app
+	File: /azure.tf:36-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-function-app-uses-the-latest-version-of-tls-encryption
+Check: CKV_AZURE_62: "Ensure function apps are not accessible from all regions"
+	PASSED for resource: azurerm_function_app.insecure_function_app
+	File: /azure.tf:36-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-cors-disallows-every-resource-to-access-function-apps
+Check: CKV_AZURE_159: "Ensure function app builtin logging is enabled"
+	PASSED for resource: azurerm_function_app_slot.insecure_app_settings
+	File: /azure.tf:62-76
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-built-in-logging-for-azure-function-app-is-enabled
+Check: CKV_AZURE_145: "Ensure Function app is using the latest version of TLS encryption"
+	PASSED for resource: azurerm_function_app_slot.insecure_app_settings
+	File: /azure.tf:62-76
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-function-app-uses-the-latest-version-of-tls-encryption
+Check: CKV_AZURE_190: "Ensure that Storage blobs restrict public access"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV_AZURE_59: "Ensure that Storage accounts disallow public access"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV_AZURE_44: "Ensure Storage Account is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azr-storage-2
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV_AZURE_206: "Ensure that Storage Accounts use replication"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV_AZURE_33: "Ensure Storage logging is enabled for Queue service for read, write and delete requests"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV_AZURE_56: "Ensure that function apps enables Authentication"
+	FAILED for resource: azurerm_function_app.insecure_function_app
+	File: /azure.tf:36-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-function-apps-enables-authentication
+
+		36 | resource "azurerm_function_app" "insecure_function_app" {
+		37 |   name                       = "tfm-insecure-funcapp-19"
+		38 |   location                   = azurerm_resource_group.rg.location
+		39 |   resource_group_name        = azurerm_resource_group.rg.name
+		40 |   app_service_plan_id        = azurerm_app_service_plan.app_plan.id
+		41 |   storage_account_name       = azurerm_storage_account.st.name
+		42 |   storage_account_access_key = azurerm_storage_account.st.primary_access_key
+		43 |   version                    = "~4" # Versión de runtime, usar una compatible
+		44 | 
+		45 |   identity {
+		46 |     type = "SystemAssigned" # Habilita la Managed Identity
+		47 |   }
+		48 | 
+		49 |   tags = {
+		50 |     Name = "TFM-Insecure-Function-App"
+		51 |   }
+		52 | }
+
+Check: CKV_AZURE_67: "Ensure that 'HTTP Version' is the latest, if used to run the Function app"
+	FAILED for resource: azurerm_function_app.insecure_function_app
+	File: /azure.tf:36-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-http-version-is-the-latest-if-used-to-run-the-function-app
+
+		36 | resource "azurerm_function_app" "insecure_function_app" {
+		37 |   name                       = "tfm-insecure-funcapp-19"
+		38 |   location                   = azurerm_resource_group.rg.location
+		39 |   resource_group_name        = azurerm_resource_group.rg.name
+		40 |   app_service_plan_id        = azurerm_app_service_plan.app_plan.id
+		41 |   storage_account_name       = azurerm_storage_account.st.name
+		42 |   storage_account_access_key = azurerm_storage_account.st.primary_access_key
+		43 |   version                    = "~4" # Versión de runtime, usar una compatible
+		44 | 
+		45 |   identity {
+		46 |     type = "SystemAssigned" # Habilita la Managed Identity
+		47 |   }
+		48 | 
+		49 |   tags = {
+		50 |     Name = "TFM-Insecure-Function-App"
+		51 |   }
+		52 | }
+
+Check: CKV_AZURE_70: "Ensure that Function apps is only accessible over HTTPS"
+	FAILED for resource: azurerm_function_app.insecure_function_app
+	File: /azure.tf:36-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-function-apps-is-only-accessible-over-https
+
+		36 | resource "azurerm_function_app" "insecure_function_app" {
+		37 |   name                       = "tfm-insecure-funcapp-19"
+		38 |   location                   = azurerm_resource_group.rg.location
+		39 |   resource_group_name        = azurerm_resource_group.rg.name
+		40 |   app_service_plan_id        = azurerm_app_service_plan.app_plan.id
+		41 |   storage_account_name       = azurerm_storage_account.st.name
+		42 |   storage_account_access_key = azurerm_storage_account.st.primary_access_key
+		43 |   version                    = "~4" # Versión de runtime, usar una compatible
+		44 | 
+		45 |   identity {
+		46 |     type = "SystemAssigned" # Habilita la Managed Identity
+		47 |   }
+		48 | 
+		49 |   tags = {
+		50 |     Name = "TFM-Insecure-Function-App"
+		51 |   }
+		52 | }
+
+Check: CKV_AZURE_67: "Ensure that 'HTTP Version' is the latest, if used to run the Function app"
+	FAILED for resource: azurerm_function_app_slot.insecure_app_settings
+	File: /azure.tf:62-76
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-http-version-is-the-latest-if-used-to-run-the-function-app
+
+		62 | resource "azurerm_function_app_slot" "insecure_app_settings" {
+		63 |   name                = "production" # Slot predeterminado
+		64 |   function_app_id     = azurerm_function_app.insecure_function_app.id
+		65 |   resource_group_name = azurerm_resource_group.rg.name
+		66 | 
+		67 |   app_settings = {
+		68 |     DATABASE_CONNECTION_STRING = "Server=myinsecure.database.windows.net;Database=data;User ID=admin;Password=BadPassword123;" # ¡Grave vulnerabilidad!
+		69 |     SENDGRID_API_KEY           = "SG.insecure_api_key_xyz"
+		70 |   }
+		71 |   lifecycle {
+		72 |     ignore_changes = [
+		73 |       app_settings, # Ignorar cambios si se gestionan por fuera (ej. CI/CD)
+		74 |     ]
+		75 |   }
+		76 | }
+Check: CKV_AZURE_70: "Ensure that Function apps is only accessible over HTTPS"
+	FAILED for resource: azurerm_function_app_slot.insecure_app_settings
+	File: /azure.tf:62-76
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-function-apps-is-only-accessible-over-https
+
+		62 | resource "azurerm_function_app_slot" "insecure_app_settings" {
+		63 |   name                = "production" # Slot predeterminado
+		64 |   function_app_id     = azurerm_function_app.insecure_function_app.id
+		65 |   resource_group_name = azurerm_resource_group.rg.name
+		66 | 
+		67 |   app_settings = {
+		68 |     DATABASE_CONNECTION_STRING = "Server=myinsecure.database.windows.net;Database=data;User ID=admin;Password=BadPassword123;" # ¡Grave vulnerabilidad!
+		69 |     SENDGRID_API_KEY           = "SG.insecure_api_key_xyz"
+		70 |   }
+		71 |   lifecycle {
+		72 |     ignore_changes = [
+		73 |       app_settings, # Ignorar cambios si se gestionan por fuera (ej. CI/CD)
+		74 |     ]
+		75 |   }
+		76 | }
+Check: CKV2_AZURE_41: "Ensure storage account is configured with SAS expiration policy"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV2_AZURE_33: "Ensure storage account is configured with private endpoint"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV2_AZURE_47: "Ensure storage account is configured without blob anonymous access"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV2_AZURE_1: "Ensure storage for critical data are encrypted with Customer Managed Key"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV2_AZURE_38: "Ensure soft-delete is enabled on Azure storage account"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+Check: CKV2_AZURE_40: "Ensure storage account is not configured with Shared Key authorization"
+	FAILED for resource: azurerm_storage_account.st
+	File: /azure.tf:12-18
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40
+
+		12 | resource "azurerm_storage_account" "st" {
+		13 |   name                     = "tfmsecst19${random_id.storage_suffix.hex}"
+		14 |   resource_group_name      = azurerm_resource_group.rg.name
+		15 |   location                 = azurerm_resource_group.rg.location
+		16 |   account_tier             = "Standard"
+		17 |   account_replication_type = "LRS"
+		18 | }
+
+

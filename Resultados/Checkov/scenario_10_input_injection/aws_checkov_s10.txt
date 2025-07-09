@@ -1,0 +1,371 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 5, Failed checks: 13, Skipped checks: 0
+
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public_10
+	File: /aws.tf:14-22
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		14 | resource "aws_subnet" "public_10" {
+		15 |   vpc_id     = aws_vpc.main_10.id
+		16 |   cidr_block = "10.0.1.0/24"
+		17 |   map_public_ip_on_launch = true
+		18 |   availability_zone = "eu-west-3a" # Ajusta la zona según la región
+		19 |   tags = {
+		20 |     Name = "tfm-security-public-subnet-10-aws"
+		21 |   }
+		22 | }
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	FAILED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+
+		24 | resource "aws_security_group" "web_10" {
+		25 |   name        = "tfm-web-sg-10-aws"
+		26 |   description = "Allow web traffic (HTTP/SSH)"
+		27 |   vpc_id      = aws_vpc.main_10.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 |   ingress {
+		36 |     from_port   = 22
+		37 |     to_port     = 22
+		38 |     protocol    = "tcp"
+		39 |     cidr_blocks = ["0.0.0.0/0"]
+		40 |   }
+		41 | 
+		42 |   egress {
+		43 |     from_port   = 0
+		44 |     to_port     = 0
+		45 |     protocol    = "-1"
+		46 |     cidr_blocks = ["0.0.0.0/0"]
+		47 |   }
+		48 | }
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		24 | resource "aws_security_group" "web_10" {
+		25 |   name        = "tfm-web-sg-10-aws"
+		26 |   description = "Allow web traffic (HTTP/SSH)"
+		27 |   vpc_id      = aws_vpc.main_10.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 |   ingress {
+		36 |     from_port   = 22
+		37 |     to_port     = 22
+		38 |     protocol    = "tcp"
+		39 |     cidr_blocks = ["0.0.0.0/0"]
+		40 |   }
+		41 | 
+		42 |   egress {
+		43 |     from_port   = 0
+		44 |     to_port     = 0
+		45 |     protocol    = "-1"
+		46 |     cidr_blocks = ["0.0.0.0/0"]
+		47 |   }
+		48 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		24 | resource "aws_security_group" "web_10" {
+		25 |   name        = "tfm-web-sg-10-aws"
+		26 |   description = "Allow web traffic (HTTP/SSH)"
+		27 |   vpc_id      = aws_vpc.main_10.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 |   ingress {
+		36 |     from_port   = 22
+		37 |     to_port     = 22
+		38 |     protocol    = "tcp"
+		39 |     cidr_blocks = ["0.0.0.0/0"]
+		40 |   }
+		41 | 
+		42 |   egress {
+		43 |     from_port   = 0
+		44 |     to_port     = 0
+		45 |     protocol    = "-1"
+		46 |     cidr_blocks = ["0.0.0.0/0"]
+		47 |   }
+		48 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.web_10
+	File: /aws.tf:24-48
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		24 | resource "aws_security_group" "web_10" {
+		25 |   name        = "tfm-web-sg-10-aws"
+		26 |   description = "Allow web traffic (HTTP/SSH)"
+		27 |   vpc_id      = aws_vpc.main_10.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 |   ingress {
+		36 |     from_port   = 22
+		37 |     to_port     = 22
+		38 |     protocol    = "tcp"
+		39 |     cidr_blocks = ["0.0.0.0/0"]
+		40 |   }
+		41 | 
+		42 |   egress {
+		43 |     from_port   = 0
+		44 |     to_port     = 0
+		45 |     protocol    = "-1"
+		46 |     cidr_blocks = ["0.0.0.0/0"]
+		47 |   }
+		48 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		57 | resource "aws_instance" "insecure_command_injection_server" {
+		58 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		59 |   instance_type = "t2.micro"
+		60 |   subnet_id     = aws_subnet.public_10.id
+		61 |   vpc_security_group_ids = [aws_security_group.web_10.id]
+		62 |   associate_public_ip_address = true
+		63 | 
+		64 |   tags = {
+		65 |     Name = "TFM-Insecure-Command-Injection-Server"
+		66 |   }
+		67 | 
+		68 |   # Vulnerabilidad: user_data que ejecuta directamente una variable sin sanitización
+		69 |   # Un atacante podría inyectar comandos shell en `user_supplied_input`.
+		70 |   user_data = <<-EOF
+		71 |               #!/bin/bash
+		72 |               echo "Processing input: ${var.user_supplied_input}"
+		73 |               # Aquí, un atacante podría enviar algo como "value; rm -rf /" en user_supplied_input
+		74 |               # y el script lo ejecutaría.
+		75 |               echo "${var.user_supplied_input}" > /tmp/output.txt
+		76 |               service apache2 start # Si se instalara apache
+		77 |               EOF
+		78 |   # En un escenario real, 'user_supplied_input' podría venir de una fuente externa
+		79 |   # o de otro recurso de Terraform que deriva de entradas no confiables.
+		80 | }
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		57 | resource "aws_instance" "insecure_command_injection_server" {
+		58 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		59 |   instance_type = "t2.micro"
+		60 |   subnet_id     = aws_subnet.public_10.id
+		61 |   vpc_security_group_ids = [aws_security_group.web_10.id]
+		62 |   associate_public_ip_address = true
+		63 | 
+		64 |   tags = {
+		65 |     Name = "TFM-Insecure-Command-Injection-Server"
+		66 |   }
+		67 | 
+		68 |   # Vulnerabilidad: user_data que ejecuta directamente una variable sin sanitización
+		69 |   # Un atacante podría inyectar comandos shell en `user_supplied_input`.
+		70 |   user_data = <<-EOF
+		71 |               #!/bin/bash
+		72 |               echo "Processing input: ${var.user_supplied_input}"
+		73 |               # Aquí, un atacante podría enviar algo como "value; rm -rf /" en user_supplied_input
+		74 |               # y el script lo ejecutaría.
+		75 |               echo "${var.user_supplied_input}" > /tmp/output.txt
+		76 |               service apache2 start # Si se instalara apache
+		77 |               EOF
+		78 |   # En un escenario real, 'user_supplied_input' podría venir de una fuente externa
+		79 |   # o de otro recurso de Terraform que deriva de entradas no confiables.
+		80 | }
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		57 | resource "aws_instance" "insecure_command_injection_server" {
+		58 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		59 |   instance_type = "t2.micro"
+		60 |   subnet_id     = aws_subnet.public_10.id
+		61 |   vpc_security_group_ids = [aws_security_group.web_10.id]
+		62 |   associate_public_ip_address = true
+		63 | 
+		64 |   tags = {
+		65 |     Name = "TFM-Insecure-Command-Injection-Server"
+		66 |   }
+		67 | 
+		68 |   # Vulnerabilidad: user_data que ejecuta directamente una variable sin sanitización
+		69 |   # Un atacante podría inyectar comandos shell en `user_supplied_input`.
+		70 |   user_data = <<-EOF
+		71 |               #!/bin/bash
+		72 |               echo "Processing input: ${var.user_supplied_input}"
+		73 |               # Aquí, un atacante podría enviar algo como "value; rm -rf /" en user_supplied_input
+		74 |               # y el script lo ejecutaría.
+		75 |               echo "${var.user_supplied_input}" > /tmp/output.txt
+		76 |               service apache2 start # Si se instalara apache
+		77 |               EOF
+		78 |   # En un escenario real, 'user_supplied_input' podría venir de una fuente externa
+		79 |   # o de otro recurso de Terraform que deriva de entradas no confiables.
+		80 | }
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		57 | resource "aws_instance" "insecure_command_injection_server" {
+		58 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		59 |   instance_type = "t2.micro"
+		60 |   subnet_id     = aws_subnet.public_10.id
+		61 |   vpc_security_group_ids = [aws_security_group.web_10.id]
+		62 |   associate_public_ip_address = true
+		63 | 
+		64 |   tags = {
+		65 |     Name = "TFM-Insecure-Command-Injection-Server"
+		66 |   }
+		67 | 
+		68 |   # Vulnerabilidad: user_data que ejecuta directamente una variable sin sanitización
+		69 |   # Un atacante podría inyectar comandos shell en `user_supplied_input`.
+		70 |   user_data = <<-EOF
+		71 |               #!/bin/bash
+		72 |               echo "Processing input: ${var.user_supplied_input}"
+		73 |               # Aquí, un atacante podría enviar algo como "value; rm -rf /" en user_supplied_input
+		74 |               # y el script lo ejecutaría.
+		75 |               echo "${var.user_supplied_input}" > /tmp/output.txt
+		76 |               service apache2 start # Si se instalara apache
+		77 |               EOF
+		78 |   # En un escenario real, 'user_supplied_input' podría venir de una fuente externa
+		79 |   # o de otro recurso de Terraform que deriva de entradas no confiables.
+		80 | }
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		57 | resource "aws_instance" "insecure_command_injection_server" {
+		58 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		59 |   instance_type = "t2.micro"
+		60 |   subnet_id     = aws_subnet.public_10.id
+		61 |   vpc_security_group_ids = [aws_security_group.web_10.id]
+		62 |   associate_public_ip_address = true
+		63 | 
+		64 |   tags = {
+		65 |     Name = "TFM-Insecure-Command-Injection-Server"
+		66 |   }
+		67 | 
+		68 |   # Vulnerabilidad: user_data que ejecuta directamente una variable sin sanitización
+		69 |   # Un atacante podría inyectar comandos shell en `user_supplied_input`.
+		70 |   user_data = <<-EOF
+		71 |               #!/bin/bash
+		72 |               echo "Processing input: ${var.user_supplied_input}"
+		73 |               # Aquí, un atacante podría enviar algo como "value; rm -rf /" en user_supplied_input
+		74 |               # y el script lo ejecutaría.
+		75 |               echo "${var.user_supplied_input}" > /tmp/output.txt
+		76 |               service apache2 start # Si se instalara apache
+		77 |               EOF
+		78 |   # En un escenario real, 'user_supplied_input' podría venir de una fuente externa
+		79 |   # o de otro recurso de Terraform que deriva de entradas no confiables.
+		80 | }
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_10
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main_10" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-10-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_10
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main_10" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-10-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.insecure_command_injection_server
+	File: /aws.tf:57-80
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		57 | resource "aws_instance" "insecure_command_injection_server" {
+		58 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+		59 |   instance_type = "t2.micro"
+		60 |   subnet_id     = aws_subnet.public_10.id
+		61 |   vpc_security_group_ids = [aws_security_group.web_10.id]
+		62 |   associate_public_ip_address = true
+		63 | 
+		64 |   tags = {
+		65 |     Name = "TFM-Insecure-Command-Injection-Server"
+		66 |   }
+		67 | 
+		68 |   # Vulnerabilidad: user_data que ejecuta directamente una variable sin sanitización
+		69 |   # Un atacante podría inyectar comandos shell en `user_supplied_input`.
+		70 |   user_data = <<-EOF
+		71 |               #!/bin/bash
+		72 |               echo "Processing input: ${var.user_supplied_input}"
+		73 |               # Aquí, un atacante podría enviar algo como "value; rm -rf /" en user_supplied_input
+		74 |               # y el script lo ejecutaría.
+		75 |               echo "${var.user_supplied_input}" > /tmp/output.txt
+		76 |               service apache2 start # Si se instalara apache
+		77 |               EOF
+		78 |   # En un escenario real, 'user_supplied_input' podría venir de una fuente externa
+		79 |   # o de otro recurso de Terraform que deriva de entradas no confiables.
+		80 | }
+

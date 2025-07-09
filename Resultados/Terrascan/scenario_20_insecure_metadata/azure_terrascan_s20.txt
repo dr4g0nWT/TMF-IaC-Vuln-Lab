@@ -1,0 +1,34 @@
+
+
+
+Violation Details -
+    
+	Description    :	Ensure that Azure Resource Group has resource lock enabled
+	File           :	azure.tf
+	Module Name    :	root
+	Line           :	7
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure that Azure Virtual Network subnet is configured with a Network Security Group
+	File           :	azure.tf
+	Module Name    :	root
+	Line           :	19
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+
+Scan Summary -
+
+	File/Folder         :	/home/dr4g0n/TFM/TMF-IaC-Vuln-Lab/Escenarios/scenario_20_insecure_metadata/azure.tf
+	IaC Type            :	terraform
+	Scanned At          :	2025-07-09 10:35:27.735279482 +0000 UTC
+	Policies Validated  :	5
+	Violated Policies   :	2
+	Low                 :	1
+	Medium              :	1
+	High                :	0
+	
+

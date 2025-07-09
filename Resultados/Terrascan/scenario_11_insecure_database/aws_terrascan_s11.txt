@@ -1,0 +1,66 @@
+
+
+
+Violation Details -
+    
+	Description    :	RDS Instance publicly_accessible flag is true
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	54
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure VPC flow logging is enabled in all VPCs
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	7
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure that your RDS database has IAM Authentication enabled.
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	54
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Security Groups - Unrestricted Specific Ports - MySQL (TCP,3306)
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	32
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure CloudWatch logging is enabled for AWS DB instances
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	54
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure automated backups are enabled for AWS RDS instances
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	54
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+
+Scan Summary -
+
+	File/Folder         :	/home/dr4g0n/TFM/TMF-IaC-Vuln-Lab/Escenarios/scenario_11_insecure_database/aws.tf
+	IaC Type            :	terraform
+	Scanned At          :	2025-07-09 10:07:42.404832434 +0000 UTC
+	Policies Validated  :	146
+	Violated Policies   :	6
+	Low                 :	1
+	Medium              :	2
+	High                :	3
+	
+

@@ -1,0 +1,27 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 0, Failed checks: 1, Skipped checks: 0
+
+Check: CKV_GCP_102: "Ensure that GCP Cloud Run services are not anonymously or publicly accessible"
+	FAILED for resource: google_cloud_run_service_iam_member.allow_unauthenticated_invocation
+	File: /gcp.tf:26-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/ensure-cloud-run-service-is-not-anonymously-or-publicly-accessible
+
+		26 | resource "google_cloud_run_service_iam_member" "allow_unauthenticated_invocation" {
+		27 |   service  = google_cloud_run_service.cloud_function_service.name
+		28 |   location = google_cloud_run_service.cloud_function_service.location
+		29 |   project  = google_cloud_run_service.cloud_function_service.project
+		30 |   role     = "roles/run.invoker"
+		31 |   member   = "allUsers" # ¡Vulnerabilidad! Permite invocación por cualquier usuario sin autenticación
+		32 | }
+
+

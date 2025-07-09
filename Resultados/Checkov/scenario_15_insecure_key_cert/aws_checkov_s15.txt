@@ -1,0 +1,499 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 10, Failed checks: 22, Skipped checks: 0
+
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_328: "Ensure that ALB is configured with defensive or strictest desync mitigation mode"
+	PASSED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-328
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_35: "AWS NAT Gateways should be utilized for the default route"
+	PASSED for resource: aws_route_table.public_rt_15
+	File: /aws.tf:33-39
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nat-gateways-are-utilized-for-the-default-route
+Check: CKV2_AWS_44: "Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic"
+	PASSED for resource: aws_route_table.public_rt_15
+	File: /aws.tf:33-39
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-route-table-with-vpc-peering-does-not-contain-routes-overly-permissive-to-all-traffic
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV2_AWS_76: "Ensure AWS ALB attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability"
+	PASSED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+Check: CKV2_AWS_74: "Ensure AWS Load Balancers use strong ciphers"
+	PASSED for resource: aws_lb_listener.insecure_http_listener
+	File: /aws.tf:112-121
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-74
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public_15
+	File: /aws.tf:19-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		19 | resource "aws_subnet" "public_15" {
+		20 |   vpc_id     = aws_vpc.main_15.id
+		21 |   cidr_block = "10.0.1.0/24"
+		22 |   map_public_ip_on_launch = true
+		23 |   availability_zone = "eu-west-3a"
+		24 |   tags = {
+		25 |     Name = "tfm-security-public-subnet-15-aws"
+		26 |   }
+		27 | }
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	FAILED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+
+		46 | resource "aws_security_group" "web_sg_15" {
+		47 |   name        = "tfm-web-sg-15-aws"
+		48 |   description = "Allow HTTP/SSH"
+		49 |   vpc_id      = aws_vpc.main_15.id
+		50 | 
+		51 |   ingress {
+		52 |     from_port   = 80
+		53 |     to_port     = 80
+		54 |     protocol    = "tcp"
+		55 |     cidr_blocks = ["0.0.0.0/0"]
+		56 |   }
+		57 |   ingress {
+		58 |     from_port   = 22
+		59 |     to_port     = 22
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   egress {
+		64 |     from_port   = 0
+		65 |     to_port     = 0
+		66 |     protocol    = "-1"
+		67 |     cidr_blocks = ["0.0.0.0/0"]
+		68 |   }
+		69 | }
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		46 | resource "aws_security_group" "web_sg_15" {
+		47 |   name        = "tfm-web-sg-15-aws"
+		48 |   description = "Allow HTTP/SSH"
+		49 |   vpc_id      = aws_vpc.main_15.id
+		50 | 
+		51 |   ingress {
+		52 |     from_port   = 80
+		53 |     to_port     = 80
+		54 |     protocol    = "tcp"
+		55 |     cidr_blocks = ["0.0.0.0/0"]
+		56 |   }
+		57 |   ingress {
+		58 |     from_port   = 22
+		59 |     to_port     = 22
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   egress {
+		64 |     from_port   = 0
+		65 |     to_port     = 0
+		66 |     protocol    = "-1"
+		67 |     cidr_blocks = ["0.0.0.0/0"]
+		68 |   }
+		69 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		46 | resource "aws_security_group" "web_sg_15" {
+		47 |   name        = "tfm-web-sg-15-aws"
+		48 |   description = "Allow HTTP/SSH"
+		49 |   vpc_id      = aws_vpc.main_15.id
+		50 | 
+		51 |   ingress {
+		52 |     from_port   = 80
+		53 |     to_port     = 80
+		54 |     protocol    = "tcp"
+		55 |     cidr_blocks = ["0.0.0.0/0"]
+		56 |   }
+		57 |   ingress {
+		58 |     from_port   = 22
+		59 |     to_port     = 22
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   egress {
+		64 |     from_port   = 0
+		65 |     to_port     = 0
+		66 |     protocol    = "-1"
+		67 |     cidr_blocks = ["0.0.0.0/0"]
+		68 |   }
+		69 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.web_sg_15
+	File: /aws.tf:46-69
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		46 | resource "aws_security_group" "web_sg_15" {
+		47 |   name        = "tfm-web-sg-15-aws"
+		48 |   description = "Allow HTTP/SSH"
+		49 |   vpc_id      = aws_vpc.main_15.id
+		50 | 
+		51 |   ingress {
+		52 |     from_port   = 80
+		53 |     to_port     = 80
+		54 |     protocol    = "tcp"
+		55 |     cidr_blocks = ["0.0.0.0/0"]
+		56 |   }
+		57 |   ingress {
+		58 |     from_port   = 22
+		59 |     to_port     = 22
+		60 |     protocol    = "tcp"
+		61 |     cidr_blocks = ["0.0.0.0/0"]
+		62 |   }
+		63 |   egress {
+		64 |     from_port   = 0
+		65 |     to_port     = 0
+		66 |     protocol    = "-1"
+		67 |     cidr_blocks = ["0.0.0.0/0"]
+		68 |   }
+		69 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		72 | resource "aws_instance" "unencrypted_ebs_instance" {
+		73 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		74 |   instance_type = "t2.micro"
+		75 |   subnet_id     = aws_subnet.public_15.id
+		76 |   vpc_security_group_ids = [aws_security_group.web_sg_15.id]
+		77 |   associate_public_ip_address = true
+		78 | 
+		79 |   root_block_device {
+		80 |     # Vulnerabilidad 1: Disco raíz de EBS sin encriptar
+		81 |     encrypted = false # ¡Vulnerabilidad! El disco raíz no está encriptado en reposo
+		82 |     volume_size = 8
+		83 |   }
+		84 | 
+		85 |   tags = {
+		86 |     Name = "TFM-Unencrypted-EBS-Instance"
+		87 |   }
+		88 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		72 | resource "aws_instance" "unencrypted_ebs_instance" {
+		73 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		74 |   instance_type = "t2.micro"
+		75 |   subnet_id     = aws_subnet.public_15.id
+		76 |   vpc_security_group_ids = [aws_security_group.web_sg_15.id]
+		77 |   associate_public_ip_address = true
+		78 | 
+		79 |   root_block_device {
+		80 |     # Vulnerabilidad 1: Disco raíz de EBS sin encriptar
+		81 |     encrypted = false # ¡Vulnerabilidad! El disco raíz no está encriptado en reposo
+		82 |     volume_size = 8
+		83 |   }
+		84 | 
+		85 |   tags = {
+		86 |     Name = "TFM-Unencrypted-EBS-Instance"
+		87 |   }
+		88 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		72 | resource "aws_instance" "unencrypted_ebs_instance" {
+		73 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		74 |   instance_type = "t2.micro"
+		75 |   subnet_id     = aws_subnet.public_15.id
+		76 |   vpc_security_group_ids = [aws_security_group.web_sg_15.id]
+		77 |   associate_public_ip_address = true
+		78 | 
+		79 |   root_block_device {
+		80 |     # Vulnerabilidad 1: Disco raíz de EBS sin encriptar
+		81 |     encrypted = false # ¡Vulnerabilidad! El disco raíz no está encriptado en reposo
+		82 |     volume_size = 8
+		83 |   }
+		84 | 
+		85 |   tags = {
+		86 |     Name = "TFM-Unencrypted-EBS-Instance"
+		87 |   }
+		88 | }
+
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		72 | resource "aws_instance" "unencrypted_ebs_instance" {
+		73 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		74 |   instance_type = "t2.micro"
+		75 |   subnet_id     = aws_subnet.public_15.id
+		76 |   vpc_security_group_ids = [aws_security_group.web_sg_15.id]
+		77 |   associate_public_ip_address = true
+		78 | 
+		79 |   root_block_device {
+		80 |     # Vulnerabilidad 1: Disco raíz de EBS sin encriptar
+		81 |     encrypted = false # ¡Vulnerabilidad! El disco raíz no está encriptado en reposo
+		82 |     volume_size = 8
+		83 |   }
+		84 | 
+		85 |   tags = {
+		86 |     Name = "TFM-Unencrypted-EBS-Instance"
+		87 |   }
+		88 | }
+
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		72 | resource "aws_instance" "unencrypted_ebs_instance" {
+		73 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		74 |   instance_type = "t2.micro"
+		75 |   subnet_id     = aws_subnet.public_15.id
+		76 |   vpc_security_group_ids = [aws_security_group.web_sg_15.id]
+		77 |   associate_public_ip_address = true
+		78 | 
+		79 |   root_block_device {
+		80 |     # Vulnerabilidad 1: Disco raíz de EBS sin encriptar
+		81 |     encrypted = false # ¡Vulnerabilidad! El disco raíz no está encriptado en reposo
+		82 |     volume_size = 8
+		83 |   }
+		84 | 
+		85 |   tags = {
+		86 |     Name = "TFM-Unencrypted-EBS-Instance"
+		87 |   }
+		88 | }
+
+Check: CKV_AWS_91: "Ensure the ELBv2 (Application/Network) has access logging enabled"
+	FAILED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-logging-22
+
+		91  | resource "aws_lb" "insecure_http_lb" {
+		92  |   name               = "tfm-insecure-http-lb-15"
+		93  |   internal           = false
+		94  |   load_balancer_type = "application"
+		95  |   security_groups    = [aws_security_group.web_sg_15.id] # Permite tráfico en el puerto 80
+		96  |   subnets            = [aws_subnet.public_15.id]
+		97  | 
+		98  |   enable_deletion_protection = false # Para facilitar la limpieza en un lab
+		99  | 
+		100 |   tags = {
+		101 |     Name = "TFM-Insecure-HTTP-LB"
+		102 |   }
+		103 | }
+
+Check: CKV_AWS_131: "Ensure that ALB drops HTTP headers"
+	FAILED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-alb-drops-http-headers
+
+		91  | resource "aws_lb" "insecure_http_lb" {
+		92  |   name               = "tfm-insecure-http-lb-15"
+		93  |   internal           = false
+		94  |   load_balancer_type = "application"
+		95  |   security_groups    = [aws_security_group.web_sg_15.id] # Permite tráfico en el puerto 80
+		96  |   subnets            = [aws_subnet.public_15.id]
+		97  | 
+		98  |   enable_deletion_protection = false # Para facilitar la limpieza en un lab
+		99  | 
+		100 |   tags = {
+		101 |     Name = "TFM-Insecure-HTTP-LB"
+		102 |   }
+		103 | }
+
+Check: CKV_AWS_150: "Ensure that Load Balancer has deletion protection enabled"
+	FAILED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-150
+
+		91  | resource "aws_lb" "insecure_http_lb" {
+		92  |   name               = "tfm-insecure-http-lb-15"
+		93  |   internal           = false
+		94  |   load_balancer_type = "application"
+		95  |   security_groups    = [aws_security_group.web_sg_15.id] # Permite tráfico en el puerto 80
+		96  |   subnets            = [aws_subnet.public_15.id]
+		97  | 
+		98  |   enable_deletion_protection = false # Para facilitar la limpieza en un lab
+		99  | 
+		100 |   tags = {
+		101 |     Name = "TFM-Insecure-HTTP-LB"
+		102 |   }
+		103 | }
+
+Check: CKV_AWS_261: "Ensure HTTP HTTPS Target group defines Healthcheck"
+	FAILED for resource: aws_lb_target_group.insecure_http_tg
+	File: /aws.tf:105-110
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-kendra-index-server-side-encryption-uses-customer-managed-keys-cmks
+
+		105 | resource "aws_lb_target_group" "insecure_http_tg" {
+		106 |   name     = "tfm-insecure-http-tg-15"
+		107 |   port     = 80
+		108 |   protocol = "HTTP"
+		109 |   vpc_id   = aws_vpc.main_15.id
+		110 | }
+
+Check: CKV_AWS_2: "Ensure ALB protocol is HTTPS"
+	FAILED for resource: aws_lb_listener.insecure_http_listener
+	File: /aws.tf:112-121
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-29
+
+		112 | resource "aws_lb_listener" "insecure_http_listener" {
+		113 |   load_balancer_arn = aws_lb.insecure_http_lb.arn
+		114 |   port              = 80
+		115 |   protocol          = "HTTP" # ¡Vulnerabilidad! Escucha en HTTP, no HTTPS
+		116 |   default_action {
+		117 |     type             = "forward"
+		118 |     target_group_arn = aws_lb_target_group.insecure_http_tg.arn
+		119 |   }
+		120 |   # No hay certificado ni redirección a HTTPS
+		121 | }
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_15
+	File: /aws.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		12 | resource "aws_vpc" "main_15" {
+		13 |   cidr_block = "10.0.0.0/16"
+		14 |   tags = {
+		15 |     Name = "tfm-security-vpc-15-aws"
+		16 |   }
+		17 | }
+
+Check: CKV2_AWS_20: "Ensure that ALB redirects HTTP requests into HTTPS ones"
+	FAILED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-alb-redirects-http-requests-into-https-ones
+
+		91  | resource "aws_lb" "insecure_http_lb" {
+		92  |   name               = "tfm-insecure-http-lb-15"
+		93  |   internal           = false
+		94  |   load_balancer_type = "application"
+		95  |   security_groups    = [aws_security_group.web_sg_15.id] # Permite tráfico en el puerto 80
+		96  |   subnets            = [aws_subnet.public_15.id]
+		97  | 
+		98  |   enable_deletion_protection = false # Para facilitar la limpieza en un lab
+		99  | 
+		100 |   tags = {
+		101 |     Name = "TFM-Insecure-HTTP-LB"
+		102 |   }
+		103 | }
+
+Check: CKV2_AWS_28: "Ensure public facing ALB are protected by WAF"
+	FAILED for resource: aws_lb.insecure_http_lb
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-public-facing-alb-are-protected-by-waf
+
+		91  | resource "aws_lb" "insecure_http_lb" {
+		92  |   name               = "tfm-insecure-http-lb-15"
+		93  |   internal           = false
+		94  |   load_balancer_type = "application"
+		95  |   security_groups    = [aws_security_group.web_sg_15.id] # Permite tráfico en el puerto 80
+		96  |   subnets            = [aws_subnet.public_15.id]
+		97  | 
+		98  |   enable_deletion_protection = false # Para facilitar la limpieza en un lab
+		99  | 
+		100 |   tags = {
+		101 |     Name = "TFM-Insecure-HTTP-LB"
+		102 |   }
+		103 | }
+
+Check: CKV_AWS_378: "Ensure AWS Load Balancer doesn't use HTTP protocol"
+	FAILED for resource: aws_lb_target_group.insecure_http_tg
+	File: /aws.tf:105-110
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-378
+
+		105 | resource "aws_lb_target_group" "insecure_http_tg" {
+		106 |   name     = "tfm-insecure-http-tg-15"
+		107 |   port     = 80
+		108 |   protocol = "HTTP"
+		109 |   vpc_id   = aws_vpc.main_15.id
+		110 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_15
+	File: /aws.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		12 | resource "aws_vpc" "main_15" {
+		13 |   cidr_block = "10.0.0.0/16"
+		14 |   tags = {
+		15 |     Name = "tfm-security-vpc-15-aws"
+		16 |   }
+		17 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.unencrypted_ebs_instance
+	File: /aws.tf:72-88
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		72 | resource "aws_instance" "unencrypted_ebs_instance" {
+		73 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		74 |   instance_type = "t2.micro"
+		75 |   subnet_id     = aws_subnet.public_15.id
+		76 |   vpc_security_group_ids = [aws_security_group.web_sg_15.id]
+		77 |   associate_public_ip_address = true
+		78 | 
+		79 |   root_block_device {
+		80 |     # Vulnerabilidad 1: Disco raíz de EBS sin encriptar
+		81 |     encrypted = false # ¡Vulnerabilidad! El disco raíz no está encriptado en reposo
+		82 |     volume_size = 8
+		83 |   }
+		84 | 
+		85 |   tags = {
+		86 |     Name = "TFM-Unencrypted-EBS-Instance"
+		87 |   }
+		88 | }
+
+Check: CKV_AWS_103: "Ensure that load balancer is using at least TLS 1.2"
+	FAILED for resource: aws_lb_listener.insecure_http_listener
+	File: /aws.tf:112-121
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-43
+
+		112 | resource "aws_lb_listener" "insecure_http_listener" {
+		113 |   load_balancer_arn = aws_lb.insecure_http_lb.arn
+		114 |   port              = 80
+		115 |   protocol          = "HTTP" # ¡Vulnerabilidad! Escucha en HTTP, no HTTPS
+		116 |   default_action {
+		117 |     type             = "forward"
+		118 |     target_group_arn = aws_lb_target_group.insecure_http_tg.arn
+		119 |   }
+		120 |   # No hay certificado ni redirección a HTTPS
+		121 | }
+

@@ -1,0 +1,979 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 19, Failed checks: 33, Skipped checks: 0
+
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	PASSED for resource: aws_subnet.public_18_a
+	File: /aws.tf:15-22
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	PASSED for resource: aws_subnet.public_18_b
+	File: /aws.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_328: "Ensure that ALB is configured with defensive or strictest desync mitigation mode"
+	PASSED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-328
+Check: CKV_AWS_93: "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)"
+	PASSED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/bc-aws-s3-24
+Check: CKV_AWS_305: "Ensure CloudFront distribution has a default root object configured"
+	PASSED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-305
+Check: CKV_AWS_216: "Ensure CloudFront distribution is enabled"
+	PASSED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-cloudfront-distribution-is-enabled
+Check: CKV_AWS_57: "S3 Bucket has an ACL defined which allows public WRITE access."
+	PASSED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-2-acl-write-permissions-everyone
+Check: CKV2_AWS_72: "Ensure AWS CloudFront origin protocol policy enforces HTTPS-only"
+	PASSED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-72
+Check: CKV2_AWS_35: "AWS NAT Gateways should be utilized for the default route"
+	PASSED for resource: aws_route_table.public_rt_18
+	File: /aws.tf:37-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nat-gateways-are-utilized-for-the-default-route
+Check: CKV2_AWS_44: "Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic"
+	PASSED for resource: aws_route_table.public_rt_18
+	File: /aws.tf:37-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-route-table-with-vpc-peering-does-not-contain-routes-overly-permissive-to-all-traffic
+Check: CKV_AWS_19: "Ensure all data stored in the S3 bucket is securely encrypted at rest"
+	PASSED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-14-data-encrypted-at-rest
+Check: CKV2_AWS_54: "Ensure AWS CloudFront distribution is using secure SSL protocols for HTTPS communication"
+	PASSED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-54
+Check: CKV2_AWS_74: "Ensure AWS Load Balancers use strong ciphers"
+	PASSED for resource: aws_lb_listener.http_listener_18
+	File: /aws.tf:102-110
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-74
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV2_AWS_76: "Ensure AWS ALB attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability"
+	PASSED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		55 | resource "aws_security_group" "alb_sg_18" {
+		56 |   name        = "tfm-alb-sg-18-aws"
+		57 |   description = "Allow HTTP/HTTPS to ALB"
+		58 |   vpc_id      = aws_vpc.main_18.id
+		59 | 
+		60 |   ingress {
+		61 |     from_port   = 80
+		62 |     to_port     = 80
+		63 |     protocol    = "tcp"
+		64 |     cidr_blocks = ["0.0.0.0/0"]
+		65 |   }
+		66 |   ingress {
+		67 |     from_port   = 443
+		68 |     to_port     = 443
+		69 |     protocol    = "tcp"
+		70 |     cidr_blocks = ["0.0.0.0/0"]
+		71 |   }
+		72 |   egress {
+		73 |     from_port   = 0
+		74 |     to_port     = 0
+		75 |     protocol    = "-1"
+		76 |     cidr_blocks = ["0.0.0.0/0"]
+		77 |   }
+		78 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		55 | resource "aws_security_group" "alb_sg_18" {
+		56 |   name        = "tfm-alb-sg-18-aws"
+		57 |   description = "Allow HTTP/HTTPS to ALB"
+		58 |   vpc_id      = aws_vpc.main_18.id
+		59 | 
+		60 |   ingress {
+		61 |     from_port   = 80
+		62 |     to_port     = 80
+		63 |     protocol    = "tcp"
+		64 |     cidr_blocks = ["0.0.0.0/0"]
+		65 |   }
+		66 |   ingress {
+		67 |     from_port   = 443
+		68 |     to_port     = 443
+		69 |     protocol    = "tcp"
+		70 |     cidr_blocks = ["0.0.0.0/0"]
+		71 |   }
+		72 |   egress {
+		73 |     from_port   = 0
+		74 |     to_port     = 0
+		75 |     protocol    = "-1"
+		76 |     cidr_blocks = ["0.0.0.0/0"]
+		77 |   }
+		78 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.alb_sg_18
+	File: /aws.tf:55-78
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		55 | resource "aws_security_group" "alb_sg_18" {
+		56 |   name        = "tfm-alb-sg-18-aws"
+		57 |   description = "Allow HTTP/HTTPS to ALB"
+		58 |   vpc_id      = aws_vpc.main_18.id
+		59 | 
+		60 |   ingress {
+		61 |     from_port   = 80
+		62 |     to_port     = 80
+		63 |     protocol    = "tcp"
+		64 |     cidr_blocks = ["0.0.0.0/0"]
+		65 |   }
+		66 |   ingress {
+		67 |     from_port   = 443
+		68 |     to_port     = 443
+		69 |     protocol    = "tcp"
+		70 |     cidr_blocks = ["0.0.0.0/0"]
+		71 |   }
+		72 |   egress {
+		73 |     from_port   = 0
+		74 |     to_port     = 0
+		75 |     protocol    = "-1"
+		76 |     cidr_blocks = ["0.0.0.0/0"]
+		77 |   }
+		78 | }
+
+Check: CKV_AWS_91: "Ensure the ELBv2 (Application/Network) has access logging enabled"
+	FAILED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-logging-22
+
+		81 | resource "aws_lb" "insecure_alb" {
+		82 |   name               = "tfm-insecure-alb-18"
+		83 |   internal           = false
+		84 |   load_balancer_type = "application"
+		85 |   security_groups    = [aws_security_group.alb_sg_18.id]
+		86 |   subnets            = [aws_subnet.public_18_a.id, aws_subnet.public_18_b.id]
+		87 | 
+		88 |   enable_deletion_protection = false # Para facilitar la limpieza
+		89 | 
+		90 |   tags = {
+		91 |     Name = "TFM-Insecure-ALB"
+		92 |   }
+		93 | }
+
+Check: CKV_AWS_131: "Ensure that ALB drops HTTP headers"
+	FAILED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-alb-drops-http-headers
+
+		81 | resource "aws_lb" "insecure_alb" {
+		82 |   name               = "tfm-insecure-alb-18"
+		83 |   internal           = false
+		84 |   load_balancer_type = "application"
+		85 |   security_groups    = [aws_security_group.alb_sg_18.id]
+		86 |   subnets            = [aws_subnet.public_18_a.id, aws_subnet.public_18_b.id]
+		87 | 
+		88 |   enable_deletion_protection = false # Para facilitar la limpieza
+		89 | 
+		90 |   tags = {
+		91 |     Name = "TFM-Insecure-ALB"
+		92 |   }
+		93 | }
+
+Check: CKV_AWS_150: "Ensure that Load Balancer has deletion protection enabled"
+	FAILED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-150
+
+		81 | resource "aws_lb" "insecure_alb" {
+		82 |   name               = "tfm-insecure-alb-18"
+		83 |   internal           = false
+		84 |   load_balancer_type = "application"
+		85 |   security_groups    = [aws_security_group.alb_sg_18.id]
+		86 |   subnets            = [aws_subnet.public_18_a.id, aws_subnet.public_18_b.id]
+		87 | 
+		88 |   enable_deletion_protection = false # Para facilitar la limpieza
+		89 | 
+		90 |   tags = {
+		91 |     Name = "TFM-Insecure-ALB"
+		92 |   }
+		93 | }
+
+Check: CKV_AWS_261: "Ensure HTTP HTTPS Target group defines Healthcheck"
+	FAILED for resource: aws_lb_target_group.http_tg_18
+	File: /aws.tf:95-100
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-kendra-index-server-side-encryption-uses-customer-managed-keys-cmks
+
+		95  | resource "aws_lb_target_group" "http_tg_18" {
+		96  |   name     = "tfm-http-tg-18"
+		97  |   port     = 80
+		98  |   protocol = "HTTP"
+		99  |   vpc_id   = aws_vpc.main_18.id
+		100 | }
+
+Check: CKV_AWS_2: "Ensure ALB protocol is HTTPS"
+	FAILED for resource: aws_lb_listener.http_listener_18
+	File: /aws.tf:102-110
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-29
+
+		102 | resource "aws_lb_listener" "http_listener_18" {
+		103 |   load_balancer_arn = aws_lb.insecure_alb.arn
+		104 |   port              = 80
+		105 |   protocol          = "HTTP"
+		106 |   default_action {
+		107 |     type             = "forward"
+		108 |     target_group_arn = aws_lb_target_group.http_tg_18.arn
+		109 |   }
+		110 | }
+
+Check: CKV_AWS_186: "Ensure S3 bucket Object is encrypted by KMS using a customer managed Key (CMK)"
+	FAILED for resource: aws_s3_bucket_object.index_html_18
+	File: /aws.tf:132-138
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-106
+
+		132 | resource "aws_s3_bucket_object" "index_html_18" {
+		133 |   bucket = aws_s3_bucket.origin_bucket_18.id
+		134 |   key    = "index.html"
+		135 |   content_type = "text/html"
+		136 |   content = "<h1>Hello from the insecure CloudFront origin!</h1>"
+		137 |   acl    = "public-read"
+		138 | }
+
+Check: CKV_AWS_86: "Ensure CloudFront distribution has Access Logging enabled"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-20
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_34: "Ensure CloudFront distribution ViewerProtocolPolicy is set to HTTPS"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-32
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_174: "Verify CloudFront Distribution Viewer Certificate is using TLS v1.2"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-networking-63
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_310: "Ensure CloudFront distributions should have origin failover configured"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-310
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_374: "Ensure AWS CloudFront web distribution has geo restriction enabled"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-374
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_68: "CloudFront Distribution should have WAF enabled"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-27
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_18
+	File: /aws.tf:8-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		8  | resource "aws_vpc" "main_18" {
+		9  |   cidr_block = "10.0.0.0/16"
+		10 |   tags = {
+		11 |     Name = "tfm-security-vpc-18-aws"
+		12 |   }
+		13 | }
+
+Check: CKV2_AWS_32: "Ensure CloudFront distribution has a response headers policy attached"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-networking-65
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_144: "Ensure that S3 bucket has cross-region replication enabled"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV2_AWS_61: "Ensure that an S3 bucket has a lifecycle configuration"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV2_AWS_28: "Ensure public facing ALB are protected by WAF"
+	FAILED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-public-facing-alb-are-protected-by-waf
+
+		81 | resource "aws_lb" "insecure_alb" {
+		82 |   name               = "tfm-insecure-alb-18"
+		83 |   internal           = false
+		84 |   load_balancer_type = "application"
+		85 |   security_groups    = [aws_security_group.alb_sg_18.id]
+		86 |   subnets            = [aws_subnet.public_18_a.id, aws_subnet.public_18_b.id]
+		87 | 
+		88 |   enable_deletion_protection = false # Para facilitar la limpieza
+		89 | 
+		90 |   tags = {
+		91 |     Name = "TFM-Insecure-ALB"
+		92 |   }
+		93 | }
+
+Check: CKV2_AWS_46: "Ensure AWS CloudFront Distribution with S3 have Origin Access set to enabled"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-aws-cloudfromt-distribution-with-s3-have-origin-access-set-to-enabled
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV2_AWS_20: "Ensure that ALB redirects HTTP requests into HTTPS ones"
+	FAILED for resource: aws_lb.insecure_alb
+	File: /aws.tf:81-93
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-alb-redirects-http-requests-into-https-ones
+
+		81 | resource "aws_lb" "insecure_alb" {
+		82 |   name               = "tfm-insecure-alb-18"
+		83 |   internal           = false
+		84 |   load_balancer_type = "application"
+		85 |   security_groups    = [aws_security_group.alb_sg_18.id]
+		86 |   subnets            = [aws_subnet.public_18_a.id, aws_subnet.public_18_b.id]
+		87 | 
+		88 |   enable_deletion_protection = false # Para facilitar la limpieza
+		89 | 
+		90 |   tags = {
+		91 |     Name = "TFM-Insecure-ALB"
+		92 |   }
+		93 | }
+
+Check: CKV_AWS_20: "S3 Bucket has an ACL defined which allows public READ access."
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-1-acl-read-permissions-everyone
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV2_AWS_62: "Ensure S3 buckets should have event notifications enabled"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV_AWS_145: "Ensure that S3 buckets are encrypted with KMS by default"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-buckets-are-encrypted-with-kms-by-default
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV_AWS_21: "Ensure all data stored in the S3 bucket have versioning enabled"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-16-enable-versioning
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV_AWS_18: "Ensure the S3 bucket has access logging enabled"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-13-enable-logging
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_18
+	File: /aws.tf:8-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		8  | resource "aws_vpc" "main_18" {
+		9  |   cidr_block = "10.0.0.0/16"
+		10 |   tags = {
+		11 |     Name = "tfm-security-vpc-18-aws"
+		12 |   }
+		13 | }
+
+Check: CKV2_AWS_6: "Ensure that S3 bucket has a Public Access block"
+	FAILED for resource: aws_s3_bucket.origin_bucket_18
+	File: /aws.tf:120-126
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/s3-bucket-should-have-public-access-blocks-defaults-to-false-if-the-public-access-block-is-not-attached
+
+		120 | resource "aws_s3_bucket" "origin_bucket_18" {
+		121 |   bucket = "tfm-cf-origin-18-${random_id.bucket_suffix.hex}"
+		122 |   acl    = "public-read" # ¡Vulnerabilidad! Bucket público, el origen no está protegido
+		123 |   tags = {
+		124 |     Name = "TFM CloudFront Origin"
+		125 |   }
+		126 | }
+
+Check: CKV2_AWS_47: "Ensure AWS CloudFront attached WAFv2 WebACL is configured with AMR for Log4j Vulnerability"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-47
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV2_AWS_42: "Ensure AWS CloudFront distribution uses custom SSL certificate"
+	FAILED for resource: aws_cloudfront_distribution.insecure_cloudfront_dist
+	File: /aws.tf:140-184
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-cloudfront-distribution-uses-custom-ssl-certificate
+
+		140 | resource "aws_cloudfront_distribution" "insecure_cloudfront_dist" {
+		141 |   origin {
+		142 |     domain_name = aws_s3_bucket.origin_bucket_18.bucket_regional_domain_name
+		143 |     origin_id   = "S3-Origin-18"
+		144 |     # No se usa un OAI/OAC, lo que significa que el bucket debe ser público, exponiendo el origen
+		145 |   }
+		146 | 
+		147 |   enabled             = true
+		148 |   is_ipv6_enabled     = true
+		149 |   comment             = "CloudFront distribution with insecure settings"
+		150 |   default_root_object = "index.html"
+		151 | 
+		152 |   default_cache_behavior {
+		153 |     allowed_methods  = ["GET", "HEAD"]
+		154 |     cached_methods   = ["GET", "HEAD"]
+		155 |     target_origin_id = "S3-Origin-18"
+		156 | 
+		157 |     forwarded_values {
+		158 |       query_string = false
+		159 |       cookies {
+		160 |         forward = "none"
+		161 |       }
+		162 |     }
+		163 | 
+		164 |     viewer_protocol_policy = "allow-all" # ¡Vulnerabilidad! Permite HTTP y HTTPS, no redirige.
+		165 |     min_ttl                = 0
+		166 |     default_ttl            = 3600
+		167 |     max_ttl                = 86400
+		168 |   }
+		169 | 
+		170 |   restrictions {
+		171 |     geo_restriction {
+		172 |       restriction_type = "none"
+		173 |     }
+		174 |   }
+		175 | 
+		176 |   viewer_certificate {
+		177 |     cloudfront_default_certificate = true
+		178 |     # ¡Vulnerabilidad! No se fuerza el uso de certificados personalizados ni versiones TLS seguras
+		179 |   }
+		180 | 
+		181 |   tags = {
+		182 |     Name = "TFM-Insecure-CloudFront"
+		183 |   }
+		184 | }
+
+Check: CKV_AWS_103: "Ensure that load balancer is using at least TLS 1.2"
+	FAILED for resource: aws_lb_listener.http_listener_18
+	File: /aws.tf:102-110
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-43
+
+		102 | resource "aws_lb_listener" "http_listener_18" {
+		103 |   load_balancer_arn = aws_lb.insecure_alb.arn
+		104 |   port              = 80
+		105 |   protocol          = "HTTP"
+		106 |   default_action {
+		107 |     type             = "forward"
+		108 |     target_group_arn = aws_lb_target_group.http_tg_18.arn
+		109 |   }
+		110 | }
+
+Check: CKV_AWS_378: "Ensure AWS Load Balancer doesn't use HTTP protocol"
+	FAILED for resource: aws_lb_target_group.http_tg_18
+	File: /aws.tf:95-100
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-378
+
+		95  | resource "aws_lb_target_group" "http_tg_18" {
+		96  |   name     = "tfm-http-tg-18"
+		97  |   port     = 80
+		98  |   protocol = "HTTP"
+		99  |   vpc_id   = aws_vpc.main_18.id
+		100 | }
+
+

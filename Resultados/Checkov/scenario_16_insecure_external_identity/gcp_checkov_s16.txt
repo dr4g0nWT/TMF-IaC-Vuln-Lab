@@ -1,0 +1,103 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 6, Skipped checks: 0
+
+Check: CKV_GCP_29: "Ensure that Cloud Storage buckets have uniform bucket-level access enabled"
+	PASSED for resource: google_storage_bucket.sensitive_bucket_16
+	File: /gcp.tf:9-16
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-gcs-2
+Check: CKV_GCP_46: "Ensure Default Service account is not used at a project level"
+	PASSED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:43-47
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-7
+Check: CKV_GCP_41: "Ensure that IAM users are not assigned the Service Account User or Service Account Token Creator roles at project level"
+	PASSED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:43-47
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-3
+Check: CKV_GCP_42: "Ensure that Service Account has no Admin privileges"
+	PASSED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:43-47
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-4
+Check: CKV_GCP_62: "Bucket should log access"
+	FAILED for resource: google_storage_bucket.sensitive_bucket_16
+	File: /gcp.tf:9-16
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-logging-2
+
+		9  | resource "google_storage_bucket" "sensitive_bucket_16" {
+		10 |   name          = "tfm-sensitive-bucket-16-${random_id.bucket_suffix.hex}" # Nombre de bucket globalmente único
+		11 |   location      = "EUROPE-WEST1" # Coincidir con la región del provider o ser multiregional
+		12 |   force_destroy = true # Para facilitar la limpieza del laboratorio
+		13 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		14 | 
+		15 |   uniform_bucket_level_access = true # Recomendado para evitar ACLs a nivel de objeto.
+		16 | }
+
+Check: CKV_GCP_114: "Ensure public access prevention is enforced on Cloud Storage bucket"
+	FAILED for resource: google_storage_bucket.sensitive_bucket_16
+	File: /gcp.tf:9-16
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-google-cloud-114
+
+		9  | resource "google_storage_bucket" "sensitive_bucket_16" {
+		10 |   name          = "tfm-sensitive-bucket-16-${random_id.bucket_suffix.hex}" # Nombre de bucket globalmente único
+		11 |   location      = "EUROPE-WEST1" # Coincidir con la región del provider o ser multiregional
+		12 |   force_destroy = true # Para facilitar la limpieza del laboratorio
+		13 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		14 | 
+		15 |   uniform_bucket_level_access = true # Recomendado para evitar ACLs a nivel de objeto.
+		16 | }
+
+Check: CKV_GCP_78: "Ensure Cloud storage has versioning enabled"
+	FAILED for resource: google_storage_bucket.sensitive_bucket_16
+	File: /gcp.tf:9-16
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-cloud-storage-has-versioning-enabled
+
+		9  | resource "google_storage_bucket" "sensitive_bucket_16" {
+		10 |   name          = "tfm-sensitive-bucket-16-${random_id.bucket_suffix.hex}" # Nombre de bucket globalmente único
+		11 |   location      = "EUROPE-WEST1" # Coincidir con la región del provider o ser multiregional
+		12 |   force_destroy = true # Para facilitar la limpieza del laboratorio
+		13 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		14 | 
+		15 |   uniform_bucket_level_access = true # Recomendado para evitar ACLs a nivel de objeto.
+		16 | }
+
+Check: CKV_GCP_28: "Ensure that Cloud Storage bucket is not anonymously or publicly accessible"
+	FAILED for resource: google_storage_bucket_iam_member.public_bucket_access_all_users
+	File: /gcp.tf:23-27
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-1
+
+		23 | resource "google_storage_bucket_iam_member" "public_bucket_access_all_users" {
+		24 |   bucket = google_storage_bucket.sensitive_bucket_16.name
+		25 |   role   = "roles/storage.objectViewer" # ¡Vulnerabilidad! Permite a cualquiera ver objetos
+		26 |   member = "allUsers" # ¡Vulnerabilidad! Acceso público sin autenticación
+		27 | }
+
+Check: CKV_GCP_49: "Ensure roles do not impersonate or manage Service Accounts used at project level"
+	FAILED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:43-47
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-10
+
+		43 | resource "google_project_iam_member" "insecure_sa_project_editor" {
+		44 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		45 |   role    = "roles/editor" # ¡Vulnerabilidad! Permisos de editor a nivel de proyecto
+		46 |   member  = "serviceAccount:${google_service_account.insecure_service_account.email}"
+		47 | }
+Check: CKV_GCP_117: "Ensure basic roles are not used at project level."
+	FAILED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:43-47
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-google-cloud-117
+
+		43 | resource "google_project_iam_member" "insecure_sa_project_editor" {
+		44 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		45 |   role    = "roles/editor" # ¡Vulnerabilidad! Permisos de editor a nivel de proyecto
+		46 |   member  = "serviceAccount:${google_service_account.insecure_service_account.email}"
+		47 | }
+
