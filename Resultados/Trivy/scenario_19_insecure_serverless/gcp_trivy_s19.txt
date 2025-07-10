@@ -1,0 +1,56 @@
+
+Report Summary
+
+┌────────┬───────────┬───────────────────┐
+│ Target │   Type    │ Misconfigurations │
+├────────┼───────────┼───────────────────┤
+│ .      │ terraform │         0         │
+├────────┼───────────┼───────────────────┤
+│ gcp.tf │ terraform │         2         │
+└────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+gcp.tf (terraform)
+==================
+Tests: 2 (SUCCESSES: 0, FAILURES: 2)
+Failures: 2 (UNKNOWN: 0, LOW: 1, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+AVD-GCP-0002 (MEDIUM): Bucket has uniform bucket level access disabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When you enable uniform bucket-level access on a bucket, Access Control Lists (ACLs) are disabled, and only bucket-level Identity and Access Management (IAM) permissions grant access to that bucket and the objects it contains. You revoke all access granted by object ACLs and the ability to administrate permissions using bucket ACLs.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0002
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:9-14
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   9 ┌ resource "google_storage_bucket" "function_code_bucket" {
+  10 │   name          = "tfm-function-code-19-${random_id.bucket_suffix.hex}"
+  11 │   location      = "EUROPE-WEST1"
+  12 │   force_destroy = true
+  13 │   project       = "your-gcp-project-id"
+  14 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0066 (LOW): Storage bucket encryption does not use a customer-managed key.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Using unmanaged keys makes rotation and general management difficult.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0066
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:9-14
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   9 ┌ resource "google_storage_bucket" "function_code_bucket" {
+  10 │   name          = "tfm-function-code-19-${random_id.bucket_suffix.hex}"
+  11 │   location      = "EUROPE-WEST1"
+  12 │   force_destroy = true
+  13 │   project       = "your-gcp-project-id"
+  14 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

@@ -1,0 +1,220 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 11, Failed checks: 9, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_28: "Ensure 'Enforce SSL connection' is set to 'ENABLED' for MySQL Database Server"
+	PASSED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-9
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_vm
+	File: /azure.tf:58-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_vm
+	File: /azure.tf:58-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_vm
+	File: /azure.tf:58-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_vm
+	File: /azure.tf:58-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_vm
+	File: /azure.tf:58-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+Check: CKV2_AZURE_39: "Ensure Azure VM is not configured with public IP and serial console access"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-2-39
+Check: CKV_AZURE_94: "Ensure that My SQL server enables geo-redundant backups"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-my-sql-server-enables-geo-redundant-backups
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV_AZURE_54: "Ensure MySQL is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-mysql-is-using-the-latest-version-of-tls-encryption
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV_AZURE_96: "Ensure that MySQL server enables infrastructure encryption"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-postgresql-server-enables-infrastructure-encryption-1
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV_AZURE_53: "Ensure 'public network access enabled' is set to 'False' for mySQL servers"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-public-network-access-enabled-is-set-to-false-for-mysql-servers
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV_AZURE_127: "Ensure that My SQL server enables Threat detection policy"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-my-sql-server-enables-threat-detection-policy
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.insecure_vm
+	File: /azure.tf:58-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		58 | resource "azurerm_linux_virtual_machine" "insecure_vm" {
+		59 |   name                = "insecure-linux-vm-09-azure"
+		60 |   resource_group_name = azurerm_resource_group.rg.name
+		61 |   location            = azurerm_resource_group.rg.location
+		62 |   size                = "Standard_B1s"
+		63 |   admin_username      = "adminuser"
+		64 |   network_interface_ids = [azurerm_network_interface.nic.id]
+		65 | 
+		66 |   source_image_reference {
+		67 |     publisher = "Canonical"
+		68 |     offer     = "UbuntuServer"
+		69 |     sku       = "18.04-LTS"
+		70 |     version   = "latest"
+		71 |   }
+		72 | 
+		73 |   os_disk {
+		74 |     caching              = "ReadWrite"
+		75 |     storage_account_type = "Standard_LRS"
+		76 |   }
+		77 | 
+		78 |   admin_ssh_key {
+		79 |     username   = "adminuser"
+		80 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com" # Cambia si vas a desplegar
+		81 |   }
+		82 | }
+
+Check: CKV2_AZURE_16: "Ensure that MySQL server enables customer-managed key for encryption"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-mysql-server-enables-customer-managed-key-for-encryption
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV2_AZURE_44: "Ensure Azure MySQL server is configured with private endpoint"
+	FAILED for resource: azurerm_mysql_server.mysql_server
+	File: /azure.tf:46-56
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-44
+
+		46 | resource "azurerm_mysql_server" "mysql_server" {
+		47 |   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   resource_group_name = azurerm_resource_group.rg.name
+		50 |   sku_name            = "B_Gen5_1"
+		51 |   storage_mb          = 5120
+		52 |   version             = "8.0"
+		53 |   administrator_login    = "mysqladmin"
+		54 |   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+		55 |   ssl_enforcement_enabled = true
+		56 | }
+
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "subnet" {
+		20 |   name                 = "tfm-security-subnet-09-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 | }
+
+

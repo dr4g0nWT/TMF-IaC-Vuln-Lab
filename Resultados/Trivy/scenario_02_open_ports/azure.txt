@@ -1,0 +1,117 @@
+
+Report Summary
+
+┌──────────┬───────────┬───────────────────┐
+│  Target  │   Type    │ Misconfigurations │
+├──────────┼───────────┼───────────────────┤
+│ .        │ terraform │         0         │
+├──────────┼───────────┼───────────────────┤
+│ azure.tf │ terraform │         5         │
+└──────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+azure.tf (terraform)
+====================
+Tests: 5 (SUCCESSES: 0, FAILURES: 5)
+Failures: 5 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 5)
+
+AVD-AZU-0047 (CRITICAL): Security group rule allows unrestricted ingress from any IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Opening up ports to allow connections from the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0047
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:36
+   via azure.tf:28-38 (security_rule)
+    via azure.tf:22-70 (azurerm_network_security_group.open_ports_nsg)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  22   resource "azurerm_network_security_group" "open_ports_nsg" {
+  ..   
+  36 [     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad (cualquier IP)
+  ..   
+  70   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0047 (CRITICAL): Security group rule allows unrestricted ingress from any IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Opening up ports to allow connections from the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0047
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:49
+   via azure.tf:41-51 (security_rule)
+    via azure.tf:22-70 (azurerm_network_security_group.open_ports_nsg)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  22   resource "azurerm_network_security_group" "open_ports_nsg" {
+  ..   
+  49 [     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+  ..   
+  70   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0047 (CRITICAL): Security group rule allows unrestricted ingress from any IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Opening up ports to allow connections from the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0047
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:62
+   via azure.tf:54-64 (security_rule)
+    via azure.tf:22-70 (azurerm_network_security_group.open_ports_nsg)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  22   resource "azurerm_network_security_group" "open_ports_nsg" {
+  ..   
+  62 [     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+  ..   
+  70   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0048 (CRITICAL): Security group rule allows unrestricted ingress to RDP port from any IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+RDP access can be configured on either the network security group or in the network security group rule.
+RDP access should not be permitted from the internet (*, 0.0.0.0, /0, internet, any). Consider using the Azure Bastion Service.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0048
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:49
+   via azure.tf:41-51 (security_rule)
+    via azure.tf:22-70 (azurerm_network_security_group.open_ports_nsg)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  22   resource "azurerm_network_security_group" "open_ports_nsg" {
+  ..   
+  49 [     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+  ..   
+  70   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0050 (CRITICAL): Security group rule allows unrestricted ingress to SSH port from any IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+SSH access can be configured on either the network security group or in the network security group rule.
+SSH access should not be permitted from the internet (*, 0.0.0.0, /0, internet, any)
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0050
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:36
+   via azure.tf:28-38 (security_rule)
+    via azure.tf:22-70 (azurerm_network_security_group.open_ports_nsg)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  22   resource "azurerm_network_security_group" "open_ports_nsg" {
+  ..   
+  36 [     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad (cualquier IP)
+  ..   
+  70   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

@@ -1,0 +1,298 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 7, Failed checks: 12, Skipped checks: 0
+
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	PASSED for resource: aws_subnet.app_subnet_13
+	File: /aws.tf:14-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	PASSED for resource: aws_subnet.db_subnet_13
+	File: /aws.tf:23-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV2_AWS_1: "Ensure that all NACL are attached to subnets"
+	PASSED for resource: aws_network_acl.overly_permissive_nacl
+	File: /aws.tf:33-60
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-all-nacl-are-attached-to-subnets
+Check: CKV2_AWS_35: "AWS NAT Gateways should be utilized for the default route"
+	PASSED for resource: aws_route_table.public_rt_13
+	File: /aws.tf:67-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nat-gateways-are-utilized-for-the-default-route
+Check: CKV2_AWS_44: "Ensure AWS route table with VPC peering does not contain routes overly permissive to all traffic"
+	PASSED for resource: aws_route_table.public_rt_13
+	File: /aws.tf:67-73
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-route-table-with-vpc-peering-does-not-contain-routes-overly-permissive-to-all-traffic
+Check: CKV_AWS_230: "Ensure no NACL allow ingress from 0.0.0.0:0 to port 20"
+	FAILED for resource: aws_network_acl.overly_permissive_nacl
+	File: /aws.tf:33-60
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nacl-does-not-allow-ingress-from-00000-to-port-20
+
+		33 | resource "aws_network_acl" "overly_permissive_nacl" {
+		34 |   vpc_id = aws_vpc.main_13.id
+		35 |   subnet_ids = [aws_subnet.app_subnet_13.id, aws_subnet.db_subnet_13.id] # Aplica a ambas subredes
+		36 | 
+		37 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		38 |   ingress {
+		39 |     rule_no    = 100
+		40 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		41 |     action     = "allow"
+		42 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier origen
+		43 |     from_port  = 0
+		44 |     to_port    = 0
+		45 |   }
+		46 | 
+		47 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		48 |   egress {
+		49 |     rule_no    = 100
+		50 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		51 |     action     = "allow"
+		52 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier destino
+		53 |     from_port  = 0
+		54 |     to_port    = 0
+		55 |   }
+		56 | 
+		57 |   tags = {
+		58 |     Name = "TFM-Overly-Permissive-NACL-13"
+		59 |   }
+		60 | }
+
+Check: CKV_AWS_232: "Ensure no NACL allow ingress from 0.0.0.0:0 to port 22"
+	FAILED for resource: aws_network_acl.overly_permissive_nacl
+	File: /aws.tf:33-60
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nacl-does-not-allow-ingress-from-00000-to-port-22
+
+		33 | resource "aws_network_acl" "overly_permissive_nacl" {
+		34 |   vpc_id = aws_vpc.main_13.id
+		35 |   subnet_ids = [aws_subnet.app_subnet_13.id, aws_subnet.db_subnet_13.id] # Aplica a ambas subredes
+		36 | 
+		37 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		38 |   ingress {
+		39 |     rule_no    = 100
+		40 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		41 |     action     = "allow"
+		42 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier origen
+		43 |     from_port  = 0
+		44 |     to_port    = 0
+		45 |   }
+		46 | 
+		47 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		48 |   egress {
+		49 |     rule_no    = 100
+		50 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		51 |     action     = "allow"
+		52 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier destino
+		53 |     from_port  = 0
+		54 |     to_port    = 0
+		55 |   }
+		56 | 
+		57 |   tags = {
+		58 |     Name = "TFM-Overly-Permissive-NACL-13"
+		59 |   }
+		60 | }
+
+Check: CKV_AWS_229: "Ensure no NACL allow ingress from 0.0.0.0:0 to port 21"
+	FAILED for resource: aws_network_acl.overly_permissive_nacl
+	File: /aws.tf:33-60
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nacl-does-not-allow-ingress-from-00000-to-port-21
+
+		33 | resource "aws_network_acl" "overly_permissive_nacl" {
+		34 |   vpc_id = aws_vpc.main_13.id
+		35 |   subnet_ids = [aws_subnet.app_subnet_13.id, aws_subnet.db_subnet_13.id] # Aplica a ambas subredes
+		36 | 
+		37 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		38 |   ingress {
+		39 |     rule_no    = 100
+		40 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		41 |     action     = "allow"
+		42 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier origen
+		43 |     from_port  = 0
+		44 |     to_port    = 0
+		45 |   }
+		46 | 
+		47 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		48 |   egress {
+		49 |     rule_no    = 100
+		50 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		51 |     action     = "allow"
+		52 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier destino
+		53 |     from_port  = 0
+		54 |     to_port    = 0
+		55 |   }
+		56 | 
+		57 |   tags = {
+		58 |     Name = "TFM-Overly-Permissive-NACL-13"
+		59 |   }
+		60 | }
+
+Check: CKV_AWS_231: "Ensure no NACL allow ingress from 0.0.0.0:0 to port 3389"
+	FAILED for resource: aws_network_acl.overly_permissive_nacl
+	File: /aws.tf:33-60
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-nacl-does-not-allow-ingress-from-00000-to-port-3389
+
+		33 | resource "aws_network_acl" "overly_permissive_nacl" {
+		34 |   vpc_id = aws_vpc.main_13.id
+		35 |   subnet_ids = [aws_subnet.app_subnet_13.id, aws_subnet.db_subnet_13.id] # Aplica a ambas subredes
+		36 | 
+		37 |   # Vulnerabilidad 1: Regla de entrada que permite todo el tráfico (todos los puertos/protocolos) desde cualquier origen
+		38 |   ingress {
+		39 |     rule_no    = 100
+		40 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		41 |     action     = "allow"
+		42 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier origen
+		43 |     from_port  = 0
+		44 |     to_port    = 0
+		45 |   }
+		46 | 
+		47 |   # Vulnerabilidad 2: Regla de salida que permite todo el tráfico (todos los puertos/protocolos) a cualquier destino
+		48 |   egress {
+		49 |     rule_no    = 100
+		50 |     protocol   = "-1" # ¡Vulnerabilidad! Todos los protocolos
+		51 |     action     = "allow"
+		52 |     cidr_block = "0.0.0.0/0" # ¡Vulnerabilidad! Cualquier destino
+		53 |     from_port  = 0
+		54 |     to_port    = 0
+		55 |   }
+		56 | 
+		57 |   tags = {
+		58 |     Name = "TFM-Overly-Permissive-NACL-13"
+		59 |   }
+		60 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		80 | resource "aws_instance" "app_server_13" {
+		81 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		82 |   instance_type = "t2.micro"
+		83 |   subnet_id     = aws_subnet.app_subnet_13.id
+		84 |   associate_public_ip_address = true
+		85 |   tags = {
+		86 |     Name = "TFM-App-Server-13"
+		87 |   }
+		88 |   # Un SG permitiría SSH/HTTP, pero la NACL es más amplia y se aplica primero.
+		89 |   # No se asocia un Security Group para ilustrar que la NACL es la que abre todo.
+		90 | }
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		80 | resource "aws_instance" "app_server_13" {
+		81 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		82 |   instance_type = "t2.micro"
+		83 |   subnet_id     = aws_subnet.app_subnet_13.id
+		84 |   associate_public_ip_address = true
+		85 |   tags = {
+		86 |     Name = "TFM-App-Server-13"
+		87 |   }
+		88 |   # Un SG permitiría SSH/HTTP, pero la NACL es más amplia y se aplica primero.
+		89 |   # No se asocia un Security Group para ilustrar que la NACL es la que abre todo.
+		90 | }
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		80 | resource "aws_instance" "app_server_13" {
+		81 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		82 |   instance_type = "t2.micro"
+		83 |   subnet_id     = aws_subnet.app_subnet_13.id
+		84 |   associate_public_ip_address = true
+		85 |   tags = {
+		86 |     Name = "TFM-App-Server-13"
+		87 |   }
+		88 |   # Un SG permitiría SSH/HTTP, pero la NACL es más amplia y se aplica primero.
+		89 |   # No se asocia un Security Group para ilustrar que la NACL es la que abre todo.
+		90 | }
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		80 | resource "aws_instance" "app_server_13" {
+		81 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		82 |   instance_type = "t2.micro"
+		83 |   subnet_id     = aws_subnet.app_subnet_13.id
+		84 |   associate_public_ip_address = true
+		85 |   tags = {
+		86 |     Name = "TFM-App-Server-13"
+		87 |   }
+		88 |   # Un SG permitiría SSH/HTTP, pero la NACL es más amplia y se aplica primero.
+		89 |   # No se asocia un Security Group para ilustrar que la NACL es la que abre todo.
+		90 | }
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		80 | resource "aws_instance" "app_server_13" {
+		81 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		82 |   instance_type = "t2.micro"
+		83 |   subnet_id     = aws_subnet.app_subnet_13.id
+		84 |   associate_public_ip_address = true
+		85 |   tags = {
+		86 |     Name = "TFM-App-Server-13"
+		87 |   }
+		88 |   # Un SG permitiría SSH/HTTP, pero la NACL es más amplia y se aplica primero.
+		89 |   # No se asocia un Security Group para ilustrar que la NACL es la que abre todo.
+		90 | }
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_13
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main_13" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-13-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_13
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main_13" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-13-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.app_server_13
+	File: /aws.tf:80-90
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		80 | resource "aws_instance" "app_server_13" {
+		81 |   ami           = "ami-0ed0d0f23bf3589b9" # Ubuntu Server 20.04 LTS (eu-west-3)
+		82 |   instance_type = "t2.micro"
+		83 |   subnet_id     = aws_subnet.app_subnet_13.id
+		84 |   associate_public_ip_address = true
+		85 |   tags = {
+		86 |     Name = "TFM-App-Server-13"
+		87 |   }
+		88 |   # Un SG permitiría SSH/HTTP, pero la NACL es más amplia y se aplica primero.
+		89 |   # No se asocia un Security Group para ilustrar que la NACL es la que abre todo.
+		90 | }
+

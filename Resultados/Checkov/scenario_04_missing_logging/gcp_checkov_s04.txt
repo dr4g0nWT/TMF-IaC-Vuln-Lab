@@ -1,0 +1,312 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 11, Skipped checks: 0
+
+Check: CKV_GCP_31: "Ensure that instances are not configured to use the default service account with full access to all Cloud APIs"
+	PASSED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-2
+Check: CKV_GCP_35: "Ensure 'Enable connecting to serial ports' is not enabled for VM Instance"
+	PASSED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-11
+Check: CKV_GCP_36: "Ensure that IP forwarding is not enabled on Instances"
+	PASSED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-12
+Check: CKV_GCP_34: "Ensure that no instance in the project overrides the project setting for enabling OSLogin(OSLogin needs to be enabled in project metadata for all instances)"
+	PASSED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-10
+Check: CKV_GCP_26: "Ensure that VPC Flow Logs is enabled for every subnet in a VPC Network"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-logging-1
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-04-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_74: "Ensure that private_ip_google_access is enabled for Subnet"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-subnet-has-a-private-ip-google-access
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-04-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_62: "Bucket should log access"
+	FAILED for resource: google_storage_bucket.unlogged_gcs_bucket
+	File: /gcp.tf:22-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-logging-2
+
+		22 | resource "google_storage_bucket" "unlogged_gcs_bucket" {
+		23 |   name          = "tfm-unlogged-gcs-bucket-2025" # Debe ser globalmente único
+		24 |   location      = "EUROPE-WEST1" # Coincide con la región
+		25 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		26 |   force_destroy = true 
+		27 | 
+		28 |   # Vulnerabilidad: No se configura el logging de acceso al bucket
+		29 |   # En GCP, el logging de acceso a buckets se gestiona a través de los logs de auditoría de Cloud Storage
+		30 |   # y configurando un destino de logging para ellos, no directamente en el bucket.
+		31 |   # La vulnerabilidad aquí es la ausencia de una configuración explícita para exportar/alertar sobre
+		32 |   # estos logs de acceso si no se hace a nivel de proyecto/organización.
+		33 |   # También podría implicar la falta de notificaciones/exportaciones para actividades críticas.
+		34 | 
+		35 |   # Por defecto, GCP genera logs de auditoría. La vulnerabilidad aquí se basa en
+		36 |   # la falta de un sink explícito para estos logs a un destino de análisis o alarma.
+		37 |   # Por ejemplo, la ausencia de un 'google_logging_project_sink' o 'google_logging_billing_account_sink'
+		38 |   # para exportar logs de auditoría de acceso a un Log Bucket o Pub/Sub para su análisis.
+		39 |   # O la falta de notificaciones para eventos críticos.
+		40 | }
+
+Check: CKV_GCP_114: "Ensure public access prevention is enforced on Cloud Storage bucket"
+	FAILED for resource: google_storage_bucket.unlogged_gcs_bucket
+	File: /gcp.tf:22-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-google-cloud-114
+
+		22 | resource "google_storage_bucket" "unlogged_gcs_bucket" {
+		23 |   name          = "tfm-unlogged-gcs-bucket-2025" # Debe ser globalmente único
+		24 |   location      = "EUROPE-WEST1" # Coincide con la región
+		25 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		26 |   force_destroy = true 
+		27 | 
+		28 |   # Vulnerabilidad: No se configura el logging de acceso al bucket
+		29 |   # En GCP, el logging de acceso a buckets se gestiona a través de los logs de auditoría de Cloud Storage
+		30 |   # y configurando un destino de logging para ellos, no directamente en el bucket.
+		31 |   # La vulnerabilidad aquí es la ausencia de una configuración explícita para exportar/alertar sobre
+		32 |   # estos logs de acceso si no se hace a nivel de proyecto/organización.
+		33 |   # También podría implicar la falta de notificaciones/exportaciones para actividades críticas.
+		34 | 
+		35 |   # Por defecto, GCP genera logs de auditoría. La vulnerabilidad aquí se basa en
+		36 |   # la falta de un sink explícito para estos logs a un destino de análisis o alarma.
+		37 |   # Por ejemplo, la ausencia de un 'google_logging_project_sink' o 'google_logging_billing_account_sink'
+		38 |   # para exportar logs de auditoría de acceso a un Log Bucket o Pub/Sub para su análisis.
+		39 |   # O la falta de notificaciones para eventos críticos.
+		40 | }
+
+Check: CKV_GCP_78: "Ensure Cloud storage has versioning enabled"
+	FAILED for resource: google_storage_bucket.unlogged_gcs_bucket
+	File: /gcp.tf:22-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-cloud-storage-has-versioning-enabled
+
+		22 | resource "google_storage_bucket" "unlogged_gcs_bucket" {
+		23 |   name          = "tfm-unlogged-gcs-bucket-2025" # Debe ser globalmente único
+		24 |   location      = "EUROPE-WEST1" # Coincide con la región
+		25 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		26 |   force_destroy = true 
+		27 | 
+		28 |   # Vulnerabilidad: No se configura el logging de acceso al bucket
+		29 |   # En GCP, el logging de acceso a buckets se gestiona a través de los logs de auditoría de Cloud Storage
+		30 |   # y configurando un destino de logging para ellos, no directamente en el bucket.
+		31 |   # La vulnerabilidad aquí es la ausencia de una configuración explícita para exportar/alertar sobre
+		32 |   # estos logs de acceso si no se hace a nivel de proyecto/organización.
+		33 |   # También podría implicar la falta de notificaciones/exportaciones para actividades críticas.
+		34 | 
+		35 |   # Por defecto, GCP genera logs de auditoría. La vulnerabilidad aquí se basa en
+		36 |   # la falta de un sink explícito para estos logs a un destino de análisis o alarma.
+		37 |   # Por ejemplo, la ausencia de un 'google_logging_project_sink' o 'google_logging_billing_account_sink'
+		38 |   # para exportar logs de auditoría de acceso a un Log Bucket o Pub/Sub para su análisis.
+		39 |   # O la falta de notificaciones para eventos críticos.
+		40 | }
+
+Check: CKV_GCP_29: "Ensure that Cloud Storage buckets have uniform bucket-level access enabled"
+	FAILED for resource: google_storage_bucket.unlogged_gcs_bucket
+	File: /gcp.tf:22-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-gcs-2
+
+		22 | resource "google_storage_bucket" "unlogged_gcs_bucket" {
+		23 |   name          = "tfm-unlogged-gcs-bucket-2025" # Debe ser globalmente único
+		24 |   location      = "EUROPE-WEST1" # Coincide con la región
+		25 |   project       = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		26 |   force_destroy = true 
+		27 | 
+		28 |   # Vulnerabilidad: No se configura el logging de acceso al bucket
+		29 |   # En GCP, el logging de acceso a buckets se gestiona a través de los logs de auditoría de Cloud Storage
+		30 |   # y configurando un destino de logging para ellos, no directamente en el bucket.
+		31 |   # La vulnerabilidad aquí es la ausencia de una configuración explícita para exportar/alertar sobre
+		32 |   # estos logs de acceso si no se hace a nivel de proyecto/organización.
+		33 |   # También podría implicar la falta de notificaciones/exportaciones para actividades críticas.
+		34 | 
+		35 |   # Por defecto, GCP genera logs de auditoría. La vulnerabilidad aquí se basa en
+		36 |   # la falta de un sink explícito para estos logs a un destino de análisis o alarma.
+		37 |   # Por ejemplo, la ausencia de un 'google_logging_project_sink' o 'google_logging_billing_account_sink'
+		38 |   # para exportar logs de auditoría de acceso a un Log Bucket o Pub/Sub para su análisis.
+		39 |   # O la falta de notificaciones para eventos críticos.
+		40 | }
+
+Check: CKV_GCP_32: "Ensure 'Block Project-wide SSH keys' is enabled for VM instances"
+	FAILED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-8
+
+		42 | resource "google_compute_instance" "vm_without_specific_logging" {
+		43 |   name         = "unlogged-gcp-vm-04"
+		44 |   machine_type = "e2-micro"
+		45 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		46 | 
+		47 |   boot_disk {
+		48 |     initialize_params {
+		49 |       image = "debian-cloud/debian-11"
+		50 |     }
+		51 |   }
+		52 | 
+		53 |   network_interface {
+		54 |     network    = google_compute_network.vpc_network.id
+		55 |     subnetwork = google_compute_subnetwork.subnet.id
+		56 |     access_config {
+		57 |       # Asigna una IP pública para un escenario más completo
+		58 |     }
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad: No se configura el agente de Logging de Cloud Monitoring/Cloud Logging
+		62 |   # para logs del sistema operativo o aplicaciones personalizadas.
+		63 |   # GCP ofrece un agente que recolecta logs del SO y aplicaciones, y la ausencia de su configuración
+		64 |   # mediante user_data o un script es la vulnerabilidad aquí.
+		65 |   # metadata_startup_script = <<-EOF
+		66 |   #                           #!/bin/bash
+		67 |   #                           # Comandos para instalar y configurar el agente de Cloud Logging
+		68 |   #                           # curl -sSO https://dl.google.com/cloudagents/add-logging-agent-apt-repo.sh
+		69 |   #                           # sudo bash add-logging-agent-apt-repo.sh --also-install
+		70 |   #                           EOF
+		71 | }
+
+Check: CKV_GCP_40: "Ensure that Compute instances do not have public IP addresses"
+	FAILED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-2
+
+		42 | resource "google_compute_instance" "vm_without_specific_logging" {
+		43 |   name         = "unlogged-gcp-vm-04"
+		44 |   machine_type = "e2-micro"
+		45 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		46 | 
+		47 |   boot_disk {
+		48 |     initialize_params {
+		49 |       image = "debian-cloud/debian-11"
+		50 |     }
+		51 |   }
+		52 | 
+		53 |   network_interface {
+		54 |     network    = google_compute_network.vpc_network.id
+		55 |     subnetwork = google_compute_subnetwork.subnet.id
+		56 |     access_config {
+		57 |       # Asigna una IP pública para un escenario más completo
+		58 |     }
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad: No se configura el agente de Logging de Cloud Monitoring/Cloud Logging
+		62 |   # para logs del sistema operativo o aplicaciones personalizadas.
+		63 |   # GCP ofrece un agente que recolecta logs del SO y aplicaciones, y la ausencia de su configuración
+		64 |   # mediante user_data o un script es la vulnerabilidad aquí.
+		65 |   # metadata_startup_script = <<-EOF
+		66 |   #                           #!/bin/bash
+		67 |   #                           # Comandos para instalar y configurar el agente de Cloud Logging
+		68 |   #                           # curl -sSO https://dl.google.com/cloudagents/add-logging-agent-apt-repo.sh
+		69 |   #                           # sudo bash add-logging-agent-apt-repo.sh --also-install
+		70 |   #                           EOF
+		71 | }
+
+Check: CKV_GCP_38: "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)"
+	FAILED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/encrypt-boot-disks-for-instances-with-cseks
+
+		42 | resource "google_compute_instance" "vm_without_specific_logging" {
+		43 |   name         = "unlogged-gcp-vm-04"
+		44 |   machine_type = "e2-micro"
+		45 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		46 | 
+		47 |   boot_disk {
+		48 |     initialize_params {
+		49 |       image = "debian-cloud/debian-11"
+		50 |     }
+		51 |   }
+		52 | 
+		53 |   network_interface {
+		54 |     network    = google_compute_network.vpc_network.id
+		55 |     subnetwork = google_compute_subnetwork.subnet.id
+		56 |     access_config {
+		57 |       # Asigna una IP pública para un escenario más completo
+		58 |     }
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad: No se configura el agente de Logging de Cloud Monitoring/Cloud Logging
+		62 |   # para logs del sistema operativo o aplicaciones personalizadas.
+		63 |   # GCP ofrece un agente que recolecta logs del SO y aplicaciones, y la ausencia de su configuración
+		64 |   # mediante user_data o un script es la vulnerabilidad aquí.
+		65 |   # metadata_startup_script = <<-EOF
+		66 |   #                           #!/bin/bash
+		67 |   #                           # Comandos para instalar y configurar el agente de Cloud Logging
+		68 |   #                           # curl -sSO https://dl.google.com/cloudagents/add-logging-agent-apt-repo.sh
+		69 |   #                           # sudo bash add-logging-agent-apt-repo.sh --also-install
+		70 |   #                           EOF
+		71 | }
+
+Check: CKV_GCP_39: "Ensure Compute instances are launched with Shielded VM enabled"
+	FAILED for resource: google_compute_instance.vm_without_specific_logging
+	File: /gcp.tf:42-71
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-y
+
+		42 | resource "google_compute_instance" "vm_without_specific_logging" {
+		43 |   name         = "unlogged-gcp-vm-04"
+		44 |   machine_type = "e2-micro"
+		45 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		46 | 
+		47 |   boot_disk {
+		48 |     initialize_params {
+		49 |       image = "debian-cloud/debian-11"
+		50 |     }
+		51 |   }
+		52 | 
+		53 |   network_interface {
+		54 |     network    = google_compute_network.vpc_network.id
+		55 |     subnetwork = google_compute_subnetwork.subnet.id
+		56 |     access_config {
+		57 |       # Asigna una IP pública para un escenario más completo
+		58 |     }
+		59 |   }
+		60 | 
+		61 |   # Vulnerabilidad: No se configura el agente de Logging de Cloud Monitoring/Cloud Logging
+		62 |   # para logs del sistema operativo o aplicaciones personalizadas.
+		63 |   # GCP ofrece un agente que recolecta logs del SO y aplicaciones, y la ausencia de su configuración
+		64 |   # mediante user_data o un script es la vulnerabilidad aquí.
+		65 |   # metadata_startup_script = <<-EOF
+		66 |   #                           #!/bin/bash
+		67 |   #                           # Comandos para instalar y configurar el agente de Cloud Logging
+		68 |   #                           # curl -sSO https://dl.google.com/cloudagents/add-logging-agent-apt-repo.sh
+		69 |   #                           # sudo bash add-logging-agent-apt-repo.sh --also-install
+		70 |   #                           EOF
+		71 | }
+
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	FAILED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:8-11
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+
+		8  | resource "google_compute_network" "vpc_network" {
+		9  |   name    = "tfm-security-vpc-04-gcp"
+		10 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		11 | }
+
+

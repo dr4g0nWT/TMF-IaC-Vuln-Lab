@@ -1,0 +1,41 @@
+
+Report Summary
+
+┌──────────────────┬───────────┬───────────────────┐
+│      Target      │   Type    │ Misconfigurations │
+├──────────────────┼───────────┼───────────────────┤
+│ .                │ terraform │         0         │
+├──────────────────┼───────────┼───────────────────┤
+│ azure_storage.tf │ terraform │         1         │
+└──────────────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+azure_storage.tf (terraform)
+============================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+AVD-AZU-0007 (HIGH): Container allows public access.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Storage container public access should be off. It can be configured for blobs only, containers and blobs or off entirely. The default is off, with no public access.
+Explicitly overriding publicAccess to anything other than off should be avoided.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0007
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure_storage.tf:37
+   via azure_storage.tf:34-40 (azurerm_storage_container.public_container)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  34   resource "azurerm_storage_container" "public_container" {
+  35     name                  = "public-data"
+  36     storage_account_name  = azurerm_storage_account.insecure_storage_account.name
+  37 [   container_access_type = "blob" # Vulnerabilidad 1: Acceso de lectura público a blobs
+  38   
+  39     depends_on = [azurerm_storage_account.insecure_storage_account]
+  40   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

@@ -1,0 +1,74 @@
+
+
+
+Violation Details -
+    
+	Description    :	Ensure VPC flow logging is enabled in all VPCs
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	12
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure Target Group use HTTPs to ensure end to end encryption
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	105
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Security Groups - Unrestricted Specific Ports - (HTTP,80)
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	46
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure there is a listener configured on HTTPs or with a port 443
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	112
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Security Groups - Unrestricted Specific Ports - (SSH,22)
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	46
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	EC2 instances should disable IMDS or require IMDSv2 as this can be related to the weaponization phase of kill chain
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	72
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure that detailed monitoring is enabled for EC2 instances.
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	72
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+
+Scan Summary -
+
+	File/Folder         :	/home/dr4g0n/TFM/TMF-IaC-Vuln-Lab/Escenarios/scenario_15_insecure_key_cert/aws.tf
+	IaC Type            :	terraform
+	Scanned At          :	2025-07-09 10:20:17.308521509 +0000 UTC
+	Policies Validated  :	146
+	Violated Policies   :	7
+	Low                 :	1
+	Medium              :	3
+	High                :	3
+	
+

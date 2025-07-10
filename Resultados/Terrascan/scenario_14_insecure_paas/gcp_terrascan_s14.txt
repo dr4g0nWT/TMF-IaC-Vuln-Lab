@@ -1,0 +1,15 @@
+
+
+
+Scan Summary -
+
+	File/Folder         :	/home/dr4g0n/TFM/TMF-IaC-Vuln-Lab/Escenarios/scenario_14_insecure_paas/gcp.tf
+	IaC Type            :	terraform
+	Scanned At          :	2025-07-09 10:17:33.626579244 +0000 UTC
+	Policies Validated  :	0
+	Violated Policies   :	0
+	Low                 :	0
+	Medium              :	0
+	High                :	0
+	
+

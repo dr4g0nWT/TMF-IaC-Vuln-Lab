@@ -1,0 +1,256 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 19, Failed checks: 7, Skipped checks: 0
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_249: "Ensure that the Execution Role ARN and the Task Role ARN are different in ECS Task definitions"
+	PASSED for resource: aws_ecs_task_definition.insecure_container_task
+	File: /aws.tf:47-89
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-the-aws-execution-role-arn-and-task-role-arn-are-different-in-ecs-task-definitions
+Check: CKV_AWS_335: "Ensure ECS task definitions should not share the host's process namespace"
+	PASSED for resource: aws_ecs_task_definition.insecure_container_task
+	File: /aws.tf:47-89
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-335
+Check: CKV_AWS_97: "Ensure Encryption in transit is enabled for EFS volumes in ECS Task definitions"
+	PASSED for resource: aws_ecs_task_definition.insecure_container_task
+	File: /aws.tf:47-89
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-39
+Check: CKV_AWS_334: "Ensure ECS containers should run as non-privileged"
+	PASSED for resource: aws_ecs_task_definition.insecure_container_task
+	File: /aws.tf:47-89
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-334
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.ecs_task_execution_role
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.ecs_task_execution_role
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-44
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.ecs_task_execution_role
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role_policy_attachment.ecs_task_execution_policy
+	File: /aws.tf:105-108
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.ecs_task_role
+	File: /aws.tf:110-122
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.ecs_task_role
+	File: /aws.tf:110-122
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-44
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.ecs_task_role
+	File: /aws.tf:110-122
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.ecs_task_execution_role
+	File: /aws.tf:91-103
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role_policy_attachment.ecs_task_execution_policy
+	File: /aws.tf:105-108
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.ecs_task_role
+	File: /aws.tf:110-122
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public_06
+	File: /aws.tf:14-22
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		14 | resource "aws_subnet" "public_06" {
+		15 |   vpc_id     = aws_vpc.main_06.id
+		16 |   cidr_block = "10.0.1.0/24"
+		17 |   map_public_ip_on_launch = true
+		18 |   availability_zone = "eu-west-3a" # Ajusta la zona según la región
+		19 |   tags = {
+		20 |     Name = "tfm-security-public-subnet-06-aws"
+		21 |   }
+		22 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		24 | resource "aws_security_group" "container_sg" {
+		25 |   name        = "tfm-container-sg-06-aws"
+		26 |   description = "Security group for insecure container"
+		27 |   vpc_id      = aws_vpc.main_06.id
+		28 | 
+		29 |   # Vulnerabilidad: Exponer un puerto sensible (ej. MySQL) públicamente
+		30 |   ingress {
+		31 |     from_port   = 3306
+		32 |     to_port     = 3306
+		33 |     protocol    = "tcp"
+		34 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Acceso público a puerto de DB
+		35 |   }
+		36 | 
+		37 |   egress {
+		38 |     from_port   = 0
+		39 |     to_port     = 0
+		40 |     protocol    = "-1"
+		41 |     cidr_blocks = ["0.0.0.0/0"]
+		42 |   }
+		43 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		24 | resource "aws_security_group" "container_sg" {
+		25 |   name        = "tfm-container-sg-06-aws"
+		26 |   description = "Security group for insecure container"
+		27 |   vpc_id      = aws_vpc.main_06.id
+		28 | 
+		29 |   # Vulnerabilidad: Exponer un puerto sensible (ej. MySQL) públicamente
+		30 |   ingress {
+		31 |     from_port   = 3306
+		32 |     to_port     = 3306
+		33 |     protocol    = "tcp"
+		34 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Acceso público a puerto de DB
+		35 |   }
+		36 | 
+		37 |   egress {
+		38 |     from_port   = 0
+		39 |     to_port     = 0
+		40 |     protocol    = "-1"
+		41 |     cidr_blocks = ["0.0.0.0/0"]
+		42 |   }
+		43 | }
+
+Check: CKV_AWS_336: "Ensure ECS containers are limited to read-only access to root filesystems"
+	FAILED for resource: aws_ecs_task_definition.insecure_container_task
+	File: /aws.tf:47-89
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-336
+
+		47 | resource "aws_ecs_task_definition" "insecure_container_task" {
+		48 |   family                   = "insecure-app-task"
+		49 |   network_mode             = "awsvpc" # Requiere ECS Fargate o EC2 launch type con network mode awsvpc
+		50 |   requires_compatibilities = ["FARGATE"]
+		51 |   cpu                      = "256"
+		52 |   memory                   = "512"
+		53 | 
+		54 |   container_definitions = jsonencode([
+		55 |     {
+		56 |       name      = "insecure-web-app",
+		57 |       image     = "nginx:latest", # Una imagen de ejemplo
+		58 |       cpu       = 256,
+		59 |       memory    = 512,
+		60 |       essential = true,
+		61 |       portMappings = [
+		62 |         {
+		63 |           containerPort = 80,
+		64 |           hostPort      = 80,
+		65 |           protocol      = "tcp"
+		66 |         },
+		67 |         {
+		68 |           containerPort = 3306, # Puerto de DB, expuesto aquí
+		69 |           hostPort      = 3306,
+		70 |           protocol      = "tcp"
+		71 |         }
+		72 |       ],
+		73 |       # Vulnerabilidad 1: Privileged container (si fuera EC2 launch type)
+		74 |       # privileged = true # Si se usa tipo de lanzamiento EC2, otorga privilegios de root al contenedor en el host.
+		75 |                          # No aplicable a Fargate, pero es una configuración a buscar.
+		76 | 
+		77 |       # Vulnerabilidad 2: Correr como root (por defecto, pero explícitamente se puede no bajar privilegios)
+		78 |       # user = "0" # Omitir la especificación de un usuario no root, o especificar "0" para root
+		79 |       # No setting 'readonlyRootFilesystem' to true
+		80 | 
+		81 |       # Vulnerabilidad 3: No hay límites de recursos o health checks robustos
+		82 |       # No hay "ulimits", "logConfiguration", "healthCheck" detallados
+		83 |     }
+		84 |   ])
+		85 | 
+		86 |   # Necesario para el network_mode "awsvpc" con Fargate
+		87 |   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+		88 |   task_role_arn      = aws_iam_role.ecs_task_role.arn
+		89 | }
+
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_06
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main_06" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-06-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: aws_security_group.container_sg
+	File: /aws.tf:24-43
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+
+		24 | resource "aws_security_group" "container_sg" {
+		25 |   name        = "tfm-container-sg-06-aws"
+		26 |   description = "Security group for insecure container"
+		27 |   vpc_id      = aws_vpc.main_06.id
+		28 | 
+		29 |   # Vulnerabilidad: Exponer un puerto sensible (ej. MySQL) públicamente
+		30 |   ingress {
+		31 |     from_port   = 3306
+		32 |     to_port     = 3306
+		33 |     protocol    = "tcp"
+		34 |     cidr_blocks = ["0.0.0.0/0"] # TODO: Acceso público a puerto de DB
+		35 |   }
+		36 | 
+		37 |   egress {
+		38 |     from_port   = 0
+		39 |     to_port     = 0
+		40 |     protocol    = "-1"
+		41 |     cidr_blocks = ["0.0.0.0/0"]
+		42 |   }
+		43 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_06
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main_06" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-06-aws"
+		11 |   }
+		12 | }
+
+

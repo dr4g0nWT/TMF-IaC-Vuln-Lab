@@ -1,0 +1,116 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 6, Failed checks: 2, Skipped checks: 0
+
+Check: CKV_GCP_75: "Ensure Google compute firewall ingress does not allow unrestricted FTP access"
+	PASSED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-ftp-access
+Check: CKV_GCP_106: "Ensure Google compute firewall ingress does not allow unrestricted http port 80 access"
+	PASSED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-http-port-80-access
+Check: CKV_GCP_88: "Ensure Google compute firewall ingress does not allow unrestricted mysql access"
+	PASSED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-compute-firewall-ingress-does-not-allow-unrestricted-mysql-access
+Check: CKV_GCP_77: "Ensure Google compute firewall ingress does not allow on ftp port"
+	PASSED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-ftp-port-20-access
+Check: CKV2_GCP_12: "Ensure GCP compute firewall ingress does not allow unrestricted access to all ports"
+	PASSED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-access-to-all-ports
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	PASSED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:3-7
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+Check: CKV_GCP_3: "Ensure Google compute firewall ingress does not allow unrestricted rdp access"
+	FAILED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-2
+
+		9  | resource "google_compute_firewall" "open_ports_firewall" {
+		10 |   name    = "tfm-insecure-open-ports-firewall"
+		11 |   network = google_compute_network.vpc_network.name
+		12 |   project = google_compute_network.vpc_network.project
+		13 | 
+		14 |   direction = "INGRESS"
+		15 |   priority  = 1000 # La prioridad por defecto, asegúrate de que no haya reglas más permisivas
+		16 | 
+		17 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		18 |   allow {
+		19 |     protocol = "tcp"
+		20 |     ports    = ["22"]
+		21 |   }
+		22 |   source_ranges = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad (cualquier IP)
+		23 |   
+		24 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		25 |   allow {
+		26 |     protocol = "tcp"
+		27 |     ports    = ["3389"]
+		28 |   }
+		29 | 
+		30 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. PostgreSQL) desde cualquier lugar (0.0.0.0/0)
+		31 |   allow {
+		32 |     protocol = "tcp"
+		33 |     ports    = ["5432"] # Puerto por defecto de PostgreSQL
+		34 |   }
+		35 | 
+		36 |   target_tags = ["allow-insecure-access"] # Puedes aplicar esta regla a instancias con este tag
+		37 | 
+		38 |   description = "Insecure firewall rule allowing public access to common sensitive ports."
+		39 | 
+		40 |   depends_on = [google_compute_network.vpc_network]
+		41 | }
+
+Check: CKV_GCP_2: "Ensure Google compute firewall ingress does not allow unrestricted ssh access"
+	FAILED for resource: google_compute_firewall.open_ports_firewall
+	File: /gcp.tf:9-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-1
+
+		9  | resource "google_compute_firewall" "open_ports_firewall" {
+		10 |   name    = "tfm-insecure-open-ports-firewall"
+		11 |   network = google_compute_network.vpc_network.name
+		12 |   project = google_compute_network.vpc_network.project
+		13 | 
+		14 |   direction = "INGRESS"
+		15 |   priority  = 1000 # La prioridad por defecto, asegúrate de que no haya reglas más permisivas
+		16 | 
+		17 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		18 |   allow {
+		19 |     protocol = "tcp"
+		20 |     ports    = ["22"]
+		21 |   }
+		22 |   source_ranges = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad (cualquier IP)
+		23 |   
+		24 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		25 |   allow {
+		26 |     protocol = "tcp"
+		27 |     ports    = ["3389"]
+		28 |   }
+		29 | 
+		30 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. PostgreSQL) desde cualquier lugar (0.0.0.0/0)
+		31 |   allow {
+		32 |     protocol = "tcp"
+		33 |     ports    = ["5432"] # Puerto por defecto de PostgreSQL
+		34 |   }
+		35 | 
+		36 |   target_tags = ["allow-insecure-access"] # Puedes aplicar esta regla a instancias con este tag
+		37 | 
+		38 |   description = "Insecure firewall rule allowing public access to common sensitive ports."
+		39 | 
+		40 |   depends_on = [google_compute_network.vpc_network]
+		41 | }
+
+

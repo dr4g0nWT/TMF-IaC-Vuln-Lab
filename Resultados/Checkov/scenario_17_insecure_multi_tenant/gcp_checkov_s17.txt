@@ -1,0 +1,165 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 21, Failed checks: 10, Skipped checks: 0
+
+Check: CKV_GCP_74: "Ensure that private_ip_google_access is enabled for Subnet"
+	PASSED for resource: google_compute_subnetwork.gke_subnet
+	File: /gcp.tf:14-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-subnet-has-a-private-ip-google-access
+Check: CKV_GCP_8: "Ensure Stackdriver Monitoring is set to Enabled on Kubernetes Engine Clusters"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-3
+Check: CKV_GCP_1: "Ensure Stackdriver Logging is set to Enabled on Kubernetes Engine Clusters"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-1
+Check: CKV_GCP_13: "Ensure client certificate authentication to Kubernetes Engine Clusters is disabled"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-8
+Check: CKV_GCP_123: "GKE Don't Use NodePools in the Cluster configuration"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-google-cloud-123
+Check: CKV_GCP_72: "Ensure Integrity Monitoring for Shielded GKE Nodes is Enabled"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-integrity-monitoring-for-shielded-gke-nodes-is-enabled
+Check: CKV_GCP_23: "Ensure Kubernetes Cluster is created with Alias IP ranges enabled"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-15
+Check: CKV_GCP_7: "Ensure Legacy Authorization is set to Disabled on Kubernetes Engine Clusters"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-2
+Check: CKV_GCP_64: "Ensure clusters are created with Private Nodes"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-clusters-are-created-with-private-nodes
+Check: CKV_GCP_71: "Ensure Shielded GKE Nodes are Enabled"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-shielded-gke-nodes-are-enabled
+Check: CKV_GCP_18: "Ensure GKE Control Plane is not public"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-10
+Check: CKV_GCP_25: "Ensure Kubernetes Cluster is created with Private cluster enabled"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-6
+Check: CKV_GCP_75: "Ensure Google compute firewall ingress does not allow unrestricted FTP access"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-ftp-access
+Check: CKV_GCP_106: "Ensure Google compute firewall ingress does not allow unrestricted http port 80 access"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-http-port-80-access
+Check: CKV_GCP_88: "Ensure Google compute firewall ingress does not allow unrestricted mysql access"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-compute-firewall-ingress-does-not-allow-unrestricted-mysql-access
+Check: CKV_GCP_3: "Ensure Google compute firewall ingress does not allow unrestricted rdp access"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-2
+Check: CKV_GCP_2: "Ensure Google compute firewall ingress does not allow unrestricted ssh access"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-1
+Check: CKV_GCP_77: "Ensure Google compute firewall ingress does not allow on ftp port"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-ftp-port-20-access
+Check: CKV2_GCP_12: "Ensure GCP compute firewall ingress does not allow unrestricted access to all ports"
+	PASSED for resource: google_compute_firewall.allow_all_internal_gke_traffic
+	File: /gcp.tf:79-104
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-access-to-all-ports
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	PASSED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:8-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+Check: CKV2_GCP_19: "Ensure GCP Kubernetes engine clusters have 'alpha cluster' feature disabled"
+	PASSED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-2-19
+Check: CKV_GCP_26: "Ensure that VPC Flow Logs is enabled for every subnet in a VPC Network"
+	FAILED for resource: google_compute_subnetwork.gke_subnet
+	File: /gcp.tf:14-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-logging-1
+
+		14 | resource "google_compute_subnetwork" "gke_subnet" {
+		15 |   name        = "tfm-security-gke-subnet-17-gcp"
+		16 |   ip_cidr_range = "10.0.1.0/24"
+		17 |   network     = google_compute_network.vpc_network.id
+		18 |   region      = "europe-west1"
+		19 |   private_ip_google_access = true # Necesario para algunos servicios de GKE
+		20 | }
+
+Check: CKV_GCP_65: "Manage Kubernetes RBAC users with Google Groups for GKE"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/manage-kubernetes-rbac-users-with-google-groups-for-gke
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_66: "Ensure use of Binary Authorization"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-use-of-binary-authorization
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_12: "Ensure Network Policy is enabled on Kubernetes Engine Clusters"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-7
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_69: "Ensure the GKE Metadata Server is Enabled"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-the-gke-metadata-server-is-enabled
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_68: "Ensure Secure Boot for Shielded GKE Nodes is Enabled"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-secure-boot-for-shielded-gke-nodes-is-enabled
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_70: "Ensure the GKE Release Channel is set"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/ensure-the-gke-release-channel-is-set
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_20: "Ensure master authorized networks is set to enabled in GKE clusters"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-12
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_61: "Enable VPC Flow Logs and Intranode Visibility"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/enable-vpc-flow-logs-and-intranode-visibility
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_GCP_21: "Ensure Kubernetes Clusters are configured with Labels"
+	FAILED for resource: google_container_cluster.insecure_gke_cluster
+	File: /gcp.tf:23-75
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-kubernetes-policies/bc-gcp-kubernetes-13
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+

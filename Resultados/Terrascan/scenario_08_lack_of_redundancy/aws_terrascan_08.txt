@@ -1,0 +1,74 @@
+
+
+
+Violation Details -
+    
+	Description    :	Ensure that your RDS database has IAM Authentication enabled.
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	60
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure automated backups are enabled for AWS RDS instances
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	60
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Security Groups - Unrestricted Specific Ports - (HTTP,80)
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	24
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure that detailed monitoring is enabled for EC2 instances.
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	44
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	EC2 instances should disable IMDS or require IMDSv2 as this can be related to the weaponization phase of kill chain
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	44
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure CloudWatch logging is enabled for AWS DB instances
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	60
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure VPC flow logging is enabled in all VPCs
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	7
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+
+Scan Summary -
+
+	File/Folder         :	/home/dr4g0n/TFM/TMF-IaC-Vuln-Lab/Escenarios/scenario_08_lack_of_redundancy/aws.tf
+	IaC Type            :	terraform
+	Scanned At          :	2025-07-08 08:37:52.7833757 +0000 UTC
+	Policies Validated  :	151
+	Violated Policies   :	7
+	Low                 :	1
+	Medium              :	3
+	High                :	3
+	
+

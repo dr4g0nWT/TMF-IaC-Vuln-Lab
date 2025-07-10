@@ -1,0 +1,314 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 6, Failed checks: 12, Skipped checks: 0
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public_07
+	File: /aws.tf:14-22
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		14 | resource "aws_subnet" "public_07" {
+		15 |   vpc_id     = aws_vpc.main_07.id
+		16 |   cidr_block = "10.0.1.0/24"
+		17 |   map_public_ip_on_launch = true
+		18 |   availability_zone = "eu-west-3a" # Ajusta la zona según la región
+		19 |   tags = {
+		20 |     Name = "tfm-security-public-subnet-07-aws"
+		21 |   }
+		22 | }
+
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		24 | resource "aws_security_group" "web_07" {
+		25 |   name        = "tfm-web-sg-07-aws"
+		26 |   description = "Allow web traffic"
+		27 |   vpc_id      = aws_vpc.main_07.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 | 
+		36 |   egress {
+		37 |     from_port   = 0
+		38 |     to_port     = 0
+		39 |     protocol    = "-1"
+		40 |     cidr_blocks = ["0.0.0.0/0"]
+		41 |   }
+		42 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		24 | resource "aws_security_group" "web_07" {
+		25 |   name        = "tfm-web-sg-07-aws"
+		26 |   description = "Allow web traffic"
+		27 |   vpc_id      = aws_vpc.main_07.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 | 
+		36 |   egress {
+		37 |     from_port   = 0
+		38 |     to_port     = 0
+		39 |     protocol    = "-1"
+		40 |     cidr_blocks = ["0.0.0.0/0"]
+		41 |   }
+		42 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.web_07
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		24 | resource "aws_security_group" "web_07" {
+		25 |   name        = "tfm-web-sg-07-aws"
+		26 |   description = "Allow web traffic"
+		27 |   vpc_id      = aws_vpc.main_07.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 | 
+		36 |   egress {
+		37 |     from_port   = 0
+		38 |     to_port     = 0
+		39 |     protocol    = "-1"
+		40 |     cidr_blocks = ["0.0.0.0/0"]
+		41 |   }
+		42 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		44 | resource "aws_instance" "outdated_os_server" {
+		45 |   # Vulnerabilidad 1: Uso de una AMI antigua/específica que probablemente no esté parcheada
+		46 |   # Aquí se usa una AMI de Ubuntu 16.04 LTS (Xenial Xerus) que ya no tiene soporte general.
+		47 |   # Es crucial reemplazar esto con una AMI de una versión realmente antigua para la prueba.
+		48 |   # La AMI proporcionada es un ejemplo para una región aleatoria, DEBES VALIDARLA para eu-west-3
+		49 |   # Por ejemplo: ami-0a89d71c480f2d847 (Ubuntu Server 16.04 LTS HVM, SSD Volume Type para eu-west-3)
+		50 |   ami           = "ami-0a89d71c480f2d847" # ¡Vulnerabilidad! AMI de Ubuntu 16.04 LTS (antigua)
+		51 |   instance_type = "t2.micro"
+		52 |   subnet_id     = aws_subnet.public_07.id
+		53 |   vpc_security_group_ids = [aws_security_group.web_07.id]
+		54 |   associate_public_ip_address = true
+		55 | 
+		56 |   tags = {
+		57 |     Name = "TFM-Outdated-OS-Server"
+		58 |   }
+		59 | 
+		60 |   # Vulnerabilidad 2: No hay configuración de System Manager (SSM) para parches automatizados
+		61 |   # En un entorno seguro, se debería adjuntar un rol IAM y configurar SSM para automatizar parches.
+		62 |   # iam_instance_profile = aws_iam_instance_profile.ssm_profile.name # Comentado para la vulnerabilidad
+		63 |   # No hay user_data para configurar actualizaciones automáticas de paquetes
+		64 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		44 | resource "aws_instance" "outdated_os_server" {
+		45 |   # Vulnerabilidad 1: Uso de una AMI antigua/específica que probablemente no esté parcheada
+		46 |   # Aquí se usa una AMI de Ubuntu 16.04 LTS (Xenial Xerus) que ya no tiene soporte general.
+		47 |   # Es crucial reemplazar esto con una AMI de una versión realmente antigua para la prueba.
+		48 |   # La AMI proporcionada es un ejemplo para una región aleatoria, DEBES VALIDARLA para eu-west-3
+		49 |   # Por ejemplo: ami-0a89d71c480f2d847 (Ubuntu Server 16.04 LTS HVM, SSD Volume Type para eu-west-3)
+		50 |   ami           = "ami-0a89d71c480f2d847" # ¡Vulnerabilidad! AMI de Ubuntu 16.04 LTS (antigua)
+		51 |   instance_type = "t2.micro"
+		52 |   subnet_id     = aws_subnet.public_07.id
+		53 |   vpc_security_group_ids = [aws_security_group.web_07.id]
+		54 |   associate_public_ip_address = true
+		55 | 
+		56 |   tags = {
+		57 |     Name = "TFM-Outdated-OS-Server"
+		58 |   }
+		59 | 
+		60 |   # Vulnerabilidad 2: No hay configuración de System Manager (SSM) para parches automatizados
+		61 |   # En un entorno seguro, se debería adjuntar un rol IAM y configurar SSM para automatizar parches.
+		62 |   # iam_instance_profile = aws_iam_instance_profile.ssm_profile.name # Comentado para la vulnerabilidad
+		63 |   # No hay user_data para configurar actualizaciones automáticas de paquetes
+		64 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		44 | resource "aws_instance" "outdated_os_server" {
+		45 |   # Vulnerabilidad 1: Uso de una AMI antigua/específica que probablemente no esté parcheada
+		46 |   # Aquí se usa una AMI de Ubuntu 16.04 LTS (Xenial Xerus) que ya no tiene soporte general.
+		47 |   # Es crucial reemplazar esto con una AMI de una versión realmente antigua para la prueba.
+		48 |   # La AMI proporcionada es un ejemplo para una región aleatoria, DEBES VALIDARLA para eu-west-3
+		49 |   # Por ejemplo: ami-0a89d71c480f2d847 (Ubuntu Server 16.04 LTS HVM, SSD Volume Type para eu-west-3)
+		50 |   ami           = "ami-0a89d71c480f2d847" # ¡Vulnerabilidad! AMI de Ubuntu 16.04 LTS (antigua)
+		51 |   instance_type = "t2.micro"
+		52 |   subnet_id     = aws_subnet.public_07.id
+		53 |   vpc_security_group_ids = [aws_security_group.web_07.id]
+		54 |   associate_public_ip_address = true
+		55 | 
+		56 |   tags = {
+		57 |     Name = "TFM-Outdated-OS-Server"
+		58 |   }
+		59 | 
+		60 |   # Vulnerabilidad 2: No hay configuración de System Manager (SSM) para parches automatizados
+		61 |   # En un entorno seguro, se debería adjuntar un rol IAM y configurar SSM para automatizar parches.
+		62 |   # iam_instance_profile = aws_iam_instance_profile.ssm_profile.name # Comentado para la vulnerabilidad
+		63 |   # No hay user_data para configurar actualizaciones automáticas de paquetes
+		64 | }
+
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		44 | resource "aws_instance" "outdated_os_server" {
+		45 |   # Vulnerabilidad 1: Uso de una AMI antigua/específica que probablemente no esté parcheada
+		46 |   # Aquí se usa una AMI de Ubuntu 16.04 LTS (Xenial Xerus) que ya no tiene soporte general.
+		47 |   # Es crucial reemplazar esto con una AMI de una versión realmente antigua para la prueba.
+		48 |   # La AMI proporcionada es un ejemplo para una región aleatoria, DEBES VALIDARLA para eu-west-3
+		49 |   # Por ejemplo: ami-0a89d71c480f2d847 (Ubuntu Server 16.04 LTS HVM, SSD Volume Type para eu-west-3)
+		50 |   ami           = "ami-0a89d71c480f2d847" # ¡Vulnerabilidad! AMI de Ubuntu 16.04 LTS (antigua)
+		51 |   instance_type = "t2.micro"
+		52 |   subnet_id     = aws_subnet.public_07.id
+		53 |   vpc_security_group_ids = [aws_security_group.web_07.id]
+		54 |   associate_public_ip_address = true
+		55 | 
+		56 |   tags = {
+		57 |     Name = "TFM-Outdated-OS-Server"
+		58 |   }
+		59 | 
+		60 |   # Vulnerabilidad 2: No hay configuración de System Manager (SSM) para parches automatizados
+		61 |   # En un entorno seguro, se debería adjuntar un rol IAM y configurar SSM para automatizar parches.
+		62 |   # iam_instance_profile = aws_iam_instance_profile.ssm_profile.name # Comentado para la vulnerabilidad
+		63 |   # No hay user_data para configurar actualizaciones automáticas de paquetes
+		64 | }
+
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		44 | resource "aws_instance" "outdated_os_server" {
+		45 |   # Vulnerabilidad 1: Uso de una AMI antigua/específica que probablemente no esté parcheada
+		46 |   # Aquí se usa una AMI de Ubuntu 16.04 LTS (Xenial Xerus) que ya no tiene soporte general.
+		47 |   # Es crucial reemplazar esto con una AMI de una versión realmente antigua para la prueba.
+		48 |   # La AMI proporcionada es un ejemplo para una región aleatoria, DEBES VALIDARLA para eu-west-3
+		49 |   # Por ejemplo: ami-0a89d71c480f2d847 (Ubuntu Server 16.04 LTS HVM, SSD Volume Type para eu-west-3)
+		50 |   ami           = "ami-0a89d71c480f2d847" # ¡Vulnerabilidad! AMI de Ubuntu 16.04 LTS (antigua)
+		51 |   instance_type = "t2.micro"
+		52 |   subnet_id     = aws_subnet.public_07.id
+		53 |   vpc_security_group_ids = [aws_security_group.web_07.id]
+		54 |   associate_public_ip_address = true
+		55 | 
+		56 |   tags = {
+		57 |     Name = "TFM-Outdated-OS-Server"
+		58 |   }
+		59 | 
+		60 |   # Vulnerabilidad 2: No hay configuración de System Manager (SSM) para parches automatizados
+		61 |   # En un entorno seguro, se debería adjuntar un rol IAM y configurar SSM para automatizar parches.
+		62 |   # iam_instance_profile = aws_iam_instance_profile.ssm_profile.name # Comentado para la vulnerabilidad
+		63 |   # No hay user_data para configurar actualizaciones automáticas de paquetes
+		64 | }
+
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_07
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main_07" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-07-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_07
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main_07" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-07-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.outdated_os_server
+	File: /aws.tf:44-64
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		44 | resource "aws_instance" "outdated_os_server" {
+		45 |   # Vulnerabilidad 1: Uso de una AMI antigua/específica que probablemente no esté parcheada
+		46 |   # Aquí se usa una AMI de Ubuntu 16.04 LTS (Xenial Xerus) que ya no tiene soporte general.
+		47 |   # Es crucial reemplazar esto con una AMI de una versión realmente antigua para la prueba.
+		48 |   # La AMI proporcionada es un ejemplo para una región aleatoria, DEBES VALIDARLA para eu-west-3
+		49 |   # Por ejemplo: ami-0a89d71c480f2d847 (Ubuntu Server 16.04 LTS HVM, SSD Volume Type para eu-west-3)
+		50 |   ami           = "ami-0a89d71c480f2d847" # ¡Vulnerabilidad! AMI de Ubuntu 16.04 LTS (antigua)
+		51 |   instance_type = "t2.micro"
+		52 |   subnet_id     = aws_subnet.public_07.id
+		53 |   vpc_security_group_ids = [aws_security_group.web_07.id]
+		54 |   associate_public_ip_address = true
+		55 | 
+		56 |   tags = {
+		57 |     Name = "TFM-Outdated-OS-Server"
+		58 |   }
+		59 | 
+		60 |   # Vulnerabilidad 2: No hay configuración de System Manager (SSM) para parches automatizados
+		61 |   # En un entorno seguro, se debería adjuntar un rol IAM y configurar SSM para automatizar parches.
+		62 |   # iam_instance_profile = aws_iam_instance_profile.ssm_profile.name # Comentado para la vulnerabilidad
+		63 |   # No hay user_data para configurar actualizaciones automáticas de paquetes
+		64 | }
+
+

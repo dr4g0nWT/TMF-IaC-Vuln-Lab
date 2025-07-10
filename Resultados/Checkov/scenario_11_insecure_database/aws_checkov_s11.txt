@@ -1,0 +1,393 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 11, Failed checks: 14, Skipped checks: 0
+
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	PASSED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_388: "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability"
+	PASSED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+Check: CKV_AWS_211: "Ensure RDS uses a modern CaCert"
+	PASSED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-rds-uses-a-modern-cacert
+Check: CKV_AWS_133: "Ensure that RDS instances has backup policy"
+	PASSED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-rds-instances-have-backup-policy
+Check: CKV_AWS_354: "Ensure RDS Performance Insights are encrypted using KMS CMKs"
+	PASSED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-354
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_69: "Ensure AWS RDS database instance configured with encryption in transit"
+	PASSED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-69
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	FAILED for resource: aws_subnet.public_11
+	File: /aws.tf:14-22
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+
+		14 | resource "aws_subnet" "public_11" {
+		15 |   vpc_id     = aws_vpc.main_11.id
+		16 |   cidr_block = "10.0.1.0/24"
+		17 |   map_public_ip_on_launch = true
+		18 |   availability_zone = "eu-west-3a" # Ajusta la zona según la región
+		19 |   tags = {
+		20 |     Name = "tfm-security-public-subnet-11-aws"
+		21 |   }
+		22 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		32 | resource "aws_security_group" "db_sg_public" {
+		33 |   name        = "tfm-db-sg-public-11"
+		34 |   description = "Security group for public database access"
+		35 |   vpc_id      = aws_vpc.main_11.id
+		36 | 
+		37 |   # Vulnerabilidad 1: Acceso público a la base de datos (puerto 3306 abierto a 0.0.0.0/0)
+		38 |   ingress {
+		39 |     from_port   = 3306 # Puerto MySQL
+		40 |     to_port     = 3306
+		41 |     protocol    = "tcp"
+		42 |     cidr_blocks = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso público
+		43 |     description = "Allow public MySQL access"
+		44 |   }
+		45 | 
+		46 |   egress {
+		47 |     from_port   = 0
+		48 |     to_port     = 0
+		49 |     protocol    = "-1"
+		50 |     cidr_blocks = ["0.0.0.0/0"]
+		51 |   }
+		52 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.db_sg_public
+	File: /aws.tf:32-52
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		32 | resource "aws_security_group" "db_sg_public" {
+		33 |   name        = "tfm-db-sg-public-11"
+		34 |   description = "Security group for public database access"
+		35 |   vpc_id      = aws_vpc.main_11.id
+		36 | 
+		37 |   # Vulnerabilidad 1: Acceso público a la base de datos (puerto 3306 abierto a 0.0.0.0/0)
+		38 |   ingress {
+		39 |     from_port   = 3306 # Puerto MySQL
+		40 |     to_port     = 3306
+		41 |     protocol    = "tcp"
+		42 |     cidr_blocks = ["0.0.0.0/0"] # ¡Vulnerabilidad! Acceso público
+		43 |     description = "Allow public MySQL access"
+		44 |   }
+		45 | 
+		46 |   egress {
+		47 |     from_port   = 0
+		48 |     to_port     = 0
+		49 |     protocol    = "-1"
+		50 |     cidr_blocks = ["0.0.0.0/0"]
+		51 |   }
+		52 | }
+
+Check: CKV_AWS_17: "Ensure all data stored in RDS is not publicly accessible"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-2
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_161: "Ensure RDS database has IAM authentication enabled"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-rds-database-has-iam-authentication-enabled
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_293: "Ensure that AWS database instances have deletion protection enabled"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-293
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_16: "Ensure all data stored in the RDS is securely encrypted at rest"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-4
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_157: "Ensure that RDS instances have Multi-AZ enabled"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-73
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_226: "Ensure DB instance gets all minor upgrades automatically"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-db-instance-gets-all-minor-upgrades-automatically
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_129: "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-that-respective-logs-of-amazon-relational-database-service-amazon-rds-are-enabled
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV_AWS_118: "Ensure that enhanced monitoring is enabled for Amazon RDS instances"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-enhanced-monitoring-is-enabled-for-amazon-rds-instances
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV2_AWS_60: "Ensure RDS instance with copy tags to snapshots is enabled"
+	FAILED for resource: aws_db_instance.insecure_rds_db
+	File: /aws.tf:54-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-60
+
+		54 | resource "aws_db_instance" "insecure_rds_db" {
+		55 |   allocated_storage    = 20
+		56 |   engine               = "mysql"
+		57 |   engine_version       = "8.0.35"
+		58 |   instance_class       = "db.t3.micro"
+		59 |   name                 = "tfm-insecure-db-11"
+		60 |   username             = "admin"
+		61 |   password             = "InsecureDBPass123!" # Usa un Secrets Manager en producción
+		62 |   parameter_group_name = "default.mysql8.0"
+		63 |   skip_final_snapshot  = true
+		64 | 
+		65 |   # Vulnerabilidad 2: Habilitar la accesibilidad pública para la base de datos
+		66 |   publicly_accessible  = true # ¡Vulnerabilidad! DB accesible públicamente
+		67 | 
+		68 |   vpc_security_group_ids = [aws_security_group.db_sg_public.id]
+		69 |   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group_11.name
+		70 | 
+		71 |   # Vulnerabilidad 3: Falta de configuración de SSL/TLS fuerte o su aplicación
+		72 |   # No se forza SSL/TLS a través de un grupo de parámetros personalizado
+		73 |   # Por defecto, RDS permite conexiones no SSL si el cliente no lo requiere.
+		74 | }
+
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_11
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main_11" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-11-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_11
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main_11" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-11-aws"
+		11 |   }
+		12 | }
+
+

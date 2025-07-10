@@ -1,0 +1,126 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 1, Failed checks: 3, Skipped checks: 0
+
+Check: CKV_AZURE_235: "Ensure that Azure container environment variables are configured with secure values only"
+	PASSED for resource: azurerm_container_group.insecure_container_aci
+	File: /azure.tf:13-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-235
+Check: CKV_AZURE_98: "Ensure that Azure Container group is deployed into virtual network"
+	FAILED for resource: azurerm_container_group.insecure_container_aci
+	File: /azure.tf:13-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-azure-container-container-group-is-deployed-into-virtual-network
+
+		13 | resource "azurerm_container_group" "insecure_container_aci" {
+		14 |   name                = "tfm-insecure-aci-06"
+		15 |   location            = azurerm_resource_group.rg.location
+		16 |   resource_group_name = azurerm_resource_group.rg.name
+		17 |   ip_address_type     = "Public"
+		18 |   dns_name_label      = "insecureaci20250707" # Debe ser único globalmente
+		19 |   os_type             = "Linux"
+		20 | 
+		21 |   container {
+		22 |     name   = "insecure-web-app"
+		23 |     image  = "nginx:latest" # Una imagen de ejemplo
+		24 |     cpu    = 1
+		25 |     memory = 1.5
+		26 | 
+		27 |     ports {
+		28 |       port     = 80
+		29 |       protocol = "TCP"
+		30 |     }
+		31 |     ports {
+		32 |       port     = 3306 # Vulnerabilidad: Puerto de DB expuesto públicamente
+		33 |       protocol = "TCP"
+		34 |     }
+		35 |     # No se especifican límites de recursos o políticas de reinicio robustas, aunque es más sutil
+		36 |   }
+		37 | 
+		38 |   # Vulnerabilidad: No se configuran políticas de reinicio estrictas o seguridad avanzada
+		39 |   # restart_policy = "OnFailure" # Más robusto sería "Never" o "OnFailure" con análisis
+		40 |   # No hay "identity" para acceso a recursos seguros (Managed Identity)
+		41 |   # No se monta Azure Files o otros volúmenes que podrían tener restricciones de seguridad
+		42 | }
+
+Check: CKV_AZURE_245: "Ensure that Azure Container group is deployed into virtual network"
+	FAILED for resource: azurerm_container_group.insecure_container_aci
+	File: /azure.tf:13-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-245
+
+		13 | resource "azurerm_container_group" "insecure_container_aci" {
+		14 |   name                = "tfm-insecure-aci-06"
+		15 |   location            = azurerm_resource_group.rg.location
+		16 |   resource_group_name = azurerm_resource_group.rg.name
+		17 |   ip_address_type     = "Public"
+		18 |   dns_name_label      = "insecureaci20250707" # Debe ser único globalmente
+		19 |   os_type             = "Linux"
+		20 | 
+		21 |   container {
+		22 |     name   = "insecure-web-app"
+		23 |     image  = "nginx:latest" # Una imagen de ejemplo
+		24 |     cpu    = 1
+		25 |     memory = 1.5
+		26 | 
+		27 |     ports {
+		28 |       port     = 80
+		29 |       protocol = "TCP"
+		30 |     }
+		31 |     ports {
+		32 |       port     = 3306 # Vulnerabilidad: Puerto de DB expuesto públicamente
+		33 |       protocol = "TCP"
+		34 |     }
+		35 |     # No se especifican límites de recursos o políticas de reinicio robustas, aunque es más sutil
+		36 |   }
+		37 | 
+		38 |   # Vulnerabilidad: No se configuran políticas de reinicio estrictas o seguridad avanzada
+		39 |   # restart_policy = "OnFailure" # Más robusto sería "Never" o "OnFailure" con análisis
+		40 |   # No hay "identity" para acceso a recursos seguros (Managed Identity)
+		41 |   # No se monta Azure Files o otros volúmenes que podrían tener restricciones de seguridad
+		42 | }
+
+Check: CKV2_AZURE_28: "Ensure Container Instance is configured with managed identity"
+	FAILED for resource: azurerm_container_group.insecure_container_aci
+	File: /azure.tf:13-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-28
+
+		13 | resource "azurerm_container_group" "insecure_container_aci" {
+		14 |   name                = "tfm-insecure-aci-06"
+		15 |   location            = azurerm_resource_group.rg.location
+		16 |   resource_group_name = azurerm_resource_group.rg.name
+		17 |   ip_address_type     = "Public"
+		18 |   dns_name_label      = "insecureaci20250707" # Debe ser único globalmente
+		19 |   os_type             = "Linux"
+		20 | 
+		21 |   container {
+		22 |     name   = "insecure-web-app"
+		23 |     image  = "nginx:latest" # Una imagen de ejemplo
+		24 |     cpu    = 1
+		25 |     memory = 1.5
+		26 | 
+		27 |     ports {
+		28 |       port     = 80
+		29 |       protocol = "TCP"
+		30 |     }
+		31 |     ports {
+		32 |       port     = 3306 # Vulnerabilidad: Puerto de DB expuesto públicamente
+		33 |       protocol = "TCP"
+		34 |     }
+		35 |     # No se especifican límites de recursos o políticas de reinicio robustas, aunque es más sutil
+		36 |   }
+		37 | 
+		38 |   # Vulnerabilidad: No se configuran políticas de reinicio estrictas o seguridad avanzada
+		39 |   # restart_policy = "OnFailure" # Más robusto sería "Never" o "OnFailure" con análisis
+		40 |   # No hay "identity" para acceso a recursos seguros (Managed Identity)
+		41 |   # No se monta Azure Files o otros volúmenes que podrían tener restricciones de seguridad
+		42 | }
+
+

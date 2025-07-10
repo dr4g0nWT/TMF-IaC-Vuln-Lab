@@ -1,0 +1,169 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 3, Failed checks: 9, Skipped checks: 0
+
+Check: CKV_GCP_46: "Ensure Default Service account is not used at a project level"
+	PASSED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:40-44
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-7
+Check: CKV_GCP_41: "Ensure that IAM users are not assigned the Service Account User or Service Account Token Creator roles at project level"
+	PASSED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:40-44
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-3
+Check: CKV_GCP_42: "Ensure that Service Account has no Admin privileges"
+	PASSED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:40-44
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-4
+Check: CKV_GCP_62: "Bucket should log access"
+	FAILED for resource: google_storage_bucket.function_code_bucket
+	File: /gcp.tf:9-14
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-logging-2
+
+		9  | resource "google_storage_bucket" "function_code_bucket" {
+		10 |   name          = "tfm-function-code-19-${random_id.bucket_suffix.hex}"
+		11 |   location      = "EUROPE-WEST1"
+		12 |   force_destroy = true
+		13 |   project       = "your-gcp-project-id"
+		14 | }
+
+Check: CKV_GCP_114: "Ensure public access prevention is enforced on Cloud Storage bucket"
+	FAILED for resource: google_storage_bucket.function_code_bucket
+	File: /gcp.tf:9-14
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-google-cloud-114
+
+		9  | resource "google_storage_bucket" "function_code_bucket" {
+		10 |   name          = "tfm-function-code-19-${random_id.bucket_suffix.hex}"
+		11 |   location      = "EUROPE-WEST1"
+		12 |   force_destroy = true
+		13 |   project       = "your-gcp-project-id"
+		14 | }
+
+Check: CKV_GCP_78: "Ensure Cloud storage has versioning enabled"
+	FAILED for resource: google_storage_bucket.function_code_bucket
+	File: /gcp.tf:9-14
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-cloud-storage-has-versioning-enabled
+
+		9  | resource "google_storage_bucket" "function_code_bucket" {
+		10 |   name          = "tfm-function-code-19-${random_id.bucket_suffix.hex}"
+		11 |   location      = "EUROPE-WEST1"
+		12 |   force_destroy = true
+		13 |   project       = "your-gcp-project-id"
+		14 | }
+
+Check: CKV_GCP_29: "Ensure that Cloud Storage buckets have uniform bucket-level access enabled"
+	FAILED for resource: google_storage_bucket.function_code_bucket
+	File: /gcp.tf:9-14
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-storage-gcs-policies/bc-gcp-gcs-2
+
+		9  | resource "google_storage_bucket" "function_code_bucket" {
+		10 |   name          = "tfm-function-code-19-${random_id.bucket_suffix.hex}"
+		11 |   location      = "EUROPE-WEST1"
+		12 |   force_destroy = true
+		13 |   project       = "your-gcp-project-id"
+		14 | }
+
+Check: CKV_GCP_49: "Ensure roles do not impersonate or manage Service Accounts used at project level"
+	FAILED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:40-44
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-10
+
+		40 | resource "google_project_iam_member" "insecure_sa_project_editor" {
+		41 |   project = "your-gcp-project-id"
+		42 |   role    = "roles/editor" # ¡Grave vulnerabilidad! Permisos de editor a nivel de proyecto
+		43 |   member  = "serviceAccount:${google_service_account.insecure_function_sa.email}"
+		44 | }
+
+Check: CKV_GCP_117: "Ensure basic roles are not used at project level."
+	FAILED for resource: google_project_iam_member.insecure_sa_project_editor
+	File: /gcp.tf:40-44
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-google-cloud-117
+
+		40 | resource "google_project_iam_member" "insecure_sa_project_editor" {
+		41 |   project = "your-gcp-project-id"
+		42 |   role    = "roles/editor" # ¡Grave vulnerabilidad! Permisos de editor a nivel de proyecto
+		43 |   member  = "serviceAccount:${google_service_account.insecure_function_sa.email}"
+		44 | }
+
+Check: CKV_GCP_124: "Ensure GCP Cloud Function is not configured with overly permissive Ingress setting"
+	FAILED for resource: google_cloudfunctions_function.insecure_cloud_function
+	File: /gcp.tf:47-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-google-cloud-124
+
+		47 | resource "google_cloudfunctions_function" "insecure_cloud_function" {
+		48 |   name        = "tfm-insecure-cloud-function-19"
+		49 |   runtime     = "nodejs16" # Usar una versión de runtime compatible
+		50 |   entry_point = "handler"
+		51 |   region      = "europe-west1"
+		52 |   project     = "your-gcp-project-id"
+		53 | 
+		54 |   source_archive_bucket = google_storage_bucket.function_code_bucket.name
+		55 |   source_archive_object = google_storage_bucket_object.function_zip.name
+		56 |   
+		57 |   service_account_email = google_service_account.insecure_function_sa.email
+		58 | 
+		59 |   trigger_http = true # Para hacerla invocable vía HTTP
+		60 | 
+		61 |   # ¡Vulnerabilidad! Almacenar secretos directamente en variables de entorno.
+		62 |   environment_variables = {
+		63 |     DATABASE_USERNAME = "admin"
+		64 |     DATABASE_PASSWORD = "AnotherHardcodedSecret123!" # ¡Grave vulnerabilidad!
+		65 |     THIRD_PARTY_API_KEY = "XYZ_GCP_Insecure_Key"
+		66 |   }
+		67 |   labels = {
+		68 |     environment = "dev-insecure"
+		69 |   }
+		70 | }
+
+Check: CKV_GCP_107: "Cloud functions should not be public"
+	FAILED for resource: google_cloudfunctions_function_iam_member.invoker
+	File: /gcp.tf:73-79
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-google-cloud-107
+
+		73 | resource "google_cloudfunctions_function_iam_member" "invoker" {
+		74 |   project        = google_cloudfunctions_function.insecure_cloud_function.project
+		75 |   region         = google_cloudfunctions_function.insecure_cloud_function.region
+		76 |   cloud_function = google_cloudfunctions_function.insecure_cloud_function.name
+		77 |   role           = "roles/cloudfunctions.invoker"
+		78 |   member         = "allUsers" # ¡Vulnerabilidad! Cualquier persona puede invocar la función.
+		79 | }
+
+Check: CKV2_GCP_10: "Ensure GCP Cloud Function HTTP trigger is secured"
+	FAILED for resource: google_cloudfunctions_function.insecure_cloud_function
+	File: /gcp.tf:47-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/ensure-gcp-cloud-function-http-trigger-is-secured
+
+		47 | resource "google_cloudfunctions_function" "insecure_cloud_function" {
+		48 |   name        = "tfm-insecure-cloud-function-19"
+		49 |   runtime     = "nodejs16" # Usar una versión de runtime compatible
+		50 |   entry_point = "handler"
+		51 |   region      = "europe-west1"
+		52 |   project     = "your-gcp-project-id"
+		53 | 
+		54 |   source_archive_bucket = google_storage_bucket.function_code_bucket.name
+		55 |   source_archive_object = google_storage_bucket_object.function_zip.name
+		56 |   
+		57 |   service_account_email = google_service_account.insecure_function_sa.email
+		58 | 
+		59 |   trigger_http = true # Para hacerla invocable vía HTTP
+		60 | 
+		61 |   # ¡Vulnerabilidad! Almacenar secretos directamente en variables de entorno.
+		62 |   environment_variables = {
+		63 |     DATABASE_USERNAME = "admin"
+		64 |     DATABASE_PASSWORD = "AnotherHardcodedSecret123!" # ¡Grave vulnerabilidad!
+		65 |     THIRD_PARTY_API_KEY = "XYZ_GCP_Insecure_Key"
+		66 |   }
+		67 |   labels = {
+		68 |     environment = "dev-insecure"
+		69 |   }
+		70 | }
+
+

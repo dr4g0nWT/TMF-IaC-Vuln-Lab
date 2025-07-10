@@ -1,0 +1,104 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 10, Failed checks: 2, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.outdated_vm
+	File: /azure.tf:38-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.outdated_vm
+	File: /azure.tf:38-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.outdated_vm
+	File: /azure.tf:38-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.outdated_vm
+	File: /azure.tf:38-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.outdated_vm
+	File: /azure.tf:38-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+Check: CKV2_AZURE_39: "Ensure Azure VM is not configured with public IP and serial console access"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-2-39
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.outdated_vm
+	File: /azure.tf:38-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		38 | resource "azurerm_linux_virtual_machine" "outdated_vm" {
+		39 |   name                = "outdated-linux-vm-07-azure"
+		40 |   resource_group_name = azurerm_resource_group.rg.name
+		41 |   location            = azurerm_resource_group.rg.location
+		42 |   size                = "Standard_B1s"
+		43 |   admin_username      = "adminuser"
+		44 |   network_interface_ids = [azurerm_network_interface.nic.id]
+		45 | 
+		46 |   # Vulnerabilidad 1: Uso de una imagen de SO antigua/específica que no está actualizada
+		47 |   # Aquí se usa una versión específica (16.04-LTS) que ya no recibe soporte general.
+		48 |   source_image_reference {
+		49 |     publisher = "Canonical"
+		50 |     offer     = "UbuntuServer"
+		51 |     sku       = "16.04-LTS" # ¡Vulnerabilidad! Versión antigua y fuera de soporte
+		52 |     version   = "latest"   # 'latest' para esta SKU antigua sigue siendo una versión 16.04
+		53 |   }
+		54 | 
+		55 |   os_disk {
+		56 |     caching              = "ReadWrite"
+		57 |     storage_account_type = "Standard_LRS"
+		58 |   }
+		59 | 
+		60 |   admin_ssh_key {
+		61 |     username   = "adminuser"
+		62 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com" # Cambia si vas a desplegar
+		63 |   }
+		64 | 
+		65 |   # Vulnerabilidad 2: No hay configuración de Azure Update Management ni de auto-parcheo
+		66 |   # En un entorno seguro, se adjuntaría la VM a un Automation Account con Update Management
+		67 |   # No hay extensión para actualizaciones de paquetes automatizadas
+		68 |   # No hay "patch_mode" definido en el os_disk para actualizaciones automáticas (disponible para Windows)
+		69 |   # No se especifica la instalación automática de actualizaciones de seguridad en 'custom_data'
+		70 | }
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "subnet" {
+		20 |   name                 = "tfm-security-subnet-07-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 | }
+
+

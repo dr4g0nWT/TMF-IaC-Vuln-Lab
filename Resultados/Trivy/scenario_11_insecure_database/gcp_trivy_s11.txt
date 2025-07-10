@@ -1,0 +1,107 @@
+
+Report Summary
+
+┌────────┬───────────┬───────────────────┐
+│ Target │   Type    │ Misconfigurations │
+├────────┼───────────┼───────────────────┤
+│ .      │ terraform │         0         │
+├────────┼───────────┼───────────────────┤
+│ gcp.tf │ terraform │         4         │
+└────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+gcp.tf (terraform)
+==================
+Tests: 4 (SUCCESSES: 0, FAILURES: 4)
+Failures: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
+
+AVD-GCP-0015 (HIGH): Database instance does not require TLS for all connections.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+In-transit data should be encrypted so that if traffic is intercepted data will not be exposed in plaintext to attackers.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0015
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:20-32
+   via gcp.tf:12-37 (settings)
+    via gcp.tf:8-38 (google_sql_database_instance.insecure_cloud_sql_db)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   8   resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+   .   
+  20 ┌     ip_configuration {
+  21 │       # Vulnerabilidad 1: Habilitar la IP pública para la base de datos
+  22 │       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+  23 │ 
+  24 │       # Vulnerabilidad 2: Redes autorizadas excesivamente permisivas (0.0.0.0/0)
+  25 │       authorized_networks {
+  26 └         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0017 (HIGH): Database instance allows access from the public internet.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Database instances should be configured so that they are not available over the public internet, but to internal compute resources which access them.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0017
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:26
+   via gcp.tf:25-28 (authorized_networks)
+    via gcp.tf:20-32 (ip_configuration)
+     via gcp.tf:12-37 (settings)
+      via gcp.tf:8-38 (google_sql_database_instance.insecure_cloud_sql_db)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   8   resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+   .   
+  26 [         value = "0.0.0.0/0" # ¡Vulnerabilidad! Acceso desde cualquier IP
+  ..   
+  38   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0017 (HIGH): Database instance is granted a public internet address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Database instances should be configured so that they are not available over the public internet, but to internal compute resources which access them.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0017
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:22
+   via gcp.tf:20-32 (ip_configuration)
+    via gcp.tf:12-37 (settings)
+     via gcp.tf:8-38 (google_sql_database_instance.insecure_cloud_sql_db)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   8   resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+   .   
+  22 [       ipv4_enabled = true # ¡Vulnerabilidad! DB accesible públicamente
+  ..   
+  38   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0024 (MEDIUM): Database instance does not have backups enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Automated backups are not enabled by default. Backups are an easy way to restore data in a corruption or data-loss scenario.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0024
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:8-38
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   8 ┌ resource "google_sql_database_instance" "insecure_cloud_sql_db" {
+   9 │   project          = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+  10 │   name             = "tfm-insecure-cloud-sql-11"
+  11 │   database_version = "MYSQL_8_0"
+  12 │   settings {
+  13 │     tier = "db-f1-micro"
+  14 │     # disk_autoresize = true
+  15 │     # backup_configuration {
+  16 └     #   enabled            = true
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

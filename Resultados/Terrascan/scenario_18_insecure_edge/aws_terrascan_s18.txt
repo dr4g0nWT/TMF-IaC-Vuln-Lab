@@ -1,0 +1,106 @@
+
+
+
+Violation Details -
+    
+	Description    :	Ensure that your AWS Cloudfront distributions have the Logging feature enabled in order to track all viewer requests for the content delivered through the Content Delivery Network (CDN).
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	140
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure that geo restriction is enabled for your Amazon CloudFront CDN distribution to whitelist or blacklist a country in order to allow or restrict users in specific locations from accessing web application content.
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	140
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Security Groups - Unrestricted Specific Ports - (HTTPS,443)
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	55
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure S3 object is Encrypted
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	132
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Enabling S3 versioning will enable easy recovery from both unintended user actions, like deletes and overwrites
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	120
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Misconfigured S3 buckets can leak private information to the entire internet or allow unauthorized data tampering / deletion
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	120
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure there is a listener configured on HTTPs or with a port 443
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	102
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure Target Group use HTTPs to ensure end to end encryption
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	95
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure VPC flow logging is enabled in all VPCs
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	8
+	Severity       :	LOW
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Ensure that cloud-front has web application firewall enabled
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	140
+	Severity       :	MEDIUM
+	
+	-----------------------------------------------------------------------
+	
+	Description    :	Security Groups - Unrestricted Specific Ports - (HTTP,80)
+	File           :	aws.tf
+	Module Name    :	root
+	Line           :	55
+	Severity       :	HIGH
+	
+	-----------------------------------------------------------------------
+	
+
+Scan Summary -
+
+	File/Folder         :	/home/dr4g0n/TFM/TMF-IaC-Vuln-Lab/Escenarios/scenario_18_insecure_edge/aws.tf
+	IaC Type            :	terraform
+	Scanned At          :	2025-07-09 10:30:21.204274549 +0000 UTC
+	Policies Validated  :	157
+	Violated Policies   :	11
+	Low                 :	3
+	Medium              :	5
+	High                :	3
+	
+

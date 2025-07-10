@@ -1,0 +1,183 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 13, Failed checks: 7, Skipped checks: 0
+
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.insecure_ec2_role
+	File: /aws.tf:26-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.insecure_ec2_role
+	File: /aws.tf:26-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-44
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.insecure_ec2_role
+	File: /aws.tf:26-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_286: "Ensure IAM policies does not allow privilege escalation"
+	PASSED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-286
+Check: CKV_AWS_287: "Ensure IAM policies does not allow credentials exposure"
+	PASSED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-287
+Check: CKV_AWS_62: "Ensure IAM policies that allow full "*-*" administrative privileges are not created"
+	PASSED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_63: "Ensure no IAM policies documents allow "*" as a statement's actions"
+	PASSED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/iam-48
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role_policy_attachment.ec2_s3_full_access_attachment
+	File: /aws.tf:59-62
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_user_policy_attachment.admin_policy_attachment
+	File: /aws.tf:18-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.insecure_ec2_role
+	File: /aws.tf:26-41
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV2_AWS_22: "Ensure an IAM User does not have access to the console"
+	PASSED for resource: aws_iam_user.insecure_admin_user
+	File: /aws.tf:10-16
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-user-does-not-have-access-to-the-console-group
+Check: CKV2_AWS_40: "Ensure AWS IAM policy does not allow full IAM privileges"
+	PASSED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-40
+Check: CKV_AWS_273: "Ensure access is controlled through SSO and not AWS IAM defined users"
+	FAILED for resource: aws_iam_user.insecure_admin_user
+	File: /aws.tf:10-16
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-273
+
+		10 | resource "aws_iam_user" "insecure_admin_user" {
+		11 |   name = "tfm-insecure-admin-user-2025"
+		12 |   tags = {
+		13 |     Project     = "IaC_Security_TFM"
+		14 |     Environment = "Dev"
+		15 |   }
+		16 | }
+
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	FAILED for resource: aws_iam_user_policy_attachment.admin_policy_attachment
+	File: /aws.tf:18-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+
+		18 | resource "aws_iam_user_policy_attachment" "admin_policy_attachment" {
+		19 |   user       = aws_iam_user.insecure_admin_user.name
+		20 |   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # ¡Vulnerabilidad! Acceso excesivo
+		21 | }
+
+Check: CKV_AWS_40: "Ensure IAM policies are attached only to groups or roles (Reducing access management complexity may in-turn reduce opportunity for a principal to inadvertently receive or retain excessive privileges.)"
+	FAILED for resource: aws_iam_user_policy_attachment.admin_policy_attachment
+	File: /aws.tf:18-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/iam-16-iam-policy-privileges-1
+
+		18 | resource "aws_iam_user_policy_attachment" "admin_policy_attachment" {
+		19 |   user       = aws_iam_user.insecure_admin_user.name
+		20 |   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # ¡Vulnerabilidad! Acceso excesivo
+		21 | }
+
+Check: CKV_AWS_289: "Ensure IAM policies does not allow permissions management / resource exposure without constraints"
+	FAILED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-289
+
+		43 | resource "aws_iam_policy" "s3_full_access_policy" {
+		44 |   name        = "tfm-s3-full-access-policy-2025"
+		45 |   description = "Allows full S3 access for testing (insecure for general use)"
+		46 | 
+		47 |   policy = jsonencode({
+		48 |     Version = "2012-10-17"
+		49 |     Statement = [
+		50 |       {
+		51 |         Action = "s3:*" # ¡Vulnerabilidad! Permisos excesivos a todos los recursos S3
+		52 |         Effect = "Allow"
+		53 |         Resource = "*"
+		54 |       },
+		55 |     ]
+		56 |   })
+		57 | }
+
+Check: CKV_AWS_355: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
+	FAILED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-355
+
+		43 | resource "aws_iam_policy" "s3_full_access_policy" {
+		44 |   name        = "tfm-s3-full-access-policy-2025"
+		45 |   description = "Allows full S3 access for testing (insecure for general use)"
+		46 | 
+		47 |   policy = jsonencode({
+		48 |     Version = "2012-10-17"
+		49 |     Statement = [
+		50 |       {
+		51 |         Action = "s3:*" # ¡Vulnerabilidad! Permisos excesivos a todos los recursos S3
+		52 |         Effect = "Allow"
+		53 |         Resource = "*"
+		54 |       },
+		55 |     ]
+		56 |   })
+		57 | }
+
+Check: CKV_AWS_288: "Ensure IAM policies does not allow data exfiltration"
+	FAILED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-288
+
+		43 | resource "aws_iam_policy" "s3_full_access_policy" {
+		44 |   name        = "tfm-s3-full-access-policy-2025"
+		45 |   description = "Allows full S3 access for testing (insecure for general use)"
+		46 | 
+		47 |   policy = jsonencode({
+		48 |     Version = "2012-10-17"
+		49 |     Statement = [
+		50 |       {
+		51 |         Action = "s3:*" # ¡Vulnerabilidad! Permisos excesivos a todos los recursos S3
+		52 |         Effect = "Allow"
+		53 |         Resource = "*"
+		54 |       },
+		55 |     ]
+		56 |   })
+		57 | }
+
+Check: CKV_AWS_290: "Ensure IAM policies does not allow write access without constraints"
+	FAILED for resource: aws_iam_policy.s3_full_access_policy
+	File: /aws.tf:43-57
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-290
+
+		43 | resource "aws_iam_policy" "s3_full_access_policy" {
+		44 |   name        = "tfm-s3-full-access-policy-2025"
+		45 |   description = "Allows full S3 access for testing (insecure for general use)"
+		46 | 
+		47 |   policy = jsonencode({
+		48 |     Version = "2012-10-17"
+		49 |     Statement = [
+		50 |       {
+		51 |         Action = "s3:*" # ¡Vulnerabilidad! Permisos excesivos a todos los recursos S3
+		52 |         Effect = "Allow"
+		53 |         Resource = "*"
+		54 |       },
+		55 |     ]
+		56 |   })
+		57 | }
+
+

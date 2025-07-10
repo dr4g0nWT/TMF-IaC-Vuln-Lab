@@ -1,0 +1,152 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 3, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:8-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:8-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_77: "Ensure that UDP Services are restricted from the Internet "
+	PASSED for resource: azurerm_network_security_group.open_ports_nsg
+	File: /azure.tf:22-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-udp-services-are-restricted-from-the-internet
+Check: CKV_AZURE_160: "Ensure that HTTP (port 80) access is restricted from the internet"
+	PASSED for resource: azurerm_network_security_group.open_ports_nsg
+	File: /azure.tf:22-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-azure-http-port-80-access-from-the-internet-is-restricted
+Check: CKV_AZURE_10: "Ensure that SSH access is restricted from the internet"
+	FAILED for resource: azurerm_network_security_group.open_ports_nsg
+	File: /azure.tf:22-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-3
+
+		22 | resource "azurerm_network_security_group" "open_ports_nsg" {
+		23 |   name                = "tfm-insecure-open-ports-nsg"
+		24 |   location            = azurerm_resource_group.rg.location
+		25 |   resource_group_name = azurerm_resource_group.rg.name
+		26 | 
+		27 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		28 |   security_rule {
+		29 |     name                       = "AllowSSHFromAny"
+		30 |     priority                   = 100
+		31 |     direction                  = "Inbound"
+		32 |     access                     = "Allow"
+		33 |     protocol                   = "Tcp"
+		34 |     source_port_range          = "*"
+		35 |     destination_port_range     = "22"
+		36 |     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad (cualquier IP)
+		37 |     destination_address_prefix = "*"
+		38 |   }
+		39 | 
+		40 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		41 |   security_rule {
+		42 |     name                       = "AllowRDPFromAny"
+		43 |     priority                   = 110
+		44 |     direction                  = "Inbound"
+		45 |     access                     = "Allow"
+		46 |     protocol                   = "Tcp"
+		47 |     source_port_range          = "*"
+		48 |     destination_port_range     = "3389"
+		49 |     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+		50 |     destination_address_prefix = "*"
+		51 |   }
+		52 | 
+		53 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. SQL Server) desde cualquier lugar (0.0.0.0/0)
+		54 |   security_rule {
+		55 |     name                       = "AllowSQLFromAny"
+		56 |     priority                   = 120
+		57 |     direction                  = "Inbound"
+		58 |     access                     = "Allow"
+		59 |     protocol                   = "Tcp"
+		60 |     source_port_range          = "*"
+		61 |     destination_port_range     = "1433" # Puerto por defecto de SQL Server
+		62 |     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+		63 |     destination_address_prefix = "*"
+		64 |   }
+		65 | 
+		66 |   tags = {
+		67 |     Environment = "Dev"
+		68 |     Project     = "IaC_Security_TFM_Azure"
+		69 |   }
+		70 | }
+
+Check: CKV_AZURE_9: "Ensure that RDP access is restricted from the internet"
+	FAILED for resource: azurerm_network_security_group.open_ports_nsg
+	File: /azure.tf:22-70
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-2
+
+		22 | resource "azurerm_network_security_group" "open_ports_nsg" {
+		23 |   name                = "tfm-insecure-open-ports-nsg"
+		24 |   location            = azurerm_resource_group.rg.location
+		25 |   resource_group_name = azurerm_resource_group.rg.name
+		26 | 
+		27 |   # Vulnerabilidad 1: Acceso SSH desde cualquier lugar (0.0.0.0/0)
+		28 |   security_rule {
+		29 |     name                       = "AllowSSHFromAny"
+		30 |     priority                   = 100
+		31 |     direction                  = "Inbound"
+		32 |     access                     = "Allow"
+		33 |     protocol                   = "Tcp"
+		34 |     source_port_range          = "*"
+		35 |     destination_port_range     = "22"
+		36 |     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad (cualquier IP)
+		37 |     destination_address_prefix = "*"
+		38 |   }
+		39 | 
+		40 |   # Vulnerabilidad 2: Acceso RDP desde cualquier lugar (0.0.0.0/0)
+		41 |   security_rule {
+		42 |     name                       = "AllowRDPFromAny"
+		43 |     priority                   = 110
+		44 |     direction                  = "Inbound"
+		45 |     access                     = "Allow"
+		46 |     protocol                   = "Tcp"
+		47 |     source_port_range          = "*"
+		48 |     destination_port_range     = "3389"
+		49 |     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+		50 |     destination_address_prefix = "*"
+		51 |   }
+		52 | 
+		53 |   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. SQL Server) desde cualquier lugar (0.0.0.0/0)
+		54 |   security_rule {
+		55 |     name                       = "AllowSQLFromAny"
+		56 |     priority                   = 120
+		57 |     direction                  = "Inbound"
+		58 |     access                     = "Allow"
+		59 |     protocol                   = "Tcp"
+		60 |     source_port_range          = "*"
+		61 |     destination_port_range     = "1433" # Puerto por defecto de SQL Server
+		62 |     source_address_prefix      = "*" # TODO: Esto es una vulnerabilidad
+		63 |     destination_address_prefix = "*"
+		64 |   }
+		65 | 
+		66 |   tags = {
+		67 |     Environment = "Dev"
+		68 |     Project     = "IaC_Security_TFM_Azure"
+		69 |   }
+		70 | }
+
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:15-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		15 | resource "azurerm_subnet" "subnet" {
+		16 |   name                 = "tfm-security-subnet-02"
+		17 |   resource_group_name  = azurerm_resource_group.rg.name
+		18 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		19 |   address_prefixes     = ["10.0.1.0/24"]
+		20 | }
+
+

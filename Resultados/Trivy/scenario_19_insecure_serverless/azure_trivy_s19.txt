@@ -1,0 +1,42 @@
+
+Report Summary
+
+┌──────────┬───────────┬───────────────────┐
+│  Target  │   Type    │ Misconfigurations │
+├──────────┼───────────┼───────────────────┤
+│ .        │ terraform │         0         │
+├──────────┼───────────┼───────────────────┤
+│ azure.tf │ terraform │         1         │
+└──────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+azure.tf (terraform)
+====================
+Tests: 1 (SUCCESSES: 0, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
+
+AVD-AZU-0004 (CRITICAL): Function app does not have HTTPS enforced.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+By default, clients can connect to function endpoints by using both HTTP or HTTPS. You should redirect HTTP to HTTPs because HTTPS uses the SSL/TLS protocol to provide a secure connection, which is both encrypted and authenticated.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0004
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:36-52
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  36 ┌ resource "azurerm_function_app" "insecure_function_app" {
+  37 │   name                       = "tfm-insecure-funcapp-19"
+  38 │   location                   = azurerm_resource_group.rg.location
+  39 │   resource_group_name        = azurerm_resource_group.rg.name
+  40 │   app_service_plan_id        = azurerm_app_service_plan.app_plan.id
+  41 │   storage_account_name       = azurerm_storage_account.st.name
+  42 │   storage_account_access_key = azurerm_storage_account.st.primary_access_key
+  43 │   version                    = "~4" # Versión de runtime, usar una compatible
+  44 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

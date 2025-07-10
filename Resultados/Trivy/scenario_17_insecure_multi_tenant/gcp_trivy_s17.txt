@@ -1,0 +1,182 @@
+
+Report Summary
+
+┌────────┬───────────┬───────────────────┐
+│ Target │   Type    │ Misconfigurations │
+├────────┼───────────┼───────────────────┤
+│ .      │ terraform │         0         │
+├────────┼───────────┼───────────────────┤
+│ gcp.tf │ terraform │         7         │
+└────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+gcp.tf (terraform)
+==================
+Tests: 7 (SUCCESSES: 0, FAILURES: 7)
+Failures: 7 (UNKNOWN: 0, LOW: 2, MEDIUM: 2, HIGH: 3, CRITICAL: 0)
+
+AVD-GCP-0029 (LOW): Subnetwork does not have VPC flow logs enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+VPC flow logs record information about all traffic, which is a vital tool in reviewing anomalous traffic.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0029
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:14-20
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  14 ┌ resource "google_compute_subnetwork" "gke_subnet" {
+  15 │   name        = "tfm-security-gke-subnet-17-gcp"
+  16 │   ip_cidr_range = "10.0.1.0/24"
+  17 │   network     = google_compute_network.vpc_network.id
+  18 │   region      = "europe-west1"
+  19 │   private_ip_google_access = true # Necesario para algunos servicios de GKE
+  20 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0048 (HIGH): Cluster has legacy metadata endpoints enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+The Compute Engine instance metadata server exposes legacy v0.1 and v1beta1 endpoints, which do not enforce metadata query headers.
+
+This is a feature in the v1 APIs that makes it more difficult for a potential attacker to retrieve instance metadata.
+
+Unless specifically required, we recommend you disable these legacy APIs.
+
+When setting the <code>metadata</code> block, the default value for <code>disable-legacy-endpoints</code> is set to true, they should not be explicitly enabled.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0048
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:31-36
+   via gcp.tf:23-75 (google_container_cluster.insecure_gke_cluster)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23   resource "google_container_cluster" "insecure_gke_cluster" {
+  ..   
+  31 ┌   node_config {
+  32 │     machine_type = "e2-medium"
+  33 │     oauth_scopes = [
+  34 │       "https://www.googleapis.com/auth/cloud-platform", # ¡Vulnerabilidad! Permisos excesivos para los nodos
+  35 │     ]
+  36 └   }
+  ..   
+  75   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0050 (MEDIUM): Cluster does not override the default service account.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+You should create and use a minimally privileged service account to run your GKE cluster instead of using the Compute Engine default service account.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0050
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:31-36
+   via gcp.tf:23-75 (google_container_cluster.insecure_gke_cluster)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23   resource "google_container_cluster" "insecure_gke_cluster" {
+  ..   
+  31 ┌   node_config {
+  32 │     machine_type = "e2-medium"
+  33 │     oauth_scopes = [
+  34 │       "https://www.googleapis.com/auth/cloud-platform", # ¡Vulnerabilidad! Permisos excesivos para los nodos
+  35 │     ]
+  36 └   }
+  ..   
+  75   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0051 (LOW): Cluster does not use GCE resource labels.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Labels make it easier to manage assets and differentiate between clusters and environments, allowing the mapping of computational resources to the wider organisational structure.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0051
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:23-75
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌ resource "google_container_cluster" "insecure_gke_cluster" {
+  24 │   name     = "tfm-insecure-gke-cluster-17"
+  25 │   location = "europe-west1"
+  26 │   project  = "your-gcp-project-id"
+  27 │ 
+  28 │   initial_node_count = 1
+  29 │   min_master_version = "1.27" # Versión de ejemplo, usar una compatible
+  30 │ 
+  31 └   node_config {
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0056 (MEDIUM): Cluster does not have a network policy enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Enabling a network policy allows the segregation of network traffic by namespace
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0056
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:23-75
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌ resource "google_container_cluster" "insecure_gke_cluster" {
+  24 │   name     = "tfm-insecure-gke-cluster-17"
+  25 │   location = "europe-west1"
+  26 │   project  = "your-gcp-project-id"
+  27 │ 
+  28 │   initial_node_count = 1
+  29 │   min_master_version = "1.27" # Versión de ejemplo, usar una compatible
+  30 │ 
+  31 └   node_config {
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0057 (HIGH): Cluster exposes node metadata of pools by default.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+If the <code>workload_metadata_config</code> block within <code>node_config</code> is included, the <code>node_metadata</code> attribute should be configured securely.
+
+The attribute should be set to <code>SECURE</code> to use metadata concealment, or <code>GKE_METADATA_SERVER</code> if workload identity is enabled. This ensures that the VM metadata is not unnecessarily exposed to pods.
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0057
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:31-36
+   via gcp.tf:23-75 (google_container_cluster.insecure_gke_cluster)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23   resource "google_container_cluster" "insecure_gke_cluster" {
+  ..   
+  31 ┌   node_config {
+  32 │     machine_type = "e2-medium"
+  33 │     oauth_scopes = [
+  34 │       "https://www.googleapis.com/auth/cloud-platform", # ¡Vulnerabilidad! Permisos excesivos para los nodos
+  35 │     ]
+  36 └   }
+  ..   
+  75   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-GCP-0061 (HIGH): Cluster does not have master authorized networks enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Enabling authorized networks means you can restrict master access to a fixed set of CIDR ranges
+
+
+See https://avd.aquasec.com/misconfig/avd-gcp-0061
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ gcp.tf:23-75
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  23 ┌ resource "google_container_cluster" "insecure_gke_cluster" {
+  24 │   name     = "tfm-insecure-gke-cluster-17"
+  25 │   location = "europe-west1"
+  26 │   project  = "your-gcp-project-id"
+  27 │ 
+  28 │   initial_node_count = 1
+  29 │   min_master_version = "1.27" # Versión de ejemplo, usar una compatible
+  30 │ 
+  31 └   node_config {
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

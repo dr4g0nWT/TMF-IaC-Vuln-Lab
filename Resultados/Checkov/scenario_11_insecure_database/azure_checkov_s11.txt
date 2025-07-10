@@ -1,0 +1,163 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 0, Failed checks: 9, Skipped checks: 0
+
+Check: CKV_AZURE_94: "Ensure that My SQL server enables geo-redundant backups"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-my-sql-server-enables-geo-redundant-backups
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV_AZURE_54: "Ensure MySQL is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-mysql-is-using-the-latest-version-of-tls-encryption
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV_AZURE_96: "Ensure that MySQL server enables infrastructure encryption"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-postgresql-server-enables-infrastructure-encryption-1
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV_AZURE_53: "Ensure 'public network access enabled' is set to 'False' for mySQL servers"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-public-network-access-enabled-is-set-to-false-for-mysql-servers
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV_AZURE_28: "Ensure 'Enforce SSL connection' is set to 'ENABLED' for MySQL Database Server"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-9
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV_AZURE_127: "Ensure that My SQL server enables Threat detection policy"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-my-sql-server-enables-threat-detection-policy
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV_AZURE_11: "Ensure no SQL Databases allow ingress from 0.0.0.0/0 (ANY IP)"
+	FAILED for resource: azurerm_mysql_firewall_rule.public_access_rule
+	File: /azure.tf:33-39
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-4
+
+		33 | resource "azurerm_mysql_firewall_rule" "public_access_rule" {
+		34 |   name                = "AllowAllPublicAccess"
+		35 |   resource_group_name = azurerm_resource_group.rg.name
+		36 |   server_name         = azurerm_mysql_server.insecure_mysql_server.name
+		37 |   start_ip_address    = "0.0.0.0" # ¡Vulnerabilidad!
+		38 |   end_ip_address      = "255.255.255.255" # ¡Vulnerabilidad!
+		39 | }
+
+Check: CKV2_AZURE_16: "Ensure that MySQL server enables customer-managed key for encryption"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-mysql-server-enables-customer-managed-key-for-encryption
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+Check: CKV2_AZURE_44: "Ensure Azure MySQL server is configured with private endpoint"
+	FAILED for resource: azurerm_mysql_server.insecure_mysql_server
+	File: /azure.tf:20-30
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-44
+
+		20 | resource "azurerm_mysql_server" "insecure_mysql_server" {
+		21 |   name                = "tfm-mysqlserver-insecure-11" # Debe ser único globalmente
+		22 |   location            = azurerm_resource_group.rg.location
+		23 |   resource_group_name = azurerm_resource_group.rg.name
+		24 |   sku_name            = "B_Gen5_1"
+		25 |   storage_mb          = 5120
+		26 |   version             = "8.0"
+		27 |   administrator_login    = "mysqladmin"
+		28 |   administrator_login_password = random_password.db_password.result # Usar Key Vault en producción
+		29 |   ssl_enforcement_enabled = false # ¡Vulnerabilidad! SSL/TLS deshabilitado
+		30 | }
+
+

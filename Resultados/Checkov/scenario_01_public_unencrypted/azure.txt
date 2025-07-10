@@ -1,0 +1,426 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 14, Skipped checks: 0
+
+Check: CKV_AZURE_36: "Ensure 'Trusted Microsoft Services' is enabled for Storage Account access"
+	PASSED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/enable-trusted-microsoft-services-for-storage-account-access
+Check: CKV_AZURE_244: "Avoid the use of local users for Azure Storage unless necessary"
+	PASSED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-244
+Check: CKV_AZURE_3: "Ensure that 'enable_https_traffic_only' is enabled"
+	PASSED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-3
+Check: CKV2_AZURE_8: "Ensure the storage container storing the activity logs is not publicly accessible"
+	PASSED for resource: azurerm_storage_container.public_container
+	File: /azure_storage.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/ensure-the-storage-container-storing-the-activity-logs-is-not-publicly-accessible
+Check: CKV_AZURE_43: "Ensure Storage Accounts adhere to the naming rules"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/ensure-storage-accounts-adhere-to-the-naming-rules
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV_AZURE_190: "Ensure that Storage blobs restrict public access"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-190
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV_AZURE_59: "Ensure that Storage accounts disallow public access"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-storage-accounts-disallow-public-access
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV_AZURE_44: "Ensure Storage Account is using the latest version of TLS encryption"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-storage-policies/bc-azr-storage-2
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV_AZURE_206: "Ensure that Storage Accounts use replication"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-206
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV_AZURE_33: "Ensure Storage logging is enabled for Queue service for read, write and delete requests"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/enable-requests-on-storage-logging-for-queue-service
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV_AZURE_34: "Ensure that 'Public access level' is set to Private for blob containers"
+	FAILED for resource: azurerm_storage_container.public_container
+	File: /azure_storage.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/set-public-access-level-to-private-for-blob-containers
+
+		34 | resource "azurerm_storage_container" "public_container" {
+		35 |   name                  = "public-data"
+		36 |   storage_account_name  = azurerm_storage_account.insecure_storage_account.name
+		37 |   container_access_type = "blob" # Vulnerabilidad 1: Acceso de lectura público a blobs
+		38 | 
+		39 |   depends_on = [azurerm_storage_account.insecure_storage_account]
+		40 | }
+Check: CKV2_AZURE_33: "Ensure storage account is configured with private endpoint"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-33
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV2_AZURE_47: "Ensure storage account is configured without blob anonymous access"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-47
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV2_AZURE_38: "Ensure soft-delete is enabled on Azure storage account"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-38
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV2_AZURE_40: "Ensure storage account is not configured with Shared Key authorization"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-40
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV2_AZURE_21: "Ensure Storage logging is enabled for Blob service for read requests"
+	FAILED for resource: azurerm_storage_container.public_container
+	File: /azure_storage.tf:34-40
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-logging-policies/ensure-storage-logging-is-enabled-for-blob-service-for-read-requests
+
+		34 | resource "azurerm_storage_container" "public_container" {
+		35 |   name                  = "public-data"
+		36 |   storage_account_name  = azurerm_storage_account.insecure_storage_account.name
+		37 |   container_access_type = "blob" # Vulnerabilidad 1: Acceso de lectura público a blobs
+		38 | 
+		39 |   depends_on = [azurerm_storage_account.insecure_storage_account]
+		40 | }
+Check: CKV2_AZURE_41: "Ensure storage account is configured with SAS expiration policy"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-iam-policies/bc-azure-2-41
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+Check: CKV2_AZURE_1: "Ensure storage for critical data are encrypted with Customer Managed Key"
+	FAILED for resource: azurerm_storage_account.insecure_storage_account
+	File: /azure_storage.tf:8-32
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-storage-for-critical-data-are-encrypted-with-customer-managed-key
+
+		8  | resource "azurerm_storage_account" "insecure_storage_account" {
+		9  |   name                     = "insecurestorageacc20250707" # Debe ser globalmente único
+		10 |   resource_group_name      = azurerm_resource_group.rg.name
+		11 |   location                 = azurerm_resource_group.rg.location
+		12 |   account_tier             = "Standard"
+		13 |   account_replication_type = "LRS"
+		14 | 
+		15 |   # Vulnerabilidad 1: Acceso público permitido a los blobs
+		16 |   # Habilita el acceso anónimo a contenedores y blobs.
+		17 |   # Aunque la configuración a nivel de contenedor/blob es lo que finalmente controla el acceso,
+		18 |   # a nivel de cuenta, esto permite la posibilidad de configuraciones públicas.
+		19 |   # En producción, esto debería ser 'false' o no estar presente si se busca el acceso privado por defecto.
+		20 |   allow_blob_public_access = true 
+		21 | 
+		22 |   # Vulnerabilidad 2: No se especifica Customer-Managed Key (CMK) para el cifrado
+		23 |   # Azure Storage está cifrado por defecto con claves gestionadas por Microsoft.
+		24 |   # Sin embargo, para mayor seguridad y cumplimiento, a menudo se recomienda CMK.
+		25 |   # La ausencia de este bloque podría ser una alerta para herramientas que busquen cumplimiento.
+		26 |   # customer_managed_key {
+		27 |   #   key_vault_id        = "/subscriptions/xxxxx/resourceGroups/yyyyy/providers/Microsoft.KeyVault/vaults/zzzzz"
+		28 |   #   key_name            = "mykey"
+		29 |   #   key_version         = "12345"
+		30 |   #   user_assigned_identity_id = "/subscriptions/xxxxx/resourcegroups/yyyyy/providers/Microsoft.ManagedIdentity/userAssignedIdentities/iiiiii"
+		31 |   # }
+		32 | }
+
+

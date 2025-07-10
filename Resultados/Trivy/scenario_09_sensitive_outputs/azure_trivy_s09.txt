@@ -1,0 +1,64 @@
+
+Report Summary
+
+┌──────────┬───────────┬───────────────────┐
+│  Target  │   Type    │ Misconfigurations │
+├──────────┼───────────┼───────────────────┤
+│ .        │ terraform │         0         │
+├──────────┼───────────┼───────────────────┤
+│ azure.tf │ terraform │         2         │
+└──────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+azure.tf (terraform)
+====================
+Tests: 2 (SUCCESSES: 0, FAILURES: 2)
+Failures: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+
+AVD-AZU-0022 (MEDIUM): Database server has public network access enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Database resources should not publicly available. You should limit all access to the minimum that is required for your application to function.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0022
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:46-56
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  46 ┌ resource "azurerm_mysql_server" "mysql_server" {
+  47 │   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+  48 │   location            = azurerm_resource_group.rg.location
+  49 │   resource_group_name = azurerm_resource_group.rg.name
+  50 │   sku_name            = "B_Gen5_1"
+  51 │   storage_mb          = 5120
+  52 │   version             = "8.0"
+  53 │   administrator_login    = "mysqladmin"
+  54 └   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AZU-0026 (MEDIUM): Database server does not require a secure TLS version.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+You should not use outdated/insecure TLS versions for encryption. You should be using TLS v1.2+.
+
+
+See https://avd.aquasec.com/misconfig/avd-azu-0026
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ azure.tf:46-56
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  46 ┌ resource "azurerm_mysql_server" "mysql_server" {
+  47 │   name                = "tfm-mysqlserver-09" # Debe ser único globalmente
+  48 │   location            = azurerm_resource_group.rg.location
+  49 │   resource_group_name = azurerm_resource_group.rg.name
+  50 │   sku_name            = "B_Gen5_1"
+  51 │   storage_mb          = 5120
+  52 │   version             = "8.0"
+  53 │   administrator_login    = "mysqladmin"
+  54 └   administrator_login_password = random_password.db_password.result # Usa la contraseña generada
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

@@ -1,0 +1,220 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 4, Failed checks: 7, Skipped checks: 0
+
+Check: CKV_GCP_31: "Ensure that instances are not configured to use the default service account with full access to all Cloud APIs"
+	PASSED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-2
+Check: CKV_GCP_35: "Ensure 'Enable connecting to serial ports' is not enabled for VM Instance"
+	PASSED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-11
+Check: CKV_GCP_36: "Ensure that IP forwarding is not enabled on Instances"
+	PASSED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-12
+Check: CKV_GCP_34: "Ensure that no instance in the project overrides the project setting for enabling OSLogin(OSLogin needs to be enabled in project metadata for all instances)"
+	PASSED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-10
+Check: CKV_GCP_26: "Ensure that VPC Flow Logs is enabled for every subnet in a VPC Network"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/logging-policies-1/bc-gcp-logging-1
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-10-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_74: "Ensure that private_ip_google_access is enabled for Subnet"
+	FAILED for resource: google_compute_subnetwork.subnet
+	File: /gcp.tf:13-20
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/ensure-gcp-subnet-has-a-private-ip-google-access
+
+		13 | resource "google_compute_subnetwork" "subnet" {
+		14 |   name        = "tfm-security-subnet-10-gcp"
+		15 |   ip_cidr_range = "10.0.1.0/24"
+		16 |   network     = google_compute_network.vpc_network.id
+		17 |   region      = "europe-west1" # Asegúrate de que coincida con la región del provider
+		18 | 
+		19 |   depends_on = [google_compute_network.vpc_network]
+		20 | }
+
+Check: CKV_GCP_32: "Ensure 'Block Project-wide SSH keys' is enabled for VM instances"
+	FAILED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-networking-8
+
+		29 | resource "google_compute_instance" "insecure_startup_script_vm" {
+		30 |   name         = "insecure-gcp-vm-${var.unvalidated_hostname_suffix}" # El nombre podría ser parte de la vulnerabilidad
+		31 |   machine_type = "e2-micro"
+		32 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		33 | 
+		34 |   boot_disk {
+		35 |     initialize_params {
+		36 |       image = "debian-cloud/debian-11"
+		37 |     }
+		38 |   }
+		39 | 
+		40 |   network_interface {
+		41 |     network    = google_compute_network.vpc_network.id
+		42 |     subnetwork = google_compute_subnetwork.subnet.id
+		43 |     access_config {
+		44 |       # Asigna una IP pública
+		45 |     }
+		46 |   }
+		47 | 
+		48 |   # Vulnerabilidad: metadata_startup_script que ejecuta directamente una variable sin sanitización
+		49 |   # Un atacante podría inyectar comandos en 'unvalidated_hostname_suffix'.
+		50 |   metadata_startup_script = <<-EOF
+		51 |                               #!/bin/bash
+		52 |                               echo "Setting up server with suffix: ${var.unvalidated_hostname_suffix}"
+		53 |                               # Comando vulnerable a inyección de comandos:
+		54 |                               # Si ${var.unvalidated_hostname_suffix} fuera "suffix; cat /etc/passwd", se ejecutaría.
+		55 |                               echo "Server configuration for ${var.unvalidated_hostname_suffix}" > /var/log/server_setup.log
+		56 |                               sudo apt-get update -y
+		57 |                               sudo apt-get install -y nginx
+		58 |                               sudo systemctl enable nginx
+		59 |                               sudo systemctl start nginx
+		60 |                               EOF
+		61 | }
+Check: CKV_GCP_40: "Ensure that Compute instances do not have public IP addresses"
+	FAILED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-public-policies/bc-gcp-public-2
+
+		29 | resource "google_compute_instance" "insecure_startup_script_vm" {
+		30 |   name         = "insecure-gcp-vm-${var.unvalidated_hostname_suffix}" # El nombre podría ser parte de la vulnerabilidad
+		31 |   machine_type = "e2-micro"
+		32 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		33 | 
+		34 |   boot_disk {
+		35 |     initialize_params {
+		36 |       image = "debian-cloud/debian-11"
+		37 |     }
+		38 |   }
+		39 | 
+		40 |   network_interface {
+		41 |     network    = google_compute_network.vpc_network.id
+		42 |     subnetwork = google_compute_subnetwork.subnet.id
+		43 |     access_config {
+		44 |       # Asigna una IP pública
+		45 |     }
+		46 |   }
+		47 | 
+		48 |   # Vulnerabilidad: metadata_startup_script que ejecuta directamente una variable sin sanitización
+		49 |   # Un atacante podría inyectar comandos en 'unvalidated_hostname_suffix'.
+		50 |   metadata_startup_script = <<-EOF
+		51 |                               #!/bin/bash
+		52 |                               echo "Setting up server with suffix: ${var.unvalidated_hostname_suffix}"
+		53 |                               # Comando vulnerable a inyección de comandos:
+		54 |                               # Si ${var.unvalidated_hostname_suffix} fuera "suffix; cat /etc/passwd", se ejecutaría.
+		55 |                               echo "Server configuration for ${var.unvalidated_hostname_suffix}" > /var/log/server_setup.log
+		56 |                               sudo apt-get update -y
+		57 |                               sudo apt-get install -y nginx
+		58 |                               sudo systemctl enable nginx
+		59 |                               sudo systemctl start nginx
+		60 |                               EOF
+		61 | }
+Check: CKV_GCP_38: "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)"
+	FAILED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/encrypt-boot-disks-for-instances-with-cseks
+
+		29 | resource "google_compute_instance" "insecure_startup_script_vm" {
+		30 |   name         = "insecure-gcp-vm-${var.unvalidated_hostname_suffix}" # El nombre podría ser parte de la vulnerabilidad
+		31 |   machine_type = "e2-micro"
+		32 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		33 | 
+		34 |   boot_disk {
+		35 |     initialize_params {
+		36 |       image = "debian-cloud/debian-11"
+		37 |     }
+		38 |   }
+		39 | 
+		40 |   network_interface {
+		41 |     network    = google_compute_network.vpc_network.id
+		42 |     subnetwork = google_compute_subnetwork.subnet.id
+		43 |     access_config {
+		44 |       # Asigna una IP pública
+		45 |     }
+		46 |   }
+		47 | 
+		48 |   # Vulnerabilidad: metadata_startup_script que ejecuta directamente una variable sin sanitización
+		49 |   # Un atacante podría inyectar comandos en 'unvalidated_hostname_suffix'.
+		50 |   metadata_startup_script = <<-EOF
+		51 |                               #!/bin/bash
+		52 |                               echo "Setting up server with suffix: ${var.unvalidated_hostname_suffix}"
+		53 |                               # Comando vulnerable a inyección de comandos:
+		54 |                               # Si ${var.unvalidated_hostname_suffix} fuera "suffix; cat /etc/passwd", se ejecutaría.
+		55 |                               echo "Server configuration for ${var.unvalidated_hostname_suffix}" > /var/log/server_setup.log
+		56 |                               sudo apt-get update -y
+		57 |                               sudo apt-get install -y nginx
+		58 |                               sudo systemctl enable nginx
+		59 |                               sudo systemctl start nginx
+		60 |                               EOF
+		61 | }
+Check: CKV_GCP_39: "Ensure Compute instances are launched with Shielded VM enabled"
+	FAILED for resource: google_compute_instance.insecure_startup_script_vm
+	File: /gcp.tf:29-61
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-general-policies/bc-gcp-general-y
+
+		29 | resource "google_compute_instance" "insecure_startup_script_vm" {
+		30 |   name         = "insecure-gcp-vm-${var.unvalidated_hostname_suffix}" # El nombre podría ser parte de la vulnerabilidad
+		31 |   machine_type = "e2-micro"
+		32 |   zone         = "europe-west1-b" # Ajusta la zona según la región
+		33 | 
+		34 |   boot_disk {
+		35 |     initialize_params {
+		36 |       image = "debian-cloud/debian-11"
+		37 |     }
+		38 |   }
+		39 | 
+		40 |   network_interface {
+		41 |     network    = google_compute_network.vpc_network.id
+		42 |     subnetwork = google_compute_subnetwork.subnet.id
+		43 |     access_config {
+		44 |       # Asigna una IP pública
+		45 |     }
+		46 |   }
+		47 | 
+		48 |   # Vulnerabilidad: metadata_startup_script que ejecuta directamente una variable sin sanitización
+		49 |   # Un atacante podría inyectar comandos en 'unvalidated_hostname_suffix'.
+		50 |   metadata_startup_script = <<-EOF
+		51 |                               #!/bin/bash
+		52 |                               echo "Setting up server with suffix: ${var.unvalidated_hostname_suffix}"
+		53 |                               # Comando vulnerable a inyección de comandos:
+		54 |                               # Si ${var.unvalidated_hostname_suffix} fuera "suffix; cat /etc/passwd", se ejecutaría.
+		55 |                               echo "Server configuration for ${var.unvalidated_hostname_suffix}" > /var/log/server_setup.log
+		56 |                               sudo apt-get update -y
+		57 |                               sudo apt-get install -y nginx
+		58 |                               sudo systemctl enable nginx
+		59 |                               sudo systemctl start nginx
+		60 |                               EOF
+		61 | }
+Check: CKV2_GCP_18: "Ensure GCP network defines a firewall and does not use the default firewall"
+	FAILED for resource: google_compute_network.vpc_network
+	File: /gcp.tf:8-11
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-networking-policies/bc-gcp-2-18
+
+		8  | resource "google_compute_network" "vpc_network" {
+		9  |   name    = "tfm-security-vpc-10-gcp"
+		10 |   project = "your-gcp-project-id" # ¡CAMBIA ESTO A TU ID DE PROYECTO REAL!
+		11 | }
+
+

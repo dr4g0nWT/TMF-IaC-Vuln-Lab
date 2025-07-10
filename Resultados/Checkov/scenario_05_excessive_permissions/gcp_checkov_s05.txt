@@ -1,0 +1,48 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 3, Failed checks: 2, Skipped checks: 0
+
+Check: CKV_GCP_46: "Ensure Default Service account is not used at a project level"
+	PASSED for resource: google_project_iam_member.insecure_editor_binding
+	File: /gcp.tf:17-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-7
+Check: CKV_GCP_41: "Ensure that IAM users are not assigned the Service Account User or Service Account Token Creator roles at project level"
+	PASSED for resource: google_project_iam_member.insecure_editor_binding
+	File: /gcp.tf:17-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-3
+Check: CKV_GCP_42: "Ensure that Service Account has no Admin privileges"
+	PASSED for resource: google_project_iam_member.insecure_editor_binding
+	File: /gcp.tf:17-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-4
+Check: CKV_GCP_49: "Ensure roles do not impersonate or manage Service Accounts used at project level"
+	FAILED for resource: google_project_iam_member.insecure_editor_binding
+	File: /gcp.tf:17-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-gcp-iam-10
+
+		17 | resource "google_project_iam_member" "insecure_editor_binding" {
+		18 |   project = google_service_account.insecure_sa.project
+		19 |   role    = "roles/editor" # ¡Vulnerabilidad! Rol de Editor (permisos excesivos)
+		20 |   member  = "serviceAccount:${google_service_account.insecure_sa.email}"
+		21 | }
+
+Check: CKV_GCP_117: "Ensure basic roles are not used at project level."
+	FAILED for resource: google_project_iam_member.insecure_editor_binding
+	File: /gcp.tf:17-21
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/google-cloud-policies/google-cloud-iam-policies/bc-google-cloud-117
+
+		17 | resource "google_project_iam_member" "insecure_editor_binding" {
+		18 |   project = google_service_account.insecure_sa.project
+		19 |   role    = "roles/editor" # ¡Vulnerabilidad! Rol de Editor (permisos excesivos)
+		20 |   member  = "serviceAccount:${google_service_account.insecure_sa.email}"
+		21 | }
+
+

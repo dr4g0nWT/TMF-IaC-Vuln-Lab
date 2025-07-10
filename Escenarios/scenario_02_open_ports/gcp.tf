@@ -26,14 +26,12 @@ resource "google_compute_firewall" "open_ports_firewall" {
     protocol = "tcp"
     ports    = ["3389"]
   }
-  source_ranges = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad (cualquier IP)
 
   # Vulnerabilidad 3: Acceso a un puerto de DB (ej. PostgreSQL) desde cualquier lugar (0.0.0.0/0)
   allow {
     protocol = "tcp"
     ports    = ["5432"] # Puerto por defecto de PostgreSQL
   }
-  source_ranges = ["0.0.0.0/0"] # TODO: Esto es una vulnerabilidad (cualquier IP)
 
   target_tags = ["allow-insecure-access"] # Puedes aplicar esta regla a instancias con este tag
 

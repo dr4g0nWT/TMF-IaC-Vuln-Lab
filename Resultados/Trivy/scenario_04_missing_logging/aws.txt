@@ -1,0 +1,379 @@
+
+Report Summary
+
+┌────────┬───────────┬───────────────────┐
+│ Target │   Type    │ Misconfigurations │
+├────────┼───────────┼───────────────────┤
+│ .      │ terraform │         0         │
+├────────┼───────────┼───────────────────┤
+│ aws.tf │ terraform │        16         │
+└────────┴───────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+aws.tf (terraform)
+==================
+Tests: 16 (SUCCESSES: 0, FAILURES: 16)
+Failures: 16 (UNKNOWN: 0, LOW: 4, MEDIUM: 2, HIGH: 9, CRITICAL: 1)
+
+AVD-AWS-0028 (HIGH): Instance does not require IMDS access to require a token.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+IMDS v2 (Instance Metadata Service) introduced session authentication tokens which improve security when talking to IMDS.
+
+By default <code>aws_instance</code> resource sets IMDS session auth tokens to be optional.
+
+To fully protect IMDS you need to enable session tokens by using <code>metadata_options</code> block and its <code>http_tokens</code> variable set to <code>required</code>.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0028
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:48-65
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  48 ┌ resource "aws_instance" "server_without_cloudwatch_agent" {
+  49 │   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+  50 │   instance_type = "t2.micro"
+  51 │   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+  52 │   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+  53 │   associate_public_ip_address = true
+  54 │ 
+  55 │   tags = {
+  56 └     Name = "ServerWithoutCloudWatch"
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0086 (HIGH): No public access block so not blocking public acls
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 buckets should block public ACLs on buckets and any objects they contain. By blocking, PUTs with fail if the object has any public ACL a.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0086
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0087 (HIGH): No public access block so not blocking public policies
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 bucket policy should have block public policy to prevent users from putting a policy that enable public access.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0087
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0088 (HIGH): Bucket does not have encryption enabled
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0088
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0089 (LOW): Bucket has logging disabled
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Ensures S3 bucket logging is enabled for S3 buckets
+
+See https://avd.aquasec.com/misconfig/s3-bucket-logging
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0090 (MEDIUM): Bucket does not have versioning enabled
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Versioning in Amazon S3 is a means of keeping multiple variants of an object in the same bucket.
+
+You can use the S3 Versioning feature to preserve, retrieve, and restore every version of every object stored in your buckets.
+
+With versioning you can recover more easily from both unintended user actions and application failures.
+
+When you enable versioning, also keep in mind the potential costs of storing noncurrent versions of objects. To help manage those costs, consider setting up an S3 Lifecycle configuration.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0090
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0091 (HIGH): No public access block so not blocking public acls
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 buckets should ignore public ACLs on buckets and any objects they contain. By ignoring rather than blocking, PUT calls with public ACLs will still be applied but the ACL will be ignored.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0091
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0093 (HIGH): No public access block so not restricting public buckets
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+S3 buckets should restrict public policies for the bucket. By enabling, the restrict_public_buckets, only the bucket owner and AWS Services can access if it has a public policy.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0093
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0094 (LOW): Bucket does not have a corresponding public access block.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+The "block public access" settings in S3 override individual policies that apply to a given bucket, meaning that all public access can be controlled in one central types for that bucket. It is therefore good practice to define these settings for each bucket in order to clearly define the public access that can be allowed for it.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0094
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0104 (CRITICAL): Security group rule allows unrestricted egress to any IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Opening up ports to connect out to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.
+
+
+See https://avd.aquasec.com/misconfig/aws-vpc-no-public-egress-sgr
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:100
+   via aws.tf:96-101 (egress)
+    via aws.tf:85-102 (aws_security_group.default)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  85   resource "aws_security_group" "default" {
+  ..   
+ 100 [     cidr_blocks = ["0.0.0.0/0"]
+ ...   
+ 102   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0124 (LOW): Security group rule does not have a description.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security group rules should include a description for auditing purposes.
+
+Simplifies auditing, debugging, and managing security groups.
+
+
+See https://avd.aquasec.com/misconfig/aws-vpc-add-description-to-security-group-rule
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:96-101
+   via aws.tf:85-102 (aws_security_group.default)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  85   resource "aws_security_group" "default" {
+  ..   
+  96 ┌   egress {
+  97 │     from_port   = 0
+  98 │     to_port     = 0
+  99 │     protocol    = "-1"
+ 100 │     cidr_blocks = ["0.0.0.0/0"]
+ 101 └   }
+ 102   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0124 (LOW): Security group rule does not have a description.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Security group rules should include a description for auditing purposes.
+
+Simplifies auditing, debugging, and managing security groups.
+
+
+See https://avd.aquasec.com/misconfig/aws-vpc-add-description-to-security-group-rule
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:90-95
+   via aws.tf:85-102 (aws_security_group.default)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  85   resource "aws_security_group" "default" {
+  ..   
+  90 ┌   ingress {
+  91 │     from_port   = 80
+  92 │     to_port     = 80
+  93 │     protocol    = "tcp"
+  94 │     cidr_blocks = ["0.0.0.0/0"]
+  95 └   }
+ ...   
+ 102   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0131 (HIGH): Root block device is not encrypted.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Block devices should be encrypted to ensure sensitive data is held securely at rest.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0131
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:48-65
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  48 ┌ resource "aws_instance" "server_without_cloudwatch_agent" {
+  49 │   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu Server 20.04 LTS), ajusta si es necesario
+  50 │   instance_type = "t2.micro"
+  51 │   subnet_id     = aws_subnet.public.id # Asume que hay un subnet definido
+  52 │   vpc_security_group_ids = [aws_security_group.default.id] # Asume un SG por defecto o crea uno
+  53 │   associate_public_ip_address = true
+  54 │ 
+  55 │   tags = {
+  56 └     Name = "ServerWithoutCloudWatch"
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0132 (HIGH): Bucket does not encrypt data with a customer managed key.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Encryption using AWS keys provides protection for your S3 buckets. To increase control of the encryption and manage factors like rotation use customer managed keys.
+
+
+See https://avd.aquasec.com/misconfig/avd-aws-0132
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:7-27
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   7 ┌ resource "aws_s3_bucket" "unlogged_sensitive_data_bucket" {
+   8 │   bucket = "tfm-unlogged-sensitive-data-bucket-2025" # Nombre único, cambia si se despliega
+   9 │   acl    = "private" # El bucket es privado, pero la vulnerabilidad es la falta de logging
+  10 │ 
+  11 │   tags = {
+  12 │     Environment = "Prod"
+  13 │     Purpose     = "SensitiveData"
+  14 │   }
+  15 └ 
+  ..   
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0164 (HIGH): Subnet associates public IP address.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+You should limit the provision of public IP addresses for resources. Resources should not be exposed on the public internet, but should have access limited to consumers required for the function of your application.
+
+
+See https://avd.aquasec.com/misconfig/aws-vpc-no-public-ingress-sgr
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:78
+   via aws.tf:75-83 (aws_subnet.public)
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  75   resource "aws_subnet" "public" {
+  76     vpc_id     = aws_vpc.main_04.id
+  77     cidr_block = "10.0.1.0/24"
+  78 [   map_public_ip_on_launch = true
+  79     availability_zone = "eu-west-3a" # Ajusta la zona según la región
+  80     tags = {
+  81       Name = "tfm-security-public-subnet-04-aws"
+  82     }
+  83   }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+AVD-AWS-0178 (MEDIUM): VPC does not have VPC Flow Logs enabled.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+VPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.
+
+
+See https://avd.aquasec.com/misconfig/aws-autoscaling-enable-at-rest-encryption
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ aws.tf:68-73
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  68 ┌ resource "aws_vpc" "main_04" {
+  69 │   cidr_block = "10.0.0.0/16"
+  70 │   tags = {
+  71 │     Name = "tfm-security-vpc-04-aws"
+  72 │   }
+  73 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+

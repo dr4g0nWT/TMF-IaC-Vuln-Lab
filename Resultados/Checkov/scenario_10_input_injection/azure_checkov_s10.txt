@@ -1,0 +1,109 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 10, Failed checks: 2, Skipped checks: 0
+
+Check: CKV_AZURE_182: "Ensure that VNET has at least 2 connected DNS Endpoints"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-182
+Check: CKV_AZURE_183: "Ensure that VNET uses local DNS addresses"
+	PASSED for resource: azurerm_virtual_network.vnet
+	File: /azure.tf:12-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/azr-networking-183
+Check: CKV_AZURE_118: "Ensure that Network Interfaces disable IP forwarding"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-disable-ip-forwarding
+Check: CKV_AZURE_149: "Ensure that Virtual machine does not enable password authentication"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_cloud_init_vm
+	File: /azure.tf:45-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-azure-virtual-machine-does-not-enable-password-authentication
+Check: CKV_AZURE_178: "Ensure linux VM enables SSH with keys for secure communication"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_cloud_init_vm
+	File: /azure.tf:45-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-178
+Check: CKV_AZURE_179: "Ensure VM agent is installed"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_cloud_init_vm
+	File: /azure.tf:45-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/azr-general-179
+Check: CKV_AZURE_1: "Ensure Azure Instance does not use basic authentication(Use SSH Key Instead)"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_cloud_init_vm
+	File: /azure.tf:45-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azr-networking-1
+Check: CKV_AZURE_92: "Ensure that Virtual Machines use managed disks"
+	PASSED for resource: azurerm_linux_virtual_machine.insecure_cloud_init_vm
+	File: /azure.tf:45-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/ensure-that-virtual-machines-use-managed-disks
+Check: CKV_AZURE_119: "Ensure that Network Interfaces don't use public IPs"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/ensure-that-network-interfaces-dont-use-public-ips
+Check: CKV2_AZURE_39: "Ensure Azure VM is not configured with public IP and serial console access"
+	PASSED for resource: azurerm_network_interface.nic
+	File: /azure.tf:26-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-networking-policies/bc-azure-2-39
+Check: CKV_AZURE_50: "Ensure Virtual Machine Extensions are not Installed"
+	FAILED for resource: azurerm_linux_virtual_machine.insecure_cloud_init_vm
+	File: /azure.tf:45-82
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azr-general-14
+
+		45 | resource "azurerm_linux_virtual_machine" "insecure_cloud_init_vm" {
+		46 |   name                = "insecure-cloud-init-vm-10-azure"
+		47 |   resource_group_name = azurerm_resource_group.rg.name
+		48 |   location            = azurerm_resource_group.rg.location
+		49 |   size                = "Standard_B1s"
+		50 |   admin_username      = "adminuser"
+		51 |   network_interface_ids = [azurerm_network_interface.nic.id]
+		52 | 
+		53 |   source_image_reference {
+		54 |     publisher = "Canonical"
+		55 |     offer     = "UbuntuServer"
+		56 |     sku       = "18.04-LTS"
+		57 |     version   = "latest"
+		58 |   }
+		59 | 
+		60 |   os_disk {
+		61 |     caching              = "ReadWrite"
+		62 |     storage_account_type = "Standard_LRS"
+		63 |   }
+		64 | 
+		65 |   admin_ssh_key {
+		66 |     username   = "adminuser"
+		67 |     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsrXm...your_public_ssh_key... example@example.com" # Cambia si vas a desplegar
+		68 |   }
+		69 | 
+		70 |   # Vulnerabilidad: custom_data (cloud-init) que ejecuta directamente una variable sin sanitización
+		71 |   # Un atacante podría inyectar comandos a través de 'untrusted_app_name'.
+		72 |   custom_data = base64encode(<<EOF
+		73 |               #cloud-config
+		74 |               runcmd:
+		75 |                 - echo "Installing ${var.untrusted_app_name}..."
+		76 |                 # Este comando es vulnerable a inyección.
+		77 |                 # Si ${var.untrusted_app_name} fuera "nginx; rm -rf /", se ejecutaría.
+		78 |                 - apt-get update -y
+		79 |                 - apt-get install -y ${var.untrusted_app_name}
+		80 |               EOF
+		81 |   )
+		82 | }
+Check: CKV2_AZURE_31: "Ensure VNET subnet is configured with a Network Security Group (NSG)"
+	FAILED for resource: azurerm_subnet.subnet
+	File: /azure.tf:19-24
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/azure-policies/azure-general-policies/bc-azure-2-31
+
+		19 | resource "azurerm_subnet" "subnet" {
+		20 |   name                 = "tfm-security-subnet-10-azure"
+		21 |   resource_group_name  = azurerm_resource_group.rg.name
+		22 |   virtual_network_name = azurerm_virtual_network.vnet.name
+		23 |   address_prefixes     = ["10.0.1.0/24"]
+		24 | }
+
+

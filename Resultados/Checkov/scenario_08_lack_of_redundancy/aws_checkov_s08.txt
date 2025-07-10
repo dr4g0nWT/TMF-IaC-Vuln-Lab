@@ -1,0 +1,458 @@
+
+       _               _
+   ___| |__   ___  ___| | _______   __
+  / __| '_ \ / _ \/ __| |/ / _ \ \ / /
+ | (__| | | |  __/ (__|   < (_) \ V /
+  \___|_| |_|\___|\___|_|\_\___/ \_/
+
+By Prisma Cloud | version: 3.2.447 
+
+terraform scan results:
+
+Passed checks: 13, Failed checks: 19, Skipped checks: 0
+
+Check: CKV_AWS_130: "Ensure VPC subnets do not assign public IP by default"
+	PASSED for resource: aws_subnet.single_az_subnet
+	File: /aws.tf:14-22
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-vpc-subnets-do-not-assign-public-ip-by-default
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	PASSED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security
+Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389"
+	PASSED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
+Check: CKV_AWS_277: "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1"
+	PASSED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-group-does-not-allow-all-traffic-on-all-ports
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_17: "Ensure all data stored in RDS is not publicly accessible"
+	PASSED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-2
+Check: CKV_AWS_388: "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability"
+	PASSED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+Check: CKV_AWS_211: "Ensure RDS uses a modern CaCert"
+	PASSED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-rds-uses-a-modern-cacert
+Check: CKV_AWS_133: "Ensure that RDS instances has backup policy"
+	PASSED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-rds-instances-have-backup-policy
+Check: CKV_AWS_354: "Ensure RDS Performance Insights are encrypted using KMS CMKs"
+	PASSED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-354
+Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
+	PASSED for resource: aws.default
+	File: /aws.tf:3-5
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-5
+Check: CKV2_AWS_69: "Ensure AWS RDS database instance configured with encryption in transit"
+	PASSED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-2-69
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	PASSED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-aws-security-groups-do-not-allow-ingress-from-00000-to-port-80
+
+		24 | resource "aws_security_group" "web_08" {
+		25 |   name        = "tfm-web-sg-08-aws"
+		26 |   description = "Allow web traffic"
+		27 |   vpc_id      = aws_vpc.main_08.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 | 
+		36 |   egress {
+		37 |     from_port   = 0
+		38 |     to_port     = 0
+		39 |     protocol    = "-1"
+		40 |     cidr_blocks = ["0.0.0.0/0"]
+		41 |   }
+		42 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		24 | resource "aws_security_group" "web_08" {
+		25 |   name        = "tfm-web-sg-08-aws"
+		26 |   description = "Allow web traffic"
+		27 |   vpc_id      = aws_vpc.main_08.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 | 
+		36 |   egress {
+		37 |     from_port   = 0
+		38 |     to_port     = 0
+		39 |     protocol    = "-1"
+		40 |     cidr_blocks = ["0.0.0.0/0"]
+		41 |   }
+		42 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.web_08
+	File: /aws.tf:24-42
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		24 | resource "aws_security_group" "web_08" {
+		25 |   name        = "tfm-web-sg-08-aws"
+		26 |   description = "Allow web traffic"
+		27 |   vpc_id      = aws_vpc.main_08.id
+		28 | 
+		29 |   ingress {
+		30 |     from_port   = 80
+		31 |     to_port     = 80
+		32 |     protocol    = "tcp"
+		33 |     cidr_blocks = ["0.0.0.0/0"]
+		34 |   }
+		35 | 
+		36 |   egress {
+		37 |     from_port   = 0
+		38 |     to_port     = 0
+		39 |     protocol    = "-1"
+		40 |     cidr_blocks = ["0.0.0.0/0"]
+		41 |   }
+		42 | }
+
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		44 | resource "aws_instance" "single_point_of_failure_app" {
+		45 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu 20.04 LTS), ajusta si es necesario
+		46 |   instance_type = "t2.micro"
+		47 |   subnet_id     = aws_subnet.single_az_subnet.id # ¡Vulnerabilidad! Desplegado en un solo AZ
+		48 |   vpc_security_group_ids = [aws_security_group.web_08.id]
+		49 |   associate_public_ip_address = true
+		50 | 
+		51 |   tags = {
+		52 |     Name = "TFM-Single-Point-of-Failure-App"
+		53 |   }
+		54 | 
+		55 |   # Vulnerabilidad: No hay Auto Scaling Group con distribución Multi-AZ
+		56 |   # No hay configuración para un balanceador de carga o grupo de Auto Scaling que garantice instancias en múltiples AZs.
+		57 |   # También se asume que no hay backups de EBS configurados automáticamente para el volumen raíz.
+		58 | }
+
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
+
+		44 | resource "aws_instance" "single_point_of_failure_app" {
+		45 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu 20.04 LTS), ajusta si es necesario
+		46 |   instance_type = "t2.micro"
+		47 |   subnet_id     = aws_subnet.single_az_subnet.id # ¡Vulnerabilidad! Desplegado en un solo AZ
+		48 |   vpc_security_group_ids = [aws_security_group.web_08.id]
+		49 |   associate_public_ip_address = true
+		50 | 
+		51 |   tags = {
+		52 |     Name = "TFM-Single-Point-of-Failure-App"
+		53 |   }
+		54 | 
+		55 |   # Vulnerabilidad: No hay Auto Scaling Group con distribución Multi-AZ
+		56 |   # No hay configuración para un balanceador de carga o grupo de Auto Scaling que garantice instancias en múltiples AZs.
+		57 |   # También se asume que no hay backups de EBS configurados automáticamente para el volumen raíz.
+		58 | }
+
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
+
+		44 | resource "aws_instance" "single_point_of_failure_app" {
+		45 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu 20.04 LTS), ajusta si es necesario
+		46 |   instance_type = "t2.micro"
+		47 |   subnet_id     = aws_subnet.single_az_subnet.id # ¡Vulnerabilidad! Desplegado en un solo AZ
+		48 |   vpc_security_group_ids = [aws_security_group.web_08.id]
+		49 |   associate_public_ip_address = true
+		50 | 
+		51 |   tags = {
+		52 |     Name = "TFM-Single-Point-of-Failure-App"
+		53 |   }
+		54 | 
+		55 |   # Vulnerabilidad: No hay Auto Scaling Group con distribución Multi-AZ
+		56 |   # No hay configuración para un balanceador de carga o grupo de Auto Scaling que garantice instancias en múltiples AZs.
+		57 |   # También se asume que no hay backups de EBS configurados automáticamente para el volumen raíz.
+		58 | }
+
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	FAILED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
+
+		44 | resource "aws_instance" "single_point_of_failure_app" {
+		45 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu 20.04 LTS), ajusta si es necesario
+		46 |   instance_type = "t2.micro"
+		47 |   subnet_id     = aws_subnet.single_az_subnet.id # ¡Vulnerabilidad! Desplegado en un solo AZ
+		48 |   vpc_security_group_ids = [aws_security_group.web_08.id]
+		49 |   associate_public_ip_address = true
+		50 | 
+		51 |   tags = {
+		52 |     Name = "TFM-Single-Point-of-Failure-App"
+		53 |   }
+		54 | 
+		55 |   # Vulnerabilidad: No hay Auto Scaling Group con distribución Multi-AZ
+		56 |   # No hay configuración para un balanceador de carga o grupo de Auto Scaling que garantice instancias en múltiples AZs.
+		57 |   # También se asume que no hay backups de EBS configurados automáticamente para el volumen raíz.
+		58 | }
+
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		44 | resource "aws_instance" "single_point_of_failure_app" {
+		45 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu 20.04 LTS), ajusta si es necesario
+		46 |   instance_type = "t2.micro"
+		47 |   subnet_id     = aws_subnet.single_az_subnet.id # ¡Vulnerabilidad! Desplegado en un solo AZ
+		48 |   vpc_security_group_ids = [aws_security_group.web_08.id]
+		49 |   associate_public_ip_address = true
+		50 | 
+		51 |   tags = {
+		52 |     Name = "TFM-Single-Point-of-Failure-App"
+		53 |   }
+		54 | 
+		55 |   # Vulnerabilidad: No hay Auto Scaling Group con distribución Multi-AZ
+		56 |   # No hay configuración para un balanceador de carga o grupo de Auto Scaling que garantice instancias en múltiples AZs.
+		57 |   # También se asume que no hay backups de EBS configurados automáticamente para el volumen raíz.
+		58 | }
+
+Check: CKV_AWS_161: "Ensure RDS database has IAM authentication enabled"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-rds-database-has-iam-authentication-enabled
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV_AWS_293: "Ensure that AWS database instances have deletion protection enabled"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-293
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV_AWS_16: "Ensure all data stored in the RDS is securely encrypted at rest"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-4
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV_AWS_157: "Ensure that RDS instances have Multi-AZ enabled"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-73
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV_AWS_226: "Ensure DB instance gets all minor upgrades automatically"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-db-instance-gets-all-minor-upgrades-automatically
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV_AWS_129: "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-that-respective-logs-of-amazon-relational-database-service-amazon-rds-are-enabled
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV_AWS_118: "Ensure that enhanced monitoring is enabled for Amazon RDS instances"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-enhanced-monitoring-is-enabled-for-amazon-rds-instances
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: aws_vpc.main_08
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-9-enable-vpc-flow-logging
+
+		7  | resource "aws_vpc" "main_08" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-08-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_60: "Ensure RDS instance with copy tags to snapshots is enabled"
+	FAILED for resource: aws_db_instance.single_az_database
+	File: /aws.tf:60-74
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-60
+
+		60 | resource "aws_db_instance" "single_az_database" {
+		61 |   allocated_storage    = 20
+		62 |   engine               = "mysql"
+		63 |   engine_version       = "8.0.35"
+		64 |   instance_class       = "db.t3.micro"
+		65 |   name                 = "tfm-singledb"
+		66 |   username             = "admin"
+		67 |   password             = "MySecureDBPassword123!" # En un entorno real, usar Secrets Manager
+		68 |   parameter_group_name = "default.mysql8.0"
+		69 |   skip_final_snapshot  = true
+		70 |   # Vulnerabilidad: No se habilita Multi-AZ
+		71 |   multi_az             = false # ¡Vulnerabilidad! Base de datos de un solo AZ
+		72 |   vpc_security_group_ids = [aws_security_group.web_08.id] # Asume que el SG permite tráfico a la DB
+		73 |   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name # Requiere un DB Subnet Group
+		74 | }
+
+Check: CKV2_AWS_12: "Ensure the default security group of every VPC restricts all traffic"
+	FAILED for resource: aws_vpc.main_08
+	File: /aws.tf:7-12
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-4
+
+		7  | resource "aws_vpc" "main_08" {
+		8  |   cidr_block = "10.0.0.0/16"
+		9  |   tags = {
+		10 |     Name = "tfm-security-vpc-08-aws"
+		11 |   }
+		12 | }
+
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.single_point_of_failure_app
+	File: /aws.tf:44-58
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		44 | resource "aws_instance" "single_point_of_failure_app" {
+		45 |   ami           = "ami-0ed0d0f23bf3589b9" # Ejemplo para eu-west-3 (Ubuntu 20.04 LTS), ajusta si es necesario
+		46 |   instance_type = "t2.micro"
+		47 |   subnet_id     = aws_subnet.single_az_subnet.id # ¡Vulnerabilidad! Desplegado en un solo AZ
+		48 |   vpc_security_group_ids = [aws_security_group.web_08.id]
+		49 |   associate_public_ip_address = true
+		50 | 
+		51 |   tags = {
+		52 |     Name = "TFM-Single-Point-of-Failure-App"
+		53 |   }
+		54 | 
+		55 |   # Vulnerabilidad: No hay Auto Scaling Group con distribución Multi-AZ
+		56 |   # No hay configuración para un balanceador de carga o grupo de Auto Scaling que garantice instancias en múltiples AZs.
+		57 |   # También se asume que no hay backups de EBS configurados automáticamente para el volumen raíz.
+		58 | }
+
+
